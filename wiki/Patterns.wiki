@@ -12,3 +12,9 @@ Of particular interest are patterns that determine the structure of forms (form 
 
 Add your content here.  Format your content with:
   * [http://www.welie.com/patterns/showPattern.php?patternID=forms Form (Interaction Design Pattern Library - Welie.com)]
+
+= Pattern analysis =
+  * [http://www.smashingmagazine.com/2008/07/04/web-form-design-patterns-sign-up-forms/ Web Form Design Patterns: Sign-Up Forms (Smashing Magazine)]
+  * [http://www.smashingmagazine.com/2008/07/08/web-form-design-patterns-sign-up-forms-part-2/ Web Form Design Patterns: Sign-Up Forms, Part 2 (Smashing Magazine)]
+  * [http://www.uxmatters.com/mt/archives/2006/07/label-placement-in-forms.php Label Placement in Forms (UX Matters)]
+  * [http://www.lukew.com/resources/articles/web_forms.html Web Application Form Design (Luke W Interface Designs)]
