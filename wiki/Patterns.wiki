@@ -11,4 +11,4 @@ Of particular interest are patterns that determine the structure of forms (form 
 = Patterns =
 
 Add your content here.  Format your content with:
-  * [http://www.welie.com/patterns/showPattern.php?patternID=forms Form (Interaction Design Pattern Library - Welie.com)
+  * [http://www.welie.com/patterns/showPattern.php?patternID=forms Form (Interaction Design Pattern Library - Welie.com)]
