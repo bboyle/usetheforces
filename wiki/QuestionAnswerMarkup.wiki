@@ -2,9 +2,9 @@
 
 = Introduction =
 
-The guts of any form are the questions and answers. The user gives the answers. The form has to provide the questions and answering controls/widgets (text boxes and drop down lists, radio buttons and all that). You might also call these "fields" or "prompt response" pairs. And you might pad this out with hints, help text, sample data, validation messages, error recovery suggestions, and more.
+The guts of any form are the questions and answers. The user gives the answers. The form has to provide the questions and answering controls/widgets (text boxes and drop down lists, radio buttons and all that). You might also call these "fields" or "prompt response pairs". And you might pad this out with hints, help text, sample data, validation messages, error recovery suggestions, and more. Throw all this in a pot and what is it called?
 
-Here in forces we're gonna choose a term from XForms and go with: 
+Here at usetheforces we're gonna choose a term from XForms and go with: 
 _[http://www.w3.org/TR/xforms/#controls form controls]_.
 
 == Why XForms? ==
