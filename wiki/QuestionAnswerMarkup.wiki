@@ -69,7 +69,7 @@ Key things to note here.
 
 In XForms, the _form control_ contains all the information about the form. The only way to accessibly do this within HTML is by placing this information within the HTML label tag. HTML also requires us to specify the widget, so we place that after the label, and then wrap the label and widget with another tag, giving it a classname based on the XForms element name.
 
-_Couldn't we just put the widget inside the label too? Would we still need the li element?_
+_Couldn't we just put the widget inside the label too? Would we still need the li element?(Hey, even if we could, we will go absolutely bonkers trying to tame this when we need to use legend instead of label. Read on!)_
 
 
 = Radio buttons and checkboxes =
