@@ -1,0 +1,14 @@
+#summary Common form design patterns
+
+= Introduction =
+
+Patterns emerge as a way of documenting convention/commonality.
+Patterns for web forms will be used in this project to frame the decisions made and the products delivered.
+
+Of particular interest are patterns that determine the structure of forms (form components, and perhaps the order they appear in, which are optional/mandatory and under what circumstances); and all those same questions answered again for key components - such as a typical form element, aka prompt: response, question? answer. That kind of thing.
+
+
+= Patterns =
+
+Add your content here.  Format your content with:
+  * [http://www.welie.com/patterns/showPattern.php?patternID=forms Form (Interaction Design Pattern Library - Welie.com)
