@@ -19,12 +19,18 @@ Simple text input.
 {{{
 <li class="xf-input">
   <label for="order-shipTo-street">
-    <span class="xf-label"Street</span>
+    <span class="xf-label">Street</span>
     <small class="xf-hint">Please enter the number and street name</small>
   </label>
   <input type="input" id="order-shipTo-street" … />
 </li>
 }}}
+
+== Forces jQuery selectors ==
+  * {{{:-xf-input}}} matches all input elements (the "li" wrapper, in the code above).
+  * {{{:-xf-label}}} matches the span class="xf-label" element
+  * {{{:-xf-hint}}} matches all small element
+  * {{{:xf-input input}}} accesses the control widget {{{input}}} element
 
 = References =
   * [http://www.w3.org/TR/xforms/#ui-input the input element (XForms)]
