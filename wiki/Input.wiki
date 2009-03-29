@@ -17,7 +17,7 @@ Simple text input.
 
 == Forces XHTML ==
 {{{
-<li class="xf-input">
+<li class="xf-input streetAddress">
   <label for="order-shipTo-street">
     <span class="xf-label">Street</span>
     <small class="xf-hint">Please enter the number and street name</small>
