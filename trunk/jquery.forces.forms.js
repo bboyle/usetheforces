@@ -42,13 +42,13 @@ $.fn.extend({
 		}
 
 		var relevant = true;
-		if (typeof(expression) == "boolean") {
+		if (typeof(expression) == "function") {
+			relevant = expression(this);
+		} else if (expression) {
 			relevant = expression;
-		} else if (typeof(expression) == "function") {
-			relevant = expression(this) == true;
 		}
 		
-		if (!relevant) {
+		if (relevant != true) {
 			// TODO +filter from jquery object
 			formControl.hide()
 			return false;
