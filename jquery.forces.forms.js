@@ -5,6 +5,9 @@
 
 // selectors
 $.extend($.expr[':'], {
+	'-xf-control': function(e) {
+		return $(e).is('.xf-input');
+	},
 	'-xf-hint': function(e) {
 		return $(e).hasClass('xf-hint');
 	},
