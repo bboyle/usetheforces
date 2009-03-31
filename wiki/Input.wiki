@@ -31,7 +31,7 @@ _These examples have been written to illustrate the code above_
 || {{{:-xf-input}}} || matches all input elements (the {{{li}}} wrapper ||
 || {{{:-xf-label}}} || matches the {{{span class="xf-label"}}} element ||
 || {{{:-xf-hint}}} || matches all {{{small}}} element ||
-|| {{{:xf-input input}}} || accesses the control widget ({{{input}}} element) ||
+|| {{{:-xf-input input}}} || accesses the control widget ({{{input}}} element) ||
 
 = References =
   * [http://www.w3.org/TR/xforms/#ui-input the input element (XForms)]
