@@ -25,7 +25,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-label'); 
 	}, 
 	'-xf-select1': function(e) { 
-		return $(e).hasClass('xf-seelct1'); 
+		return $(e).hasClass('xf-select1'); 
 	}, 
 });
 
