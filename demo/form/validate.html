@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>forces validate test</title>
+</head>
+
+<body id="usetheforces.googlecode.com">
+
+<h1>forces validate test</h1>
+
+<form action="#" method="get" class="forces">
+	<ol>
+		<li class="xf-input">
+			<label for="my-amount">
+				<span class="xf-label">Amount</span>
+				<abbr class="required" title="required">*</abbr>
+			</label>
+			<input type="text" id="my-amount" name="myAmount" value="999" />
+		</li>
+		<li class="xf-input">
+			<label for="my-discount">
+				<span class="xf-label">Discount</span>
+				<abbr class="required" title="required">*</abbr>
+			</label>
+			<input type="text" id="my-discount" name="myDiscount" />
+		</li>
+		<li class="xf-submit">
+			<strong><input type="submit" value="Validate" />
+		</li>
+  	</ol>
+</form>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript" src="../../jquery.forces.forms.js"></script>
+<script type="text/javascript">
+<!-- //
+
+// http://code.google.com/p/usetheforces/wiki/Relevant
+$('#my-discount').relevant(function() {
+  return $('#my-amount').val() > 1000;
+});
+
+// -->
+</script>
+
+</body>
+</html>
