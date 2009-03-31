@@ -100,10 +100,16 @@ $.fn.extend({
 // form events
 $('form.forces')
 	// form control changed
-	.change(function(eventObject) {
-		var formControl = $(eventObject.target).formControl();
+	.bind('change -tf-change',function(eventObject, /* optional */ target) {
+		var formControl = $(target||eventObject.target).formControl();
 		// evaluate relevance of all controls
 		$(':-xf-control:-xf-relevant', formControl.parents('form'));
+	})
+	.keyup(function(eventObject){
+		var formInput = $(eventObject.target);
+		if (formInput.data('previousValue') != formInput.val()) {
+			formInput.parents('form').trigger('-tf-change',[formInput]).data('previousValue', formInput.val());
+		}
 	})
 	// form was submitted
 	.submit(function(eventObject) {
