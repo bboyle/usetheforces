@@ -25,6 +25,9 @@
 			</label>
 			<input type="text" id="my-discount" name="myDiscount" />
 		</li>
+		<li class="xf-select">
+			<label for="make-a-donation"><input type="checkbox" id="make-a-donation" />I would like to donate some money too</label>
+		</li>
 		<li class="xf-input">
 			<label for="my-donation">
 				<span class="xf-label">Donation</span>
@@ -42,6 +45,11 @@
 // http://code.google.com/p/usetheforces/wiki/Relevant
 $('#my-discount').relevant(function() {
   return $('#my-amount').val() > 1000;
+});
+
+// checkbox driven relevance
+$('#my-donation').relevant(function() {
+  return $('#make-a-donation').is(':checked');
 });
 
 // -->
