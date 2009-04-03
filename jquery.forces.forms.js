@@ -15,7 +15,7 @@ $.extend($.expr[':'], {
 	},
 	// xforms
 	'-xf-control': function(e) {
-		return $(e).is('.xf-input,.xf-select1,.xf-group');
+		return $(e).is('.xf-input,.xf-select1,.xf-select,.xf-group');
 	},
 	'-xf-group': function(e) {
 		return $(e).hasClass('xf-group');
@@ -38,6 +38,9 @@ $.extend($.expr[':'], {
 	'-xf-required': function(e) {
 		return $(e).find('.required').size() > 0;
 	},
+	'-xf-select': function(e) {
+		return $(e).hasClass('xf-select');
+	},
 	'-xf-select1': function(e) {
 		return $(e).hasClass('xf-select1');
 	},
@@ -49,10 +52,17 @@ $.extend($.expr[':'], {
 
 
 $.fn.extend({
-	// get form control
+	// get form 
+    form: function() { 
+        return this.is('form') ? this : this.parents('form'); 
+    },
+
+
+    // get form control
 	formControl: function() {
 		return this.is(':-xf-control') ? this : this.parents(':-xf-control').eq(0);
 	},
+
 
 	// get/set relevance
 	relevant: function(expression) {
@@ -77,6 +87,7 @@ $.fn.extend({
 		return true;
 	},
 	
+
 	// is control valid
 	validate: function() {
 		if (this.is(':-tf-blank')) {
@@ -86,6 +97,7 @@ $.fn.extend({
 		return true;
 	},
 	
+
 	// get value
 	xfValue: function() {
 		if (this.find('input:text').size()) {
