@@ -53,20 +53,20 @@ $.extend($.expr[':'], {
 
 $.fn.extend({
 	// get form 
-    form: function() { 
+    xForm: function() { 
         return this.is('form') ? this : this.parents('form'); 
     },
 
 
     // get form control
-	formControl: function() {
+	xFormControl: function() {
 		return this.is(':-xf-control') ? this : this.parents(':-xf-control').eq(0);
 	},
 
 
 	// get/set relevance
 	relevant: function(expression) {
-		var formControl = this.formControl();
+		var formControl = this.xFormControl();
 		if (expression) {
 			formControl.data('relevant', expression);
 		} else {
@@ -113,14 +113,14 @@ $.fn.extend({
 $('form.forces')
 	// form control changed
 	.bind('change -tf-change',function(eventObject, /* optional */ target) {
-		var formControl = $(target||eventObject.target).formControl();
+		console.log('change');
 		// evaluate relevance of all controls
-		$(':-xf-control:-xf-relevant', formControl.parents('form'));
+		$(':-xf-control:-xf-relevant', $(target||eventObject.target).xForm());
 	})
 	.keyup(function(eventObject){
 		var formInput = $(eventObject.target);
 		if (formInput.data('previousValue') != formInput.val()) {
-			formInput.parents('form').trigger('-tf-change',[formInput]).data('previousValue', formInput.val());
+			formInput.xForm().trigger('-tf-change',[formInput]).data('previousValue', formInput.val());
 		}
 	})
 	// form was submitted
@@ -142,5 +142,16 @@ $('form.forces')
 		return false;
 	});
 
+
+// IE fixes
+if ($.browser.msie) {
+	// trigger change on radio buttons and checkboxes
+	$(':radio,:checkbox').bind('click change', function(eventObject) {
+		var formInput = $(eventObject.target);
+		if (formInput.data('previousValue') != formInput.val()) {
+			formInput.xForm().trigger('-tf-change',[formInput]).data('previousValue', formInput.val());
+		}
+	});
+}
 
 })(jQuery);
