@@ -9,6 +9,7 @@
 
 	var _tf_SUBMIT_TOLERANCE = 2000; // ms
 	var _tf_SUBMIT_ERROR = "Unable to submit form";
+	var _tf_ALERT_REQUIRED = "must be completed";
 
 // selectors
 $.extend($.expr[':'], {
@@ -34,7 +35,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-input'); 
 	},
 	'-xf-invalid' : function(e) {
-		return $(e)._valid() === false;
+		return $(e).data('-tf-valid') === false;
 	},
 	'-xf-label': function(e) { 
 		return $(e).hasClass('xf-label'); 
@@ -55,7 +56,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-select1');
 	},
 	'-xf-valid': function(e) {
-		return $(e)._valid() === true;
+		return $(e).data('-tf-valid') === true;
 	}
 	
 });
@@ -65,27 +66,19 @@ $.extend($.expr[':'], {
 $.fn.extend({
 
 
-	// get/set valid
-	_valid: function(isValid, alertMessage) {
-		if (isValid == null) {
-			return this.data('-tf-valid');
-		}
-		this.data('-tf-valid', isValid);
-		if (isValid) {
-			this.find(':-xf-alert').remove();
-			this.removeClass('xf-invalid');
-			this.addClass('xf-valid');
-		} else {
-			this.removeClass('xf-valid');
-			this.addClass('xf-invalid');
-			this.find(':-xf-label')
-				.parent()
-					.find(':-xf-alert')
-						.remove()
-					.end()
-				.append('<em class="xf-alert">' + alertMessage + '</em>');
-		}
-		return isValid;
+	// set contraints
+	constraint: function(selector, alertMessage, test) {
+		var form = $(this).xForm();
+
+		if (form.data('constraints') == null) form.data('constraints', []);
+		
+		form.data('constraints').push({
+			selector: selector,
+			alertMessage: alertMessage,
+			test: test
+		});
+
+		return this;
 	},
 	
 
@@ -128,18 +121,44 @@ $.fn.extend({
 	// is control valid
 	validate: function() {
 		var control = this.xFormControl();
+		// set valid state
+		function _valid(isValid, alertMessage) {
+			control.data('-tf-valid', isValid);
+			if (isValid) {
+				control.find(':-xf-alert').remove();
+				control.removeClass('xf-invalid');
+				control.addClass('xf-valid');
+			} else {
+				control.removeClass('xf-valid');
+				control.addClass('xf-invalid');
+				control.find(':-xf-label')
+					.parent()
+						.find(':-xf-alert')
+							.remove()
+						.end()
+					.append('<em class="xf-alert">' + alertMessage + '</em>');
+			}
+			return isValid;
+		}
+	
 		if (control.is(':-tf-blank')) {
 			if (control.is(':-xf-required')) {
 				// blank + required = invalid
 				// TODO required to a core constraint, so message can be easily customised
-				return control._valid(false, 'must be completed');
+				return _valid(false, _tf_ALERT_REQUIRED);
 			} else {
 				// blank + not required = valid
-				return control._valid(true);
+				return _valid(true);
 			}
-		// } else { TODO constraint validation			
+		} else {
+			var constraints = control.xForm().data('constraints') || [];
+			for (var i = 0; i < constraints.length; i++) {
+				if (control.is(constraints[i].selector) && constraints[i].test(control) == false) {
+					return _valid(false, constraints[i].alertMessage)
+				}
+			}
 		}
-		return control._valid(true);
+		return _valid(true);
 	},
 	
 
@@ -253,7 +272,6 @@ $('.xform form')
 			// TODO scrollTo/focus status
 			return cancel(xform);
 		}
-		
 		return true;
 	});
 
@@ -270,20 +288,22 @@ if ($.browser.msie) {
 }
 
 
-// TODO setup constraints
-/*
-$('form').constraint(':-xf-required', "must be completed", function(e) { return !$(e).is(':-tf-blank'); });
-$('form').constraint('.xsd-date', "unrecognised date format", function(e) {
-	try {
-		new Date(e.xfValue());
-	} catch (x) {
-		return false;
-	}
-	return true;
-});
-*/
-// turn on validation
-// true (uses "Unable to submit form"), String (true, custom message), false = disable
-$('form').useForcesValidation("Validation tests prevent submit");
-
 })(jQuery);
+
+
+
+
+
+// default constraints
+$('form').constraint('.xsd-date', "unrecognised date format", function(e) {
+	var d = e.xfValue().split(/\D/);
+	if (d.length == 3 && d.join('').match(/^\d{4,8}$/)) {
+		var date = new Date(d[2], d[1]-1, d[0]);
+		return date.getMonth()+1 == d[1] && date.getDate() == d[0] && (date.getFullYear() == d[2] || date.getYear() == d[2]);
+	}
+	return false;
+});
+
+
+// turn on validation
+$('form').useForcesValidation("Validation tests prevent submit");
