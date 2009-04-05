@@ -1,0 +1,90 @@
+/**
+ * demo.css
+ * @see http://usetheforces.googlecode.com/
+ * @license GNU GENERAL PUBLIC LICENSE Version 3 <http://www.gnu.org/licenses/gpl.html>
+ */
+
+body {
+	font: 100%/1.3 Verdana, Arial, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+
+.xf-label,
+.xf-hint,
+.xf-alert {
+	display: block;
+}
+abbr.required {
+	color: red;
+	border-bottom: none;
+}
+
+/* form container */
+.xform {
+	padding: .3em;
+	margin: .5em;
+	border: 1px solid #CCC;
+	background: #EEE;
+}
+
+/* questions */
+.questions > li {
+	position: relative;
+	padding: .3em 2em;
+	margin: .5em;
+	border: 1px solid #CCC;
+	background: #EEE;
+}
+.questions abbr.required {
+	position: absolute;
+	left: 0;
+	width: 2em;
+	text-align: center;
+}
+
+li.xf-valid {
+	border-color: #0A0;
+}
+li.xf-invalid {
+	border-color: #A00;
+}
+.xf-submit-error {
+	border-color: #F00;
+}
+.xf-submit-error li.xf-valid {
+	background: #CFC;
+}
+.xf-submit-error li.xf-invalid {
+	background: #FCC;
+}
+
+
+/* alerts in labels */
+label .alert,
+legend .alert {
+	color: #FC0;
+}
+
+
+/* status block */
+.status {
+	background: #FFC;
+	padding: .3em 2em;
+	margin: .5em .5em 2em;
+	border-radius: 1em;
+	-moz-border-radius: 1em;
+	-webkit-border-radius: 1em;
+}
+.status h1 {
+	margin: 0;
+}
+.status ol {
+	margin: 0;
+	padding: 0 2em;
+}
+.status li {
+	margin: .3em 0;
+}

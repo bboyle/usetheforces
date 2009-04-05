@@ -7,6 +7,8 @@
 
 (function($){
 
+	var _tf_SUBMIT_TOLERANCE = 2000; // ms
+
 // selectors
 $.extend($.expr[':'], {
 	// (use)theforces
@@ -14,8 +16,11 @@ $.extend($.expr[':'], {
 		return $.trim($(e).xfValue()).length == 0;
 	},
 	// xforms
+	'-xf-alert': function(e) { 
+		return $(e).hasClass('xf-alert'); 
+	}, 
 	'-xf-control': function(e) {
-		return $(e).is('.xf-input,.xf-select1,.xf-select,.xf-group');
+		return $(e).is('.xf-input,.xf-select1,.xf-select,.xf-secret,.xf-group');
 	},
 	'-xf-group': function(e) {
 		return $(e).hasClass('xf-group');
@@ -27,7 +32,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-input'); 
 	},
 	'-xf-invalid' : function(e) {
-		return $(e).is(':not(:-xf-valid)');
+		return $(e)._valid() === false;
 	},
 	'-xf-label': function(e) { 
 		return $(e).hasClass('xf-label'); 
@@ -38,6 +43,9 @@ $.extend($.expr[':'], {
 	'-xf-required': function(e) {
 		return $(e).find('.required').size() > 0;
 	},
+	'-xf-secret': function(e) {
+		return $(e).hasClass('xf-secret');
+	},
 	'-xf-select': function(e) {
 		return $(e).hasClass('xf-select');
 	},
@@ -45,16 +53,43 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-select1');
 	},
 	'-xf-valid': function(e) {
-		return $(e).validate();
+		return $(e)._valid() === true;
 	}
 	
 });
 
 
+// functions
 $.fn.extend({
-	// get form 
+
+
+	// get/set valid
+	_valid: function(isValid, alertMessage) {
+		if (isValid == null) {
+			return this.data('-tf-valid');
+		}
+		this.data('-tf-valid', isValid);
+		if (isValid) {
+			this.find(':-xf-alert').remove();
+			this.removeClass('xf-invalid');
+			this.addClass('xf-valid');
+		} else {
+			this.removeClass('xf-valid');
+			this.addClass('xf-invalid');
+			this.find(':-xf-label')
+				.parent()
+					.find(':-xf-alert')
+						.remove()
+					.end()
+				.append('<em class="xf-alert">' + alertMessage + '</em>');
+		}
+		return isValid;
+	},
+	
+
+	// get form
     xForm: function() { 
-        return this.is('form') ? this : this.parents('form'); 
+        return this.hasClass('xform') ? this : this.parents('.xform'); 
     },
 
 
@@ -62,10 +97,11 @@ $.fn.extend({
 	xFormControl: function() {
 		return this.is(':-xf-control') ? this : this.parents(':-xf-control').eq(0);
 	},
-
-
+	
+	
 	// get/set relevance
 	relevant: function(expression) {
+		// TODO do not recalculate if form has not changed (timestamp form changes?)
 		var formControl = this.xFormControl();
 		if (expression) {
 			formControl.data('relevant', expression);
@@ -79,7 +115,6 @@ $.fn.extend({
 			relevant = expression;
 		}
 		if (relevant != true) {
-			// TODO +filter from jquery object
 			formControl.hide();
 			return false;
 		}
@@ -87,59 +122,122 @@ $.fn.extend({
 		return true;
 	},
 	
-
+	
 	// is control valid
 	validate: function() {
-		if (this.is(':-tf-blank')) {
-			return !this.is(':-xf-required');
+		var control = this.xFormControl();
+		if (control.is(':-tf-blank')) {
+			if (control.is(':-xf-required')) {
+				// blank + required = invalid
+				// TODO required to a core constraint, so message can be easily customised
+				return control._valid(false, 'must be completed');
+			} else {
+				// blank + not required = valid
+				return control._valid(true);
+			}
 		// } else { TODO constraint validation			
 		}
-		return true;
+		return control._valid(true);
 	},
 	
 
+	// get alert message text
+	xfAlert: function() {
+		return this.xFormControl().find(':-xf-alert').text();
+	},
+
+
+	// get label text
+	xfLabel: function() {
+		return this.xFormControl().find(':-xf-label').text().replace(/[:?]$/, '');
+	},
+
+
 	// get value
 	xfValue: function() {
-		if (this.find('input:text').size()) {
+		if (this.find(':text').length) {
 			return this.find('input:text').val();
+		} else if (this.find('select').length) {
+			return this.find('select').val();
+		} else if (this.find(':radio').length) {
+			var checked = this.find(':radio:checked');
+			return checked.length > 0 ? checked.val() : null;
 		}
 		// TODO support textarea, password, radio/checkboxes and select
 		return null;
 	}
+
+
 });
 
 
-// form events
-$('form.forces')
+// events
+$('.xform form')
+
+
 	// form control changed
 	.bind('change -tf-change',function(eventObject, /* optional */ target) {
 		console.log('change');
+		var target = $(target||eventObject.target);
+		target.validate();
 		// evaluate relevance of all controls
-		$(':-xf-control:-xf-relevant', $(target||eventObject.target).xForm());
+		$(':-xf-control:-xf-relevant', target.xForm());
 	})
+
+
+	// keyup (early change detection)
 	.keyup(function(eventObject){
 		var formInput = $(eventObject.target);
 		if (formInput.data('previousValue') != formInput.val()) {
 			formInput.xForm().trigger('-tf-change',[formInput]).data('previousValue', formInput.val());
 		}
 	})
+
+
 	// form was submitted
 	.submit(function(eventObject) {
 		console.log('submit');
 
-		var form = $(eventObject.target);
+		var now = new Date().getTime();
+		var xform = $(eventObject.target).xForm();
 
-		console.log($(':-xf-control', form).size(), "fields");
-		console.log($(':-xf-control:-xf-relevant', form).size(), "relevant fields");
-		console.log($(':-xf-control:-xf-required', form).size(), "required fields");
-		console.log($(':-xf-control:-tf-blank', form).size(), "blank fields");
-		console.log($(':-xf-control:-xf-valid', form).size(), "valid fields");
-		console.log($(':-xf-control:-xf-relevant:-xf-invalid', form).size(), "invalid (relevant) fields");
+		function cancel(xform) {
+			// TODO port shake button (negative feedback)
+			xform.addClass('xf-submit-error');
+			return false;
+		}
 		
-		// highlight (relevant) invalid controls
-		$(':-xf-control:-xf-relevant:-xf-invalid', form).css('background', 'red');
-
-		return false;
+		// suppress, if repeated submit within timeframe (milliseconds)
+		if (xform.data('submitted') && now - xform.data('submitted') < _tf_SUBMIT_TOLERANCE) {
+			console.log("multiple form submission detected: < ", _tf_SUBMIT_TOLERANCE, " ms since last submit");
+			return cancel(xform);
+		}
+		xform.data('submitted', now);
+	
+		// get all relevant controls		
+		var controls = $(':-xf-control:-xf-relevant', xform);
+		// validate controls that have not been validated (i.e. never changed)
+		controls.filter(':not(:-xf-valid):not(:-xf-invalid)').filter(function() {
+			$(this).validate();
+		});
+		var invalid = controls.filter(':-xf-invalid');
+		if (invalid.length > 0) {
+			var status = xform.prev('.status');
+			if (status.length == 1) {
+				status.find('li').remove();
+			} else {
+				status = $('<div class="status alert"><h1>Unable to validate</h1><ol></ol></div>');
+			}
+			invalid.each(function() {
+				var control = $(this);
+				status.find('ol').append($('<li>' + control.xfLabel() + ': ' + control.xfAlert() + '</li>'));
+			});
+			xform.before(status);
+			// TODO scrollTo/focus status
+			return cancel(xform);
+		}
+		
+		return true;
 	});
 
 
