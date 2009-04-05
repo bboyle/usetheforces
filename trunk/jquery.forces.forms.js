@@ -8,12 +8,14 @@
 (function($){
 
 	var _tf_SUBMIT_TOLERANCE = 2000; // ms
+	var _tf_SUBMIT_ERROR = "Unable to submit form";
 
 // selectors
 $.extend($.expr[':'], {
 	// (use)theforces
 	'-tf-blank': function(e) {
-		return $.trim($(e).xfValue()).length == 0;
+		var v = $(e).xfValue();
+		return v == null || $.trim($(e).xfValue()).length == 0;
 	},
 	// xforms
 	'-xf-alert': function(e) { 
@@ -87,18 +89,6 @@ $.fn.extend({
 	},
 	
 
-	// get form
-    xForm: function() { 
-        return this.hasClass('xform') ? this : this.parents('.xform'); 
-    },
-
-
-    // get form control
-	xFormControl: function() {
-		return this.is(':-xf-control') ? this : this.parents(':-xf-control').eq(0);
-	},
-	
-	
 	// get/set relevance
 	relevant: function(expression) {
 		// TODO do not recalculate if form has not changed (timestamp form changes?)
@@ -120,6 +110,18 @@ $.fn.extend({
 		}
 		formControl.slideDown();
 		return true;
+	},
+	
+	
+	// use validation
+	useForcesValidation: function(enable) {
+		var form = $(this).xForm();
+		if (enable) {
+			form.data('-tf-submit-error', enable);
+		} else {
+			form.removeData('-tf-submit-error');
+		}
+		return Boolean(enable);
 	},
 	
 	
@@ -147,6 +149,18 @@ $.fn.extend({
 	},
 
 
+	// get form
+    xForm: function() { 
+        return this.hasClass('xform') ? this : this.parents('.xform'); 
+    },
+
+
+    // get form control
+	xFormControl: function() {
+		return this.is(':-xf-control') ? this : this.parents(':-xf-control').eq(0);
+	},
+	
+	
 	// get label text
 	xfLabel: function() {
 		return this.xFormControl().find(':-xf-label').text().replace(/[:?]$/, '');
@@ -162,8 +176,11 @@ $.fn.extend({
 		} else if (this.find(':radio').length) {
 			var checked = this.find(':radio:checked');
 			return checked.length > 0 ? checked.val() : null;
+		} else if (this.find(':checkbox').length) {
+			var checked = this.find(':checkbox:checked');
+			return checked.length > 0 ? checked.val() : null;
 		}
-		// TODO support textarea, password, radio/checkboxes and select
+		// TODO support textarea, password
 		return null;
 	}
 
@@ -202,7 +219,7 @@ $('.xform form')
 		var xform = $(eventObject.target).xForm();
 
 		function cancel(xform) {
-			// TODO port shake button (negative feedback)
+			// TODO shake button (negative feedback)
 			xform.addClass('xf-submit-error');
 			return false;
 		}
@@ -226,7 +243,7 @@ $('.xform form')
 			if (status.length == 1) {
 				status.find('li').remove();
 			} else {
-				status = $('<div class="status alert"><h1>Unable to validate</h1><ol></ol></div>');
+				status = $('<div class="status alert"><h1>' + (xform.data('-tf-submit-error') || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
 			}
 			invalid.each(function() {
 				var control = $(this);
@@ -251,5 +268,22 @@ if ($.browser.msie) {
 		}
 	});
 }
+
+
+// TODO setup constraints
+/*
+$('form').constraint(':-xf-required', "must be completed", function(e) { return !$(e).is(':-tf-blank'); });
+$('form').constraint('.xsd-date', "unrecognised date format", function(e) {
+	try {
+		new Date(e.xfValue());
+	} catch (x) {
+		return false;
+	}
+	return true;
+});
+*/
+// turn on validation
+// true (uses "Unable to submit form"), String (true, custom message), false = disable
+$('form').useForcesValidation("Validation tests prevent submit");
 
 })(jQuery);
