@@ -5,17 +5,20 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>forces relevant test</title>
+	<link rel="stylesheet" href="../demo.css" type="text/css" />
 </head>
 
 <body id="usetheforces.googlecode.com">
 
 <h1>forces relevant test</h1>
 
+<div class="xform">
 <form action="#" method="get" class="forces">
-	<ol>
+	<ol class="questions">
 		<li class="xf-input">
 			<label for="my-amount">
 				<span class="xf-label">Amount</span>
+				<abbr class="required" title="required">*</abbr>
 			</label>
 			<input type="text" id="my-amount" name="myAmount" value="999" />
 		</li>
@@ -24,6 +27,7 @@
 				<span class="xf-label">Discount</span>
 			</label>
 			<input type="text" id="my-discount" name="myDiscount" />
+			<abbr class="required" title="required">*</abbr>
 		</li>
 		<li class="xf-select">
 			<label for="make-a-donation"><input type="checkbox" id="make-a-donation" />I would like to donate some money too</label>
@@ -31,6 +35,7 @@
 		<li class="xf-input">
 			<label for="my-donation">
 				<span class="xf-label">Donation</span>
+				<abbr class="required" title="required">*</abbr>
 			</label>
 			<input type="text" id="my-donation" name="myDonation" value="" />
 		</li>
@@ -52,6 +57,7 @@
 		<li class="xf-select">
 			<label for="sword-swings">
 				<span class="xf-label">How many times do you want to swing the sword?</span>
+				<abbr class="required" title="required">*</abbr>
 			</label>
 			<select id="sword-swings">
 				<option value="">— please select —</option>
@@ -67,6 +73,7 @@
 				<legend>
 					<span>
 						<span class="xf-label">How do you open the gate?</span>
+						<abbr class="required" title="required">*</abbr>
 					</span>
 				</legend>
 				<ul class="choices">
@@ -76,31 +83,35 @@
 				</ul>
 			</fieldset>
 		</li>
+		<li class="xf-submit">
+			<strong><input type="submit" value="Validate" /></strong>
+		</li>
   	</ol>
 </form>
+</div>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript" src="../../jquery-1.3.2.js"></script>
 <script type="text/javascript" src="../../jquery.forces.forms.js"></script>
 <script type="text/javascript">
 <!-- //
 
-// http://code.google.com/p/usetheforces/wiki/Relevant
-$('#my-discount').relevant(function() {
-  return $('#my-amount').val() > 1000;
-});
-
-// checkbox driven relevance
-$('#my-donation').relevant(function() {
-  return $('#make-a-donation').is(':checked');
-});
-
-// radio button driven relevance
-$('#sword-swings').relevant(function() {
-  return $('#my-answer-sword').is(':checked') || $('#my-answer-sword-gate').is(':checked');
-});
-$('#gate-open').relevant(function() {
-  return $('#my-answer-gate').is(':checked') || $('#my-answer-sword-gate').is(':checked');
-});
+	// http://code.google.com/p/usetheforces/wiki/Relevant
+	$('#my-discount').relevant(function() {
+	  return $('#my-amount').val() > 1000;
+	});
+	
+	// checkbox driven relevance
+	$('#my-donation').relevant(function() {
+	  return $('#make-a-donation').is(':checked');
+	});
+	
+	// radio button driven relevance
+	$('#sword-swings').relevant(function() {
+	  return $('#my-answer-sword').is(':checked') || $('#my-answer-sword-gate').is(':checked');
+	});
+	$('#gate-open').relevant(function() {
+	  return $('#my-answer-gate').is(':checked') || $('#my-answer-sword-gate').is(':checked');
+	});
 
 // -->
 </script>
