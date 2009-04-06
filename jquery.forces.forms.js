@@ -82,6 +82,12 @@ $.fn.extend({
 	},
 	
 
+    // get form
+    form: function() {
+    	return this.is('form') ? this : this.parents('form');
+    },
+
+
 	// get/set relevance
 	relevant: function(expression) {
 		// TODO do not recalculate if form has not changed (timestamp form changes?)
@@ -168,11 +174,13 @@ $.fn.extend({
 	},
 
 
-	// get form
+	// get xform
+	// TODO define "xform" as an "article" container for the form
+	// is "xform" the best terminology?
     xForm: function() { 
         return this.hasClass('xform') ? this : this.parents('.xform'); 
     },
-
+    
 
     // get form control
 	xFormControl: function() {
@@ -208,8 +216,10 @@ $.fn.extend({
 
 
 // events
-$('.xform form')
-
+$('form')
+	.change(function() {
+		console.log('form.change');
+	})
 
 	// form control changed
 	.bind('change -tf-change',function(eventObject, /* optional */ target) {
@@ -221,15 +231,6 @@ $('.xform form')
 	})
 
 
-	// keyup (early change detection)
-	.keyup(function(eventObject){
-		var formInput = $(eventObject.target);
-		if (formInput.data('previousValue') != formInput.val()) {
-			formInput.xForm().trigger('-tf-change',[formInput]).data('previousValue', formInput.val());
-		}
-	})
-
-
 	// form was submitted
 	.submit(function(eventObject) {
 		console.log('submit');
@@ -237,7 +238,7 @@ $('.xform form')
 		var now = new Date().getTime();
 		var xform = $(eventObject.target).xForm();
 
-		function cancel(xform) {
+		function _cancel(xform) {
 			// TODO shake button (negative feedback)
 			xform.addClass('xf-submit-error');
 			return false;
@@ -246,7 +247,7 @@ $('.xform form')
 		// suppress, if repeated submit within timeframe (milliseconds)
 		if (xform.data('submitted') && now - xform.data('submitted') < _tf_SUBMIT_TOLERANCE) {
 			console.log("multiple form submission detected: < ", _tf_SUBMIT_TOLERANCE, " ms since last submit");
-			return cancel(xform);
+			return _cancel(xform);
 		}
 		xform.data('submitted', now);
 	
@@ -270,23 +271,39 @@ $('.xform form')
 			});
 			xform.before(status);
 			// TODO scrollTo/focus status
-			return cancel(xform);
+			return _cancel(xform);
 		}
 		return true;
 	});
 
 
-// IE fixes
+// keyup early change trigger
+$(':text,:password,textarea')
+	// keyup (early change detection)
+	.keyup(function(eventObject){
+		var formInput = $(eventObject.target);
+		var control = formInput.xFormControl();
+		var val = control.xfValue();
+		if (control.data('previousValue') != val) {
+			control.data('previousValue', val);
+			control.form().trigger('-tf-change',[formInput]);
+		}
+	});
+
+
+// IE
 if ($.browser.msie) {
 	// trigger change on radio buttons and checkboxes
-	$(':radio,:checkbox').bind('click change', function(eventObject) {
+	$(':radio,:checkbox').click(function(eventObject) {
 		var formInput = $(eventObject.target);
-		if (formInput.data('previousValue') != formInput.val()) {
-			formInput.xForm().trigger('-tf-change',[formInput]).data('previousValue', formInput.val());
+		var control = formInput.xFormControl();
+		var val = control.xfValue();
+		if (control.data('previousValue') != val) {
+			control.data('previousValue', val);
+			control.form().trigger('-tf-change',[formInput]);
 		}
 	});
 }
-
 
 })(jQuery);
 
@@ -295,6 +312,7 @@ if ($.browser.msie) {
 
 
 // default constraints
+// TODO will this work when multiple forms are in the page?
 $('form').constraint('.xsd-date', "unrecognised date format", function(e) {
 	var d = e.xfValue().split(/\D/);
 	if (d.length == 3 && d.join('').match(/^\d{4,8}$/)) {
@@ -306,4 +324,5 @@ $('form').constraint('.xsd-date', "unrecognised date format", function(e) {
 
 
 // turn on validation
+// TODO selector becomes the forcesContainer element?
 $('form').useForcesValidation("Validation tests prevent submit");
