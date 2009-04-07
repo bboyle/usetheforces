@@ -267,7 +267,7 @@ $('form')
 			}
 			invalid.each(function() {
 				var control = $(this);
-				status.find('ol').append($('<li>' + control.xfLabel() + ': ' + control.xfAlert() + '</li>'));
+				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.xfLabel() + ': ' + control.xfAlert() + '</a></li>'));
 			});
 			xform.before(status);
 			// TODO scrollTo/focus status
