@@ -13,10 +13,51 @@ Use [checkboxes] or [multiple select lists] when more than one choice may be sel
 
 == XForms ==
 {{{
+<select1 ref="my:flavor">
+  <label>Flavor</label>
+  <item>
+    <label>Vanilla</label>
+    <value>v</value>
+  </item>
+  <item>
+    <label>Strawberry</label>
+    <value>s</value>
+  </item>
+  <item>
+    <label>Chocolate</label>
+    <value>c</value>
+  </item>
+</select1>
 }}}
 
 == Forces XHTML ==
+=== Select drop down list ===
 {{{
+<li class="xf-select">
+  <label for="my-flavor">
+    <span class="xf-label">Flavor</span>
+  </label>
+  <select id="my-flavor" …>
+    <option value="v">Vanilla</option>
+    <option value="s">Strawberry</option>
+    <option value="c">Chocolate</option>
+  </select>
+</li>
+}}}
+=== Radio buttons ===
+{{{
+<li class="xf-select">
+  <fieldset id="my-flavor">
+    <legend>
+      <span class="xf-label">Flavor</span>
+    </legend>
+    <ul>
+      <li><label for="my-flavor-v"><input type="radio" … id="my-flavor-v" value="v" />Vanilla</label></li>
+      <li><label for="my-flavor-s"><input type="radio" … id="my-flavor-s" value="s" />Strawberry</label></li>
+      <li><label for="my-flavor-c"><input type="radio" … id="my-flavor-c" value="c" />Chocolate</label></li>
+    </ul>
+  </fieldset>
+</li>
 }}}
 
 == Forces jQuery selectors ==
