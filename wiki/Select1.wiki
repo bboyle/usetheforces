@@ -33,7 +33,7 @@ Use [checkboxes] or [multiple select lists] when more than one choice may be sel
 == Forces XHTML ==
 === Select drop down list ===
 {{{
-<li class="xf-select">
+<li class="xf-select1">
   <label for="my-flavor">
     <span class="xf-label">Flavor</span>
   </label>
@@ -46,7 +46,7 @@ Use [checkboxes] or [multiple select lists] when more than one choice may be sel
 }}}
 === Radio buttons ===
 {{{
-<li class="xf-select">
+<li class="xf-select1">
   <fieldset id="my-flavor">
     <legend>
       <span class="xf-label">Flavor</span>
