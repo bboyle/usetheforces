@@ -8,8 +8,8 @@ Multiple options are provided, only one may be selected.
 
 = Details =
 
-Typically implemented as a [select list] or [radio buttons]
-Use [checkboxes] or [multiple select lists] when more than one choice may be selected.
+Typically implemented as a _select list_ or _radio buttons_.
+Use _checkboxes_ or _multiple select lists_ when more than one choice may be selected.
 
 == XForms ==
 {{{
@@ -64,7 +64,6 @@ Use [checkboxes] or [multiple select lists] when more than one choice may be sel
 _These examples have been written to illustrate the code above_
 || {{{:-xf-select1}}} || matches all input elements (the {{{li}}} wrapper ||
 || {{{:-xf-label}}} || matches the {{{span class="xf-label"}}} element ||
-|| {{{:-xf-hint}}} || matches all {{{small}}} element ||
 || {{{:-xf-select1 select}}} || accesses the control widget ({{{select}}} element) ||
 || {{{:-xf-select1 :radio}}} || accesses the control widget ({{{input}}} elements) ||
 || {{{:-xf-select1 :radio:checked}}} || accesses the checked control widget ({{{input}}} elements) ||
