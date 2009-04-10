@@ -1,0 +1,32 @@
+#summary select one (and only one) from a list of choices
+
+= Introduction =
+
+A single select control.
+Multiple options are provided, only one may be selected.
+
+
+= Details =
+
+Typically implemented as a [select list] or [radio buttons]
+Use [checkboxes] or [multiple select lists] when more than one choice may be selected.
+
+== XForms ==
+{{{
+}}}
+
+== Forces XHTML ==
+{{{
+}}}
+
+== Forces jQuery selectors ==
+_These examples have been written to illustrate the code above_
+|| {{{:-xf-select1}}} || matches all input elements (the {{{li}}} wrapper ||
+|| {{{:-xf-label}}} || matches the {{{span class="xf-label"}}} element ||
+|| {{{:-xf-hint}}} || matches all {{{small}}} element ||
+|| {{{:-xf-select1 select}}} || accesses the control widget ({{{select}}} element) ||
+|| {{{:-xf-select1 :radio}}} || accesses the control widget ({{{input}}} elements) ||
+|| {{{:-xf-select1 :radio:checked}}} || accesses the checked control widget ({{{input}}} elements) ||
+
+= References =
+  * [http://www.w3.org/TR/xforms/#ui-selectOne the select1 element (XForms)]
