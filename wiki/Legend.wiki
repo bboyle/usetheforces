@@ -39,7 +39,7 @@ IE6 does not support the sibling selector '{{{+}}}', so the above rule is ignore
 
 {{{
 legend {
- _border-bottom: 1px solid #000;
+  _border-bottom: 1px solid #000;
 }
 }}}
 
