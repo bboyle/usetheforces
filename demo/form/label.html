@@ -4,13 +4,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>forces validate test</title>
+	<title>forces label test</title>
 	<link rel="stylesheet" href="../demo.css" type="text/css" />
 </head>
 
 <body id="usetheforces.googlecode.com">
 
-<h1>forces validate test</h1>
+<h1>forces label test</h1>
 
 <div class="xform">
 <form action="#" method="get">
@@ -44,23 +44,16 @@
 				</ul>
 			</fieldset>
 		</li>
-		<li class="xf-textarea">
-			<label for="my-textarea">
-				<span class="xf-label">Comments or feedback?</span>
+		<li class="xf-input">
+			<label for="abn">
+				<span class="xf-label"><abbr title="Australian Business Number">ABN</abbr>:</span>
 				<abbr class="required" title="required">*</abbr>
 			</label>
-			<textarea id="my-textarea" name="myTextArea"></textarea>
-		</li>
-		<li class="xf-input xsd-date">
-			<label for="my-date">
-				<span class="xf-label">Date</span>
-				<abbr class="required" title="required">*</abbr>
-			</label>
-			<input type="text" id="my-date" name="myDate" />
+			<input type="text" id="abn" name="abn" />
 		</li>
 		<li class="xf-input xsd-date">
 			<label for="my-date2">
-				<span class="xf-label">Date (optional)</span>
+				<span class="xf-label">Would you like to supply an optional date?</span>
 			</label>
 			<input type="text" id="my-date2" name="myDate2" />
 		</li>
@@ -71,15 +64,47 @@
 </form>
 </div>
 
+<div id="debug">
+<h2>Labels found</h2>
+<ol>
+</ol>
+</div>
+
 <script type="text/javascript" src="../../jquery-1.3.2.js"></script>
 <script type="text/javascript" src="../../jquery.forces.forms.js"></script>
 <script type="text/javascript">
 <!-- //
 
-// http://code.google.com/p/usetheforces/wiki/Relevant
-$('#my-discount').relevant(function() {
-  return $('#my-amount').val() > 1000;
-});
+function readLabels() {
+	var debug = $('ol', '#debug');
+	$(':-xf-control', '.xform').each(function () {
+		debug.append($('<li>' + $(this).xfLabel().html() + '</li>'));
+	});
+}
+
+function loremLabels(separator) {
+	var lorem = [
+		"Lorem ipsum",
+		"Dolor sit amet",
+		"Consectetur adipiscing elit",
+		'<b>Phasellus velit</b>',
+		"Nunc ac ligula non velit tempus venenatis"
+	];
+	
+	$(':-xf-control', '.xform').each(function (i) {
+		$(this).xfLabel(lorem[i], separator);
+	});
+	readLabels();
+}
+
+readLabels();
+setTimeout(function() { loremLabels() }, 3000);
+// set all separators to ':'
+setTimeout(function() { loremLabels(':') }, 6000);
+// set all separators to '?'
+setTimeout(function() { loremLabels('?') }, 9000);
+// remove all separators
+setTimeout(function() { loremLabels('') }, 9000);
 
 // -->
 </script>
