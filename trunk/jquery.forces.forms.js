@@ -23,7 +23,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-alert'); 
 	}, 
 	'-xf-control': function(e) {
-		return $(e).is('.xf-input,.xf-select1,.xf-select,.xf-secret,.xf-group');
+		return $(e).is('.xf-input,.xf-select1,.xf-select,.xf-secret,.xf-textarea,.xf-group');
 	},
 	'-xf-group': function(e) {
 		return $(e).hasClass('xf-group');
@@ -54,6 +54,9 @@ $.extend($.expr[':'], {
 	},
 	'-xf-select1': function(e) {
 		return $(e).hasClass('xf-select1');
+	},
+	'-xf-select1': function(e) {
+		return $(e).hasClass('xf-textarea');
 	},
 	'-xf-valid': function(e) {
 		return $(e).data('-tf-valid') === true;
@@ -188,9 +191,19 @@ $.fn.extend({
 	},
 	
 	
-	// get label text
-	xfLabel: function() {
-		return this.xFormControl().find(':-xf-label').text().replace(/[:?]$/, '');
+	// get/set label
+	xfLabel: function(label, labelSeparator) {
+		var xfLabel = this.xFormControl().find(':-xf-label');
+
+		if (label) {
+			if (labelSeparator == null) {
+				var m = new RegExp('([:?]+)$').exec(xfLabel.text());
+				labelSeparator = m ? m[1] : '';
+			}
+			xfLabel.html(label + labelSeparator);
+		}
+
+ 		return xfLabel;
 	},
 
 
@@ -267,7 +280,7 @@ $('form')
 			}
 			invalid.each(function() {
 				var control = $(this);
-				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.xfLabel() + ': ' + control.xfAlert() + '</a></li>'));
+				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.xfLabel().text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
 			});
 			xform.before(status);
 			// TODO scrollTo/focus status
