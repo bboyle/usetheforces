@@ -69,4 +69,4 @@ _These examples have been written to illustrate the code above_
 || {{{:-xf-select1 :radio:checked}}} || accesses the checked control widget ({{{input}}} elements) ||
 
 = References =
-  * [http://www.w3.org/TR/xforms/#ui-selectMany the select element (XForms)]
+  * [http://www.w3.org/TR/xforms/#ui-selectOne the select1 element (XForms)]
