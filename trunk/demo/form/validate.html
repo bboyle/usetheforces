@@ -51,6 +51,43 @@
 			</label>
 			<textarea id="my-textarea" name="myTextArea"></textarea>
 		</li>
+		
+		<li class="xf-group">
+			<fieldset id="my-name">
+				<legend>
+					<span class="xf-label">Name</span>
+					<abbr title="required" class="required">*</abbr>
+				</legend>
+				<ol class="questions">
+					<li class="xf-select1">
+						<label for="my-name-title">
+							<span class="xf-label placeholder">Title</span>
+						</label>
+						<select id="my-name-title" name="myNameTitle">
+							<option value="">Title</option>
+							<option>Mr</option>
+							<option>Mrs</option>
+							<option>Miss</option>
+							<option>Ms</option>
+						</select>
+					</li>
+					<li class="xf-input">
+						<label for="my-name-given">
+							<span class="xf-label placeholder">Given name</span>
+						</label>
+						<input type="text" id="my-name-given" name="myNameGiven" />
+					</li>
+					<li class="xf-input">
+						<label for="my-name-family">
+							<span class="xf-label placeholder">Family name</span>
+						</label>
+						<input type="text" id="my-name-family" name="myNameFamily" />
+					</li>
+				</ol>
+			</fieldset>
+		</li>
+		
+
 		<li class="xf-input xsd-date">
 			<label for="my-date">
 				<span class="xf-label">Date</span>
@@ -58,12 +95,15 @@
 			</label>
 			<input type="text" id="my-date" name="myDate" />
 		</li>
+		<!--
 		<li class="xf-input xsd-date">
 			<label for="my-date2">
 				<span class="xf-label">Date (optional)</span>
 			</label>
 			<input type="text" id="my-date2" name="myDate2" />
-		</li>
+		</li> -->
+
+
 		<li class="xf-submit">
 			<strong><input type="submit" value="Validate" /></strong>
 		</li>
