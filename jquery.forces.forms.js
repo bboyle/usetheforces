@@ -5,18 +5,32 @@
  * @requires jQuery
  */
 
-(function($){
+;(function($){
 
+	// forces configuration
 	var _tf_SUBMIT_TOLERANCE = 2000; // ms
 	var _tf_SUBMIT_ERROR = "Unable to submit form";
 	var _tf_ALERT_REQUIRED = "must be completed";
+	
+	// event types
+	var EVENT_ENABLED = '-xf-enabled';
+	var EVENT_DISABLED = '-xf-disabled';
+	var EVENT_VALUE_CHANGED = '-xf-value-changed';
 
+	// internal state data
+	var DATA_CONSTRAINTS = '-xf-constraints';
+	var DATA_RELEVANT = '-xf-reabled';
+	var DATA_CALCULATE_RELEVANT = '-tf-relevant';
+	
 // selectors
 $.extend($.expr[':'], {
 	// (use)theforces
 	'-tf-blank': function(e) {
 		var v = $(e).xfValue();
-		return v == null || $.trim($(e).xfValue()).length == 0;
+		return v == null || $.trim(v).length == 0;
+	},
+	'-tf-date': function(e) {
+		return $(e).is('.xsd-date');
 	},
 	// xforms
 	'-xf-alert': function(e) { 
@@ -41,10 +55,11 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-label'); 
 	}, 
 	'-xf-relevant': function(e) {
-		return $(e).relevant();
+		return $(e).data(DATA_RELEVANT) != false;
 	},
 	'-xf-required': function(e) {
-		return $(e).find('.required').size() > 0;
+		e = $(e);
+		return e.find('.required').size() > 0 || (e.data('required') != null && e.data('required')(e));
 	},
 	'-xf-secret': function(e) {
 		return $(e).hasClass('xf-secret');
@@ -71,50 +86,81 @@ $.fn.extend({
 
 	// set contraints
 	constraint: function(selector, alertMessage, test) {
-		var form = $(this).xForm();
+		var e = this.xForm();
 
-		if (form.data('constraints') == null) form.data('constraints', []);
-		
-		form.data('constraints').push({
-			selector: selector,
-			alertMessage: alertMessage,
-			test: test
-		});
+		function _constraint(selector, alertMessage, test) {
+			if (e.data(DATA_CONSTRAINTS) == null) e.data(DATA_CONSTRAINTS, []);
+			e.data(DATA_CONSTRAINTS).push({
+				selector: selector,
+				alertMessage: alertMessage,
+				test: test
+			});
+		}
+
+		if (test == null) {
+			this.each(function() {
+				var id = $(this);
+				id = id.attr('id') || id.xFormControl().find('*[id]').attr('id');
+				_constraint('#' + id, selector, alertMessage);
+			});
+		} else {
+			_constraint(selector, alertMessage, test);
+		}
 
 		return this;
 	},
 	
 
-    // get form
-    form: function() {
-    	return this.is('form') ? this : this.parents('form');
-    },
+	// get form
+	form: function() {
+		return this.is('form') ? this : this.parents('form');
+	},
+
+
+	// recalculate controls within me
+	recalculate: function() {
+		return this.find(':-xf-control').relevant();
+	},
 
 
 	// get/set relevance
+	// returns filtered list of controls (only relevant controls remain)
 	relevant: function(expression) {
-		// TODO do not recalculate if form has not changed (timestamp form changes?)
-		var formControl = this.xFormControl();
-		if (expression) {
-			formControl.data('relevant', expression);
-		} else {
-			expression = formControl.data('relevant', expression) || true;
+		function _enable(e, enabled) {
+			if (enabled == false) {
+				if (e.data(DATA_RELEVANT) != false) {
+					e.hide().trigger(EVENT_DISABLED).add(e.find(':xf-control')).data(DATA_RELEVANT, false);
+				}
+				return false;
+			} else {
+				e.slideDown().trigger(EVENT_ENABLED).add(e.find(':xf-control')).removeData(DATA_RELEVANT);
+				return true;
+			}
 		}
-		var relevant = true;
-		if (typeof(expression) == "function") {
-			relevant = expression(this);
-		} else if (expression) {
-			relevant = expression;
-		}
-		if (relevant != true) {
-			formControl.hide();
-			return false;
-		}
-		formControl.slideDown();
-		return true;
+		return this.xFormControl().filter(function() {
+			var e = $(this);
+			if (expression) {
+				if (expression === true) {
+					e.removeData(DATA_CALCULATE_RELEVANT);
+				} else {
+					e.data(DATA_CALCULATE_RELEVANT, expression);
+					return _enable(e, expression(e));
+				}
+			} else if (e.data(DATA_CALCULATE_RELEVANT)) {
+				return _enable(e, e.data(DATA_CALCULATE_RELEVANT)(e));
+			}
+			return true;
+		});
 	},
 	
 	
+	// set required conditions
+	required: function(test) {
+		if (test) $(this).xFormControl().data('required', test);
+		return this;
+	},
+	
+
 	// use validation
 	useForcesValidation: function(enable) {
 		var form = $(this).xForm();
@@ -128,6 +174,7 @@ $.fn.extend({
 	
 	
 	// is control valid
+	// TODO should validate entire "group" (for controls in group)
 	validate: function() {
 		var control = this.xFormControl();
 		// set valid state
@@ -160,7 +207,13 @@ $.fn.extend({
 				return _valid(true);
 			}
 		} else {
-			var constraints = control.xForm().data('constraints') || [];
+			var constraints = control.data(DATA_CONSTRAINTS) || [];
+			for (var i = 0; i < constraints.length; i++) {
+				if (constraints[i].test(control) == false) {
+					return _valid(false, constraints[i].alertMessage)
+				}
+			}
+			constraints = control.xForm().data(DATA_CONSTRAINTS) || [];
 			for (var i = 0; i < constraints.length; i++) {
 				if (control.is(constraints[i].selector) && constraints[i].test(control) == false) {
 					return _valid(false, constraints[i].alertMessage)
@@ -181,13 +234,16 @@ $.fn.extend({
 	// TODO define "xform" as an "article" container for the form
 	// is "xform" the best terminology?
     xForm: function() { 
-        return this.hasClass('xform') ? this : this.parents('.xform'); 
+        return this.hasClass('xform') ? this : this.parents('.xform');
     },
     
 
     // get form control
 	xFormControl: function() {
-		return this.is(':-xf-control') ? this : this.parents(':-xf-control').eq(0);
+		return this.map(function() {
+			var e = $(this);
+			return (e.is(':-xf-control') ? e : e.parents(':-xf-control')).get(0);
+		});
 	},
 	
 	
@@ -209,7 +265,9 @@ $.fn.extend({
 
 	// get value
 	xfValue: function() {
-		if (this.find(':text').length) {
+		if (this.is(':-tf-date')) {
+			return new Date(this.find('input:text').val()) || null;
+		} else if (this.find(':text').length) {
 			return this.find('input:text').val();
 		} else if (this.find('select').length) {
 			return this.find('select').val();
@@ -220,7 +278,7 @@ $.fn.extend({
 			var checked = this.find(':checkbox:checked');
 			return checked.length > 0 ? checked.val() : null;
 		}
-		// TODO support textarea, password
+		// TODO support textarea, password, and more datatypes
 		return null;
 	}
 
@@ -230,23 +288,17 @@ $.fn.extend({
 
 // events
 $('form')
-	.change(function() {
-		console.log('form.change');
-	})
-
 	// form control changed
-	.bind('change -tf-change',function(eventObject, /* optional */ target) {
-		console.log('change');
-		var target = $(target||eventObject.target);
-		target.validate();
+	.bind('change ' + EVENT_VALUE_CHANGED, function(eventObject, target) {
+		var target = $(target || eventObject.target).xFormControl();
+		target.xForm().recalculate();
+		//target.validate().xForm().recalculate();
 		// evaluate relevance of all controls
-		$(':-xf-control:-xf-relevant', target.xForm());
+		//$(':-xf-control:-xf-relevant', target.xForm());
 	})
-
-
+	
 	// form was submitted
-	.submit(function(eventObject) {
-		console.log('submit');
+	.bind('submit', function(eventObject) {
 
 		var now = new Date().getTime();
 		var xform = $(eventObject.target).xForm();
@@ -259,13 +311,14 @@ $('form')
 		
 		// suppress, if repeated submit within timeframe (milliseconds)
 		if (xform.data('submitted') && now - xform.data('submitted') < _tf_SUBMIT_TOLERANCE) {
-			console.log("multiple form submission detected: < ", _tf_SUBMIT_TOLERANCE, " ms since last submit");
 			return _cancel(xform);
 		}
 		xform.data('submitted', now);
 	
 		// get all relevant controls		
-		var controls = $(':-xf-control:-xf-relevant', xform);
+		var controls = $(':-xf-control', xform);
+		controls = $(':-xf-control:-xf-relevant', xform);
+		
 		// validate controls that have not been validated (i.e. never changed)
 		controls.filter(':not(:-xf-valid):not(:-xf-invalid)').filter(function() {
 			$(this).validate();
@@ -299,7 +352,7 @@ $(':text,:password,textarea')
 		var val = control.xfValue();
 		if (control.data('previousValue') != val) {
 			control.data('previousValue', val);
-			control.form().trigger('-tf-change',[formInput]);
+			control.form().trigger(EVENT_VALUE_CHANGED,[formInput]);
 		}
 	});
 
@@ -318,15 +371,16 @@ if ($.browser.msie) {
 	});
 }
 
+
 })(jQuery);
 
 
 
 
 
-// default constraints
+// datatype constraints
 // TODO will this work when multiple forms are in the page?
-$('form').constraint('.xsd-date', "unrecognised date format", function(e) {
+$('form').constraint(':-tf-date', "unrecognised date format", function(e) {
 	var d = e.xfValue().split(/\D/);
 	if (d.length == 3 && d.join('').match(/^\d{4,8}$/)) {
 		var date = new Date(d[2], d[1]-1, d[0]);

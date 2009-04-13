@@ -113,6 +113,14 @@
 	  return $('#my-answer-gate').is(':checked') || $('#my-answer-sword-gate').is(':checked');
 	});
 
+
+	// DEBUGGING
+	$('form')
+		.bind('-xf-enabled -xf-disabled', function(ev) {
+			console.log("event", ev.type, ev.target);
+		})
+	;
+	
 // -->
 </script>
 
