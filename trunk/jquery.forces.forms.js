@@ -273,6 +273,9 @@ $.fn.extend({
 	xfValue: function() {
 		var v = this._xfValue();
 		if (!v) return null;
+		
+		// TODO datatype support
+		// switch (dataType)
 		if (this.is(':-tf-date')) {
 			v = new Date(v);
 		}
