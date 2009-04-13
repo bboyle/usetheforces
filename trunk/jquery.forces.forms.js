@@ -1,5 +1,5 @@
 /**
- * jquery.forces.forms.js
+ * jquery.forms.js
  * @see http://usetheforces.googlecode.com/
  * @license GNU GENERAL PUBLIC LICENSE Version 3 <http://www.gnu.org/licenses/gpl.html>
  * @requires jQuery
@@ -12,16 +12,23 @@
 	var _tf_SUBMIT_ERROR = "Unable to submit form";
 	var _tf_ALERT_REQUIRED = "must be completed";
 	
+	// class names
+	var CLASS_ALERT = 'xf-alert';
+	var CLASS_INVALID = 'xf-invalid';
+	var CLASS_VALID = 'xf-valid';
+
 	// event types
 	var EVENT_ENABLED = '-xf-enabled';
 	var EVENT_DISABLED = '-xf-disabled';
 	var EVENT_VALUE_CHANGED = '-xf-value-changed';
 
 	// internal state data
+	var DATA_CALCULATE_RELEVANT = '-tf-relevant';
 	var DATA_CONSTRAINTS = '-xf-constraints';
 	var DATA_RELEVANT = '-xf-reabled';
-	var DATA_CALCULATE_RELEVANT = '-tf-relevant';
+	var DATA_VALID = '-xf-valid';
 	
+
 // selectors
 $.extend($.expr[':'], {
 	// (use)theforces
@@ -34,7 +41,7 @@ $.extend($.expr[':'], {
 	},
 	// xforms
 	'-xf-alert': function(e) { 
-		return $(e).hasClass('xf-alert'); 
+		return $(e).hasClass(CLASS_ALERT); 
 	}, 
 	'-xf-control': function(e) {
 		return $(e).is('.xf-input,.xf-select1,.xf-select,.xf-secret,.xf-textarea,.xf-group');
@@ -49,7 +56,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-input'); 
 	},
 	'-xf-invalid' : function(e) {
-		return $(e).data('-tf-valid') === false;
+		return $(e).data(DATA_VALID) === false;
 	},
 	'-xf-label': function(e) { 
 		return $(e).hasClass('xf-label'); 
@@ -70,11 +77,11 @@ $.extend($.expr[':'], {
 	'-xf-select1': function(e) {
 		return $(e).hasClass('xf-select1');
 	},
-	'-xf-select1': function(e) {
+	'-xf-textarea': function(e) {
 		return $(e).hasClass('xf-textarea');
 	},
 	'-xf-valid': function(e) {
-		return $(e).data('-tf-valid') === true;
+		return $(e).data(DATA_VALID) === true;
 	}
 	
 });
@@ -82,7 +89,6 @@ $.extend($.expr[':'], {
 
 // functions
 $.fn.extend({
-
 
 	// set contraints
 	constraint: function(selector, alertMessage, test) {
@@ -124,7 +130,7 @@ $.fn.extend({
 
 
 	// get/set relevance
-	// returns filtered list of controls (only relevant controls remain)
+	// returns jQuery (filtered to relevant controls)
 	relevant: function(expression) {
 		function _enable(e, enabled) {
 			if (enabled == false) {
@@ -174,53 +180,53 @@ $.fn.extend({
 	
 	
 	// is control valid
-	// TODO should validate entire "group" (for controls in group)
+	// returns jQuery (filtered to valid controls)
 	validate: function() {
-		var control = this.xFormControl();
 		// set valid state
-		function _valid(isValid, alertMessage) {
-			control.data('-tf-valid', isValid);
+		function _valid(e, isValid, alertMessage) {
+			e.data(DATA_VALID, isValid);
 			if (isValid) {
-				control.find(':-xf-alert').remove();
-				control.removeClass('xf-invalid');
-				control.addClass('xf-valid');
+				e.find(':-xf-alert').remove();
+				e.removeClass(CLASS_INVALID).addClass(CLASS_VALID);
 			} else {
-				control.removeClass('xf-valid');
-				control.addClass('xf-invalid');
-				control.find(':-xf-label')
+				e.removeClass(CLASS_VALID).addClass(CLASS_INVALID).find(':-xf-label')
 					.parent()
 						.find(':-xf-alert')
 							.remove()
 						.end()
-					.append('<em class="xf-alert">' + alertMessage + '</em>');
+					.append('<em class="' + CLASS_ALERT + '">' + alertMessage + '</em>');
 			}
 			return isValid;
 		}
 	
-		if (control.is(':-tf-blank')) {
-			if (control.is(':-xf-required')) {
-				// blank + required = invalid
-				// TODO required to a core constraint, so message can be easily customised
-				return _valid(false, _tf_ALERT_REQUIRED);
+		return this.xFormControl().filter(function() {
+			var e = $(this);
+
+			if (e.is(':-tf-blank')) {
+				if (e.is(':-xf-required')) {
+					// blank + required = invalid
+					// TODO required to a core constraint, so message can be easily customised
+					return _valid(e, false, _tf_ALERT_REQUIRED);
+				} else {
+					// blank + not required = valid
+					return _valid(e, true);
+				}
 			} else {
-				// blank + not required = valid
-				return _valid(true);
-			}
-		} else {
-			var constraints = control.data(DATA_CONSTRAINTS) || [];
-			for (var i = 0; i < constraints.length; i++) {
-				if (constraints[i].test(control) == false) {
-					return _valid(false, constraints[i].alertMessage)
+				var constraints = e.data(DATA_CONSTRAINTS) || [];
+				for (var i = 0; i < constraints.length; i++) {
+					if (constraints[i].test(e) == false) {
+						return _valid(e, false, constraints[i].alertMessage)
+					}
+				}
+				constraints = e.xForm().data(DATA_CONSTRAINTS) || [];
+				for (var i = 0; i < constraints.length; i++) {
+					if (e.is(constraints[i].selector) && constraints[i].test(e) == false) {
+						return _valid(e, false, constraints[i].alertMessage)
+					}
 				}
 			}
-			constraints = control.xForm().data(DATA_CONSTRAINTS) || [];
-			for (var i = 0; i < constraints.length; i++) {
-				if (control.is(constraints[i].selector) && constraints[i].test(control) == false) {
-					return _valid(false, constraints[i].alertMessage)
-				}
-			}
-		}
-		return _valid(true);
+			return _valid(e, true);
+		});
 	},
 	
 
@@ -249,7 +255,7 @@ $.fn.extend({
 	
 	// get/set label
 	xfLabel: function(label, labelSeparator) {
-		var xfLabel = this.xFormControl().find(':-xf-label');
+		var xfLabel = this.xFormControl().find(':-xf-label').eq(0);
 
 		if (label) {
 			if (labelSeparator == null) {
@@ -265,9 +271,17 @@ $.fn.extend({
 
 	// get value
 	xfValue: function() {
+		var v = this._xfValue();
+		if (!v) return null;
 		if (this.is(':-tf-date')) {
-			return new Date(this.find('input:text').val()) || null;
-		} else if (this.find(':text').length) {
+			v = new Date(v);
+		}
+		return v;
+	},
+
+	// returns raw value
+	_xfValue: function() {
+		if (this.find(':text').length) {
 			return this.find('input:text').val();
 		} else if (this.find('select').length) {
 			return this.find('select').val();
@@ -281,7 +295,6 @@ $.fn.extend({
 		// TODO support textarea, password, and more datatypes
 		return null;
 	}
-
 
 });
 
