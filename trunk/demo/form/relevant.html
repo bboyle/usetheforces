@@ -97,7 +97,7 @@
 
 	// http://code.google.com/p/usetheforces/wiki/Relevant
 	$('#my-discount').relevant(function() {
-	  return $('#my-amount').val() > 1000;
+	  return $.xfVal('#my-amount') > 1000;
 	});
 	
 	// checkbox driven relevance

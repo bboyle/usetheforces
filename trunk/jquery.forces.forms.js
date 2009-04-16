@@ -27,6 +27,7 @@
 	var DATA_CONSTRAINTS = '-xf-constraints';
 	var DATA_RELEVANT = '-xf-reabled';
 	var DATA_VALID = '-xf-valid';
+	var DATA_MSG_ALERT = '-tf-submit-alert';
 	
 
 // selectors
@@ -139,7 +140,9 @@ $.fn.extend({
 				}
 				return false;
 			} else {
-				e.slideDown().trigger(EVENT_ENABLED).add(e.find(':xf-control')).removeData(DATA_RELEVANT);
+				if (e.data(DATA_RELEVANT) != null) {
+					e.slideDown().trigger(EVENT_ENABLED).add(e.find(':xf-control')).removeData(DATA_RELEVANT);
+				}
 				return true;
 			}
 		}
@@ -171,17 +174,21 @@ $.fn.extend({
 	useForcesValidation: function(enable) {
 		var form = $(this).xForm();
 		if (enable) {
-			form.data('-tf-submit-error', enable);
-		} else {
-			form.removeData('-tf-submit-error');
+			form.data(DATA_MSG_ALERT, enable);
+			return true;
+		} else if (enable === false) {
+			form.removeData(DATA_MSG_ALERT);
+			return false;
 		}
-		return Boolean(enable);
+		return form.data(DATA_MSG_ALERT) != null;
 	},
 	
 	
 	// is control valid
 	// returns jQuery (filtered to valid controls)
 	validate: function() {
+		if (this.useForcesValidation() === false) return this;
+		
 		// set valid state
 		function _valid(e, isValid, alertMessage) {
 			e.data(DATA_VALID, isValid);
@@ -281,7 +288,8 @@ $.fn.extend({
 		}
 		return v;
 	},
-
+	
+	
 	// returns raw value
 	_xfValue: function() {
 		if (this.find(':text').length) {
@@ -300,6 +308,20 @@ $.fn.extend({
 	}
 
 });
+
+
+// aliases
+
+// xfVal('#id') or xfVal('name') or xfVal(jQuery)
+// shortcut for $(jquery).xfValue()
+$.xfVal = function(e) {
+	if (typeof(e) == 'string')
+		e = e.charAt(0) == '#' ? $(e) : $('*[name="' + e + '"]');
+	return e.xfValue();
+};
+
+
+
 
 
 // events
@@ -345,7 +367,7 @@ $('form')
 			if (status.length == 1) {
 				status.find('li').remove();
 			} else {
-				status = $('<div class="status alert"><h1>' + (xform.data('-tf-submit-error') || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
+				status = $('<div class="status alert"><h1>' + (xform.data(DATA_MSG_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
 			}
 			invalid.each(function() {
 				var control = $(this);
