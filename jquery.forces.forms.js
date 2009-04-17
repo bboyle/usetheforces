@@ -5,13 +5,15 @@
  * @requires jQuery
  */
 
-;(function($){
-
-	// forces configuration
+;if(typeof(jQuery)!="undefined") {
+	// (global) forces configuration
 	var _tf_SUBMIT_TOLERANCE = 2000; // ms
 	var _tf_SUBMIT_ERROR = "Unable to submit form";
 	var _tf_ALERT_REQUIRED = "must be completed";
-	
+
+
+(function($){
+
 	// class names
 	var CLASS_ALERT = 'xf-alert';
 	var CLASS_INVALID = 'xf-invalid';
@@ -28,7 +30,7 @@
 	var DATA_RELEVANT = '-xf-reabled';
 	var DATA_VALID = '-xf-valid';
 	var DATA_MSG_ALERT = '-tf-submit-alert';
-	
+
 
 // selectors
 $.extend($.expr[':'], {
@@ -84,7 +86,7 @@ $.extend($.expr[':'], {
 	'-xf-valid': function(e) {
 		return $(e).data(DATA_VALID) === true;
 	}
-	
+
 });
 
 
@@ -116,7 +118,7 @@ $.fn.extend({
 
 		return this;
 	},
-	
+
 
 	// get form
 	form: function() {
@@ -161,14 +163,14 @@ $.fn.extend({
 			return true;
 		});
 	},
-	
-	
+
+
 	// set required conditions
 	required: function(test) {
 		if (test) $(this).xFormControl().data('required', test);
 		return this;
 	},
-	
+
 
 	// use validation
 	useForcesValidation: function(enable) {
@@ -182,8 +184,8 @@ $.fn.extend({
 		}
 		return form.data(DATA_MSG_ALERT) != null;
 	},
-	
-	
+
+
 	// is control valid
 	// returns jQuery (filtered to valid controls)
 	validate: function() {
@@ -205,7 +207,7 @@ $.fn.extend({
 			}
 			return isValid;
 		}
-	
+
 		return this.xFormControl().filter(function() {
 			var e = $(this);
 
@@ -246,20 +248,20 @@ $.fn.extend({
 	// get xform
 	// TODO define "xform" as an "article" container for the form
 	// is "xform" the best terminology?
-    xForm: function() { 
-        return this.hasClass('xform') ? this : this.parents('.xform');
-    },
-    
+	xForm: function() { 
+		return this.hasClass('xform') ? this : this.parents('.xform');
+	},
 
-    // get form control
+
+	// get form control
 	xFormControl: function() {
 		return this.map(function() {
 			var e = $(this);
 			return (e.is(':-xf-control') ? e : e.parents(':-xf-control')).get(0);
 		});
 	},
-	
-	
+
+
 	// get/set label
 	xfLabel: function(label, labelSeparator) {
 		var xfLabel = this.xFormControl().find(':-xf-label').eq(0);
@@ -288,12 +290,12 @@ $.fn.extend({
 		}
 		return v;
 	},
-	
-	
+
+
 	// returns raw value
 	_xfValue: function() {
 		if (this.find(':text').length) {
-			return this.find('input:text').val();
+			return this.find(':text').val();
 		} else if (this.find('select').length) {
 			return this.find('select').val();
 		} else if (this.find(':radio').length) {
@@ -315,9 +317,10 @@ $.fn.extend({
 // xfVal('#id') or xfVal('name') or xfVal(jQuery)
 // shortcut for $(jquery).xfValue()
 $.xfVal = function(e) {
-	if (typeof(e) == 'string')
+	if (typeof(e) == 'string') {
 		e = e.charAt(0) == '#' ? $(e) : $('*[name="' + e + '"]');
-	return e.xfValue();
+	}
+	return e.xFormControl().xfValue();
 };
 
 
@@ -334,7 +337,7 @@ $('form')
 		// evaluate relevance of all controls
 		//$(':-xf-control:-xf-relevant', target.xForm());
 	})
-	
+
 	// form was submitted
 	.bind('submit', function(eventObject) {
 
@@ -346,17 +349,17 @@ $('form')
 			xform.addClass('xf-submit-error');
 			return false;
 		}
-		
+
 		// suppress, if repeated submit within timeframe (milliseconds)
 		if (xform.data('submitted') && now - xform.data('submitted') < _tf_SUBMIT_TOLERANCE) {
 			return _cancel(xform);
 		}
 		xform.data('submitted', now);
-	
+
 		// get all relevant controls		
 		var controls = $(':-xf-control', xform);
 		controls = $(':-xf-control:-xf-relevant', xform);
-		
+
 		// validate controls that have not been validated (i.e. never changed)
 		controls.filter(':not(:-xf-valid):not(:-xf-invalid)').filter(function() {
 			$(this).validate();
@@ -390,7 +393,7 @@ $(':text,:password,textarea')
 		var val = control.xfValue();
 		if (control.data('previousValue') != val) {
 			control.data('previousValue', val);
-			control.form().trigger(EVENT_VALUE_CHANGED,[formInput]);
+			control.form().trigger(EVENT_VALUE_CHANGED, [formInput]);
 		}
 	});
 
@@ -404,7 +407,7 @@ if ($.browser.msie) {
 		var val = control.xfValue();
 		if (control.data('previousValue') != val) {
 			control.data('previousValue', val);
-			control.form().trigger('-tf-change',[formInput]);
+			control.form().trigger(EVENT_VALUE_CHANGED,[formInput]);
 		}
 	});
 }
@@ -430,4 +433,8 @@ $('form').constraint(':-tf-date', "unrecognised date format", function(e) {
 
 // turn on validation
 // TODO selector becomes the forcesContainer element?
-$('form').useForcesValidation("Validation tests prevent submit");
+$('form').each(function() {
+	$(this).useForcesValidation(_tf_ALERT_REQUIRED);
+});
+
+}
