@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>forces validate test</title>
+	<link rel="stylesheet" href="../demo.css" type="text/css" />
+</head>
+
+<body id="usetheforces.googlecode.com">
+
+<h1>forces validate test</h1>
+
+<div class="xform">
+<form action="#" method="get">
+	<ol class="questions">
+		<li class="xf-input xsd-date">
+			<label for="my-date">
+				<span class="xf-label">Date</span>
+				<abbr class="required" title="required">*</abbr>
+			</label>
+			<input type="text" id="my-date" name="myDate" />
+		</li>
+		<li class="xf-input xsd-date">
+			<label for="my-dob">
+				<span class="xf-label">Date of birth</span>
+			</label>
+			<input type="text" id="my-dob" name="myDob" />
+		</li>
+
+
+		<!-- HTML5 date input -->
+		<li class="xf-input xsd-date">
+			<label for="my-date2">
+				<span class="xf-label">Native date</span>
+			</label>
+			<input type="date" id="my-date2" name="myDate2" />
+		</li>
+
+		<!-- forces date input -->
+		<li class="xf-input">
+			<label for="my-date3">
+				<span class="xf-label">Forces date</span>
+			</label>
+			<input type="text" id="my-date3" value="foo" />
+			<input type="hidden" name="myDate3" value="foo" />
+			<span class="xf-output" id="test-output">foo</span>
+		</li>
+
+
+		<li class="xf-submit">
+			<strong><input type="submit" value="Validate" /></strong>
+		</li>
+  	</ol>
+</form>
+</div>
+
+<script type="text/javascript" src="../../jquery-1.3.2.js"></script>
+<script type="text/javascript" src="../../jquery.forces.forms.js"></script>
+<script type="text/javascript">
+<!-- //
+
+var d = new Date();
+$('#test-output').text($.forces.date.format(d, 'YYYY-MM-DD'));
+$('#my-date3').val($.forces.date.format(d, 'DD/MM/YYYY'));
+$('#my-date3').next(':hidden').val($.forces.date.format(d, 'DD/MM/YYYY'));
+
+// -->
+</script>
+
+</body>
+</html>
