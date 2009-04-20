@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>forces attribute styling</title>
+	<link rel="stylesheet" href="../demo.css" type="text/css" />
+</head>
+
+<body id="usetheforces.googlecode.com">
+
+<h1>forces relevant test</h1>
+
+<div class="xform">
+<form action="#" method="get" class="forces">
+<table>
+	<caption>Example styling based on form attributes</caption>
+	<thead>
+		<tr>
+			<th scope="col">Control</th>
+			<th scope="col">standard</th>
+			<th scope="col">disabled</th>
+			<th scope="col">maxlength</th>
+			<th scope="col">pattern</th>
+			<th scope="col">readonly</th>
+			<th scope="col">required</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th scope="row">input[type="text"]</th>
+			<td><input type="text" value="foo" /></td>
+			<td><input type="text" value="foo" disabled="disabled" /></td>
+			<td><input type="text" value="foo" maxlength="5" /></td>
+			<td><input type="text" value="foo" pattern="foo" /></td>
+			<td><input type="text" value="foo" readonly="readonly" /></td>
+			<td><input type="text" value="foo" required="required" /></td>
+		</tr>
+		<tr>
+			<th scope="row">input[type="password"]</th>
+			<td><input type="password" value="foo" /></td>
+			<td><input type="password" value="foo" disabled="disabled" /></td>
+			<td><input type="password" value="foo" maxlength="5" /></td>
+			<td><input type="password" value="foo" pattern="foo" /></td>
+			<td><input type="password" value="foo" readonly="readonly" /></td>
+			<td><input type="password" value="foo" required="required" /></td>
+		</tr>
+		<tr>
+			<th scope="row">input[type="submit"]</th>
+			<td><input type="submit" value="foo" /></td>
+			<td><input type="submit" value="foo" disabled="disabled" /></td>
+			<td><input type="submit" value="foo" maxlength="5" /></td>
+			<td><input type="submit" value="foo" pattern="foo" /></td>
+			<td><input type="submit" value="foo" readonly="readonly" /></td>
+			<td><input type="submit" value="foo" required="required" /></td>
+		</tr>
+		<tr>
+			<th scope="row">input[type="file"]</th>
+			<td><input type="file" value="foo" /></td>
+			<td><input type="file" value="foo" disabled="disabled" /></td>
+			<td><input type="file" value="foo" maxlength="5" /></td>
+			<td><input type="file" value="foo" pattern="foo" /></td>
+			<td><input type="file" value="foo" readonly="readonly" /></td>
+			<td><input type="file" value="foo" required="required" /></td>
+		</tr>
+		<tr>
+			<th scope="row">textarea</th>
+			<td><textarea>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque leo sem, gravida sed, congue et, sollicitudin id, leo.</textarea></td>
+			<td><textarea disabled="disabled">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque leo sem, gravida sed, congue et, sollicitudin id, leo.</textarea></td>
+			<td><textarea maxlength="255">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque leo sem, gravida sed, congue et, sollicitudin id, leo.</textarea></td>
+			<td><textarea pattern="foo">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque leo sem, gravida sed, congue et, sollicitudin id, leo.</textarea></td>
+			<td><textarea readonly="readonly">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque leo sem, gravida sed, congue et, sollicitudin id, leo.</textarea></td>
+			<td><textarea required="required">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque leo sem, gravida sed, congue et, sollicitudin id, leo.</textarea></td>
+		</tr>
+		<tr>
+			<th scope="row">select</th>
+			<td><select><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></select></td>
+			<td><select disabled="disabled"><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></select></td>
+			<td>—</td>
+			<td>—</td>
+			<td><select readonly="readonly"><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></select></td>
+			<td><select required="required"><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></select></td>
+		</tr>
+		<tr>
+			<th scope="row">optgroup</th>
+			<td><select><optgroup label="Ice cream"><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></optgroup><optgroup label="Sorbet"><option>Lemon</option><option>Strawberry</option><option>Watermelon</option></optgroup></select></td>
+			<td><select><optgroup label="Ice cream" disabled="disabled"><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></optgroup><optgroup label="Sorbet"><option>Lemon</option><option>Strawberry</option><option>Watermelon</option></optgroup></select></td>
+			<td>—</td>
+			<td>—</td>
+			<td><select><optgroup label="Ice cream" readonly="readonly"><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></optgroup><optgroup label="Sorbet"><option>Lemon</option><option>Strawberry</option><option>Watermelon</option></optgroup></select></td>
+			<td><select><optgroup label="Ice cream" required="required"><option>Chocolate</option><option>Strawberry</option><option>Vanilla</option></optgroup><optgroup label="Sorbet"><option>Lemon</option><option>Strawberry</option><option>Watermelon</option></optgroup></select></td>
+		</tr>
+		<tr>
+			<th scope="row">input[type="radio"]</th>
+			<td><input type="radio" value="foo" /></td>
+			<td><input type="radio" value="foo" disabled="disabled" /></td>
+			<td>—</td>
+			<td>—</td>
+			<td><input type="radio" value="foo" readonly="readonly" /></td>
+			<td><input type="radio" value="foo" required="required" /></td>
+		</tr>
+		<tr>
+			<th scope="row">input[type="checkbox"]</th>
+			<td><input type="checkbox" value="foo" /></td>
+			<td><input type="checkbox" value="foo" disabled="disabled" /></td>
+			<td>—</td>
+			<td>—</td>
+			<td><input type="checkbox" value="foo" readonly="readonly" /></td>
+			<td><input type="checkbox" value="foo" required="required" /></td>
+		</tr>
+	</tbody>
+</table>
+
+</form>
+</div>
+
+</body>
+</html>

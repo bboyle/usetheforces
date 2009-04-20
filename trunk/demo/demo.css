@@ -12,6 +12,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
+*[disabled] {
+	opacity: .5;
+}
+*[readonly] {
+	color: #777;
+}
+
+
 .xf-label,
 .xf-hint,
 .xf-alert {
