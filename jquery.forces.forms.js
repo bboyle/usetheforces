@@ -90,8 +90,37 @@ $.extend($.expr[':'], {
 });
 
 
+// forces library
+$.forces = {
+
+	// forces date library
+	date: {
+		// supports YYYY, MM, DD
+		format: function(date, format) {
+			return format
+				.replace(/YYYY/, date.getFullYear())
+				.replace(/MM/, this.MM(date))
+				.replace(/DD/, this.DD(date));
+		},
+		DD: function(date) {
+			return this._pad(date.getDate(), 2, '0');
+		},
+		MM: function(date) {
+			return this._pad(date.getMonth()+1, 2, '0');
+		},
+		// zero pad numbers (string, length, char)
+		_pad: function(s, l, c) {
+			s = String(s);
+			while (s.length < l) s = String(c) + s;
+			return s;
+		},
+	}	
+};
+
+
 // functions
 $.fn.extend({
+
 
 	// set contraints
 	constraint: function(selector, alertMessage, test) {
@@ -133,21 +162,34 @@ $.fn.extend({
 
 
 	// get/set relevance
-	// returns jQuery (filtered to relevant controls)
+	// returns jQuery (filtered, relevant controls remain)
 	relevant: function(expression) {
 		function _enable(e, enabled) {
 			if (enabled == false) {
 				if (e.data(DATA_RELEVANT) != false) {
-					e.hide().trigger(EVENT_DISABLED).add(e.find(':xf-control')).data(DATA_RELEVANT, false);
+					e
+					.hide()
+					.trigger(EVENT_DISABLED)
+					.add(e.find(':xf-control'))
+					.data(DATA_RELEVANT, false)
+					.find('input,select,textarea')
+						.attr('disabled', 'disabled');
 				}
 				return false;
 			} else {
 				if (e.data(DATA_RELEVANT) != null) {
-					e.slideDown().trigger(EVENT_ENABLED).add(e.find(':xf-control')).removeData(DATA_RELEVANT);
+					e
+					.slideDown()
+					.trigger(EVENT_ENABLED)
+					.add(e.find(':xf-control'))
+					.removeData(DATA_RELEVANT)
+					.find('input,select,textarea')
+						.removeAttr('disabled');
 				}
 				return true;
 			}
 		}
+
 		return this.xFormControl().filter(function() {
 			var e = $(this);
 			if (expression) {
@@ -187,7 +229,7 @@ $.fn.extend({
 
 
 	// is control valid
-	// returns jQuery (filtered to valid controls)
+	// returns jQuery (filtered, invalid controls remain)
 	validate: function() {
 		if (this.useForcesValidation() === false) return this;
 		
@@ -214,27 +256,26 @@ $.fn.extend({
 			if (e.is(':-tf-blank')) {
 				if (e.is(':-xf-required')) {
 					// blank + required = invalid
-					// TODO required to a core constraint, so message can be easily customised
-					return _valid(e, false, _tf_ALERT_REQUIRED);
+					return !_valid(e, false, _tf_ALERT_REQUIRED);
 				} else {
 					// blank + not required = valid
-					return _valid(e, true);
+					return !_valid(e, true);
 				}
 			} else {
 				var constraints = e.data(DATA_CONSTRAINTS) || [];
 				for (var i = 0; i < constraints.length; i++) {
 					if (constraints[i].test(e) == false) {
-						return _valid(e, false, constraints[i].alertMessage)
+						return !_valid(e, false, constraints[i].alertMessage)
 					}
 				}
 				constraints = e.xForm().data(DATA_CONSTRAINTS) || [];
 				for (var i = 0; i < constraints.length; i++) {
 					if (e.is(constraints[i].selector) && constraints[i].test(e) == false) {
-						return _valid(e, false, constraints[i].alertMessage)
+						return !_valid(e, false, constraints[i].alertMessage)
 					}
 				}
 			}
-			return _valid(e, true);
+			return !_valid(e, true);
 		});
 	},
 	
@@ -246,8 +287,6 @@ $.fn.extend({
 
 
 	// get xform
-	// TODO define "xform" as an "article" container for the form
-	// is "xform" the best terminology?
 	xForm: function() { 
 		return this.hasClass('xform') ? this : this.parents('.xform');
 	},
@@ -283,7 +322,6 @@ $.fn.extend({
 		var v = this._xfValue();
 		if (!v) return null;
 		
-		// TODO datatype support
 		// switch (dataType)
 		if (this.is(':-tf-date')) {
 			v = new Date(v);
@@ -338,6 +376,12 @@ $('form')
 		//$(':-xf-control:-xf-relevant', target.xForm());
 	})
 
+	// focus
+	.bind('focus', function(eventObject) {
+		// TODO focus not captured at form level?
+		console.log('focus', $(eventObject.target));
+	})
+
 	// form was submitted
 	.bind('submit', function(eventObject) {
 
@@ -345,7 +389,7 @@ $('form')
 		var xform = $(eventObject.target).xForm();
 
 		function _cancel(xform) {
-			// TODO shake button (negative feedback)
+			// TODO shake button (or form?) to indicate negative feedback
 			xform.addClass('xf-submit-error');
 			return false;
 		}
