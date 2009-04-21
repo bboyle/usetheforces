@@ -10,6 +10,8 @@
 	var _tf_SUBMIT_TOLERANCE = 2000; // ms
 	var _tf_SUBMIT_ERROR = "Unable to submit form";
 	var _tf_ALERT_REQUIRED = "must be completed";
+	var _tf_DATE_MONTHS = 'January February March April May June July August September October November December'.split(/ /);
+	var _tf_DATE_WEEKDAYS = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(/ /);
 
 
 (function($){
@@ -90,38 +92,79 @@ $.extend($.expr[':'], {
 });
 
 
-// forces library
-$.forces = {
-
-	// forces date library
-	date: {
-		// supports YYYY, MM, DD
-		format: function(date, format) {
-			return format
-				.replace(/YYYY/, date.getFullYear())
-				.replace(/MM/, this.MM(date))
-				.replace(/DD/, this.DD(date));
-		},
-		DD: function(date) {
-			return this._pad(date.getDate(), 2, '0');
-		},
-		MM: function(date) {
-			return this._pad(date.getMonth()+1, 2, '0');
-		},
-		// zero pad numbers (string, length, char)
-		_pad: function(s, l, c) {
-			s = String(s);
-			while (s.length < l) s = String(c) + s;
-			return s;
-		},
-	}	
+// private utility functions
+var _private = {
+	pad: function(s, l, c) {
+		s = String(s);
+		while (s.length < l) s = String(c) + s;
+		return s;
+	},
+	// date formats
+	DD: function(date) {
+		return this.pad(date.getDate(), 2, '0');
+	},
+	MM: function(date) {
+		return this.pad(date.getMonth()+1, 2, '0');
+	},
 };
 
 
-// functions
+// format a date
+$.forces_date_format = function(date, format) {
+	return format
+		.replace(/YYYY/, date.getFullYear())
+		.replace(/MM/, _private.MM(date))
+		.replace(/DD/, _private.DD(date))
+		.replace(/%B/, _tf_DATE_MONTHS[date.getMonth()])
+		.replace(/%A/, _tf_DATE_WEEKDAYS[date.getDay()]);
+};
+
+
+// parse a date
+$.forces_date_parse = function(s) {
+	// TODO - parse date
+	return new Date();
+};
+
+
+
+// makes and returns date fields
+$.fn.forces_form_dateField = function(format, output) {
+	format = format || 'YYYY-MM-DD';
+	
+	console.log('dateField', this, format, output);
+	return this.forces_xform_control().filter(function() {
+		var e = $(this).find(':text');
+		if (e.length == 1) {
+			e = e.eq(0);
+			var date = $.forces_date_parse(e.val());
+			e.eq(0)
+				.after('<input type="hidden" name="' + e.attr('name') + '" />')
+				.removeAttr('name');
+			if (output) {
+				var output = $('<span class="xf-output"></span>');
+				if (e.val()) {
+					output.text(e.xfVal(), output);
+				}
+				e.after(output);
+			}
+		}		
+		return false;
+	});
+};
+	
+	
+// get form control element
+$.fn.forces_xform_control = function() {
+	return this.map(function() {
+		var e = $(this);
+		return (e.is(':-xf-control') ? e : e.parents(':-xf-control')).get(0);
+	});
+};
+
+
+// legacy $ extensions
 $.fn.extend({
-
-
 	// set contraints
 	constraint: function(selector, alertMessage, test) {
 		var e = this.xForm();
@@ -138,7 +181,7 @@ $.fn.extend({
 		if (test == null) {
 			this.each(function() {
 				var id = $(this);
-				id = id.attr('id') || id.xFormControl().find('*[id]').attr('id');
+				id = id.attr('id') || id.forces_xform_control().find('*[id]').attr('id');
 				_constraint('#' + id, selector, alertMessage);
 			});
 		} else {
@@ -190,7 +233,7 @@ $.fn.extend({
 			}
 		}
 
-		return this.xFormControl().filter(function() {
+		return this.forces_xform_control().filter(function() {
 			var e = $(this);
 			if (expression) {
 				if (expression === true) {
@@ -209,7 +252,7 @@ $.fn.extend({
 
 	// set required conditions
 	required: function(test) {
-		if (test) $(this).xFormControl().data('required', test);
+		if (test) $(this).forces_xform_control().data('required', test);
 		return this;
 	},
 
@@ -250,7 +293,7 @@ $.fn.extend({
 			return isValid;
 		}
 
-		return this.xFormControl().filter(function() {
+		return this.forces_xform_control().filter(function() {
 			var e = $(this);
 
 			if (e.is(':-tf-blank')) {
@@ -282,7 +325,7 @@ $.fn.extend({
 
 	// get alert message text
 	xfAlert: function() {
-		return this.xFormControl().find(':-xf-alert').text();
+		return this.forces_xform_control().find(':-xf-alert').text();
 	},
 
 
@@ -292,18 +335,9 @@ $.fn.extend({
 	},
 
 
-	// get form control
-	xFormControl: function() {
-		return this.map(function() {
-			var e = $(this);
-			return (e.is(':-xf-control') ? e : e.parents(':-xf-control')).get(0);
-		});
-	},
-
-
 	// get/set label
 	xfLabel: function(label, labelSeparator) {
-		var xfLabel = this.xFormControl().find(':-xf-label').eq(0);
+		var xfLabel = this.forces_xform_control().find(':-xf-label').eq(0);
 
 		if (label) {
 			if (labelSeparator == null) {
@@ -358,7 +392,7 @@ $.xfVal = function(e) {
 	if (typeof(e) == 'string') {
 		e = e.charAt(0) == '#' ? $(e) : $('*[name="' + e + '"]');
 	}
-	return e.xFormControl().xfValue();
+	return e.forces_xform_control().xfValue();
 };
 
 
@@ -369,7 +403,7 @@ $.xfVal = function(e) {
 $('form')
 	// form control changed
 	.bind('change ' + EVENT_VALUE_CHANGED, function(eventObject, target) {
-		var target = $(target || eventObject.target).xFormControl();
+		var target = $(target || eventObject.target).forces_xform_control();
 		target.xForm().recalculate();
 		//target.validate().xForm().recalculate();
 		// evaluate relevance of all controls
@@ -433,7 +467,7 @@ $(':text,:password,textarea')
 	// keyup (early change detection)
 	.keyup(function(eventObject){
 		var formInput = $(eventObject.target);
-		var control = formInput.xFormControl();
+		var control = formInput.forces_xform_control();
 		var val = control.xfValue();
 		if (control.data('previousValue') != val) {
 			control.data('previousValue', val);
@@ -447,7 +481,7 @@ if ($.browser.msie) {
 	// trigger change on radio buttons and checkboxes
 	$(':radio,:checkbox').click(function(eventObject) {
 		var formInput = $(eventObject.target);
-		var control = formInput.xFormControl();
+		var control = formInput.forces_xform_control();
 		var val = control.xfValue();
 		if (control.data('previousValue') != val) {
 			control.data('previousValue', val);
