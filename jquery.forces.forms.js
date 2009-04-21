@@ -99,24 +99,39 @@ var _private = {
 		while (s.length < l) s = String(c) + s;
 		return s;
 	},
-	// date formats
-	DD: function(date) {
-		return this.pad(date.getDate(), 2, '0');
-	},
-	MM: function(date) {
-		return this.pad(date.getMonth()+1, 2, '0');
-	},
 };
 
 
 // format a date
 $.forces_date_format = function(date, format) {
-	return format
-		.replace(/YYYY/, date.getFullYear())
-		.replace(/MM/, _private.MM(date))
-		.replace(/DD/, _private.DD(date))
-		.replace(/%B/, _tf_DATE_MONTHS[date.getMonth()])
-		.replace(/%A/, _tf_DATE_WEEKDAYS[date.getDay()]);
+	// TODO consider splitting the format string, then running through it to replace
+	format = format.split(/\s+/);
+	for (var i = 0; i < format.length; i++) {
+		switch (format[i]) {
+			case 'YYYY':
+			case '%Y':
+				format[i] = date.getFullYear();
+			break;
+			
+			case 'MM':
+			case '%m':
+				format[i] = _private.pad(date.getMonth()+1, 2, '0');
+			break;
+			
+			case 'DD':
+			case '%d':
+				format[i] = _private.pad(date.getDate(), 2, '0');
+			break;
+			
+			case '%B':
+				format[i] = _tf_DATE_MONTHS[date.getMonth()];
+			break;
+
+			case '%A':
+				format[i] = _tf_DATE_WEEKDAYS[date.getDay()];
+		}
+	}
+	return format.join(' ');
 };
 
 
@@ -144,7 +159,9 @@ $.fn.forces_form_dateField = function(format, output) {
 			if (output) {
 				var output = $('<span class="xf-output"></span>');
 				if (e.val()) {
-					output.text(e.xfVal(), output);
+					// TODO setup output.calculation()
+					// support for calculations
+					output.text($.forces_date_format(e.xfVal(), output));
 				}
 				e.after(output);
 			}

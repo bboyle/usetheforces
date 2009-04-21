@@ -67,7 +67,12 @@
 $('.xsd-date').forces_form_dateField('DD/MM/YYYY', '');
 
 var d = new Date();
-console.log($.forces_date_format(d, '%A DD %B YYYY'));
+var formats = "YYYY MM DD %Y %m %d %A %B".split(/ /);
+console.log('test formats:', formats)
+for (var i = 0; i < formats.length; i++) {
+	console.log(i+1, formats[i], $.forces_date_format(d, formats[i]))
+}
+console.log($.forces_date_format(d, 'Once upon a time, %d %B in the year of %Y in fact, ...'));
 
 
 // -->
