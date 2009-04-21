@@ -7,11 +7,11 @@ Dates are coming. XForms can leverage the date datatype from XML schema and HTML
 = Date format -
 {{{$.forces_date_format(date, format)}}}
 Supported formats:
- || {{{YYYY}}} || 4 digit year ||
- || {{{MM}}} || 2 digit month ||
- || {{{DD}}} || 2 digit day of month ||
- || {{{%A}}} || Full weekday (English) ||
- || {{{%B}}} || Full month name (English) ||
+|| {{{YYYY}}} || 4 digit year ||
+|| {{{MM}}} || 2 digit month ||
+|| {{{DD}}} || 2 digit day of month ||
+|| {{{%A}}} || Full weekday (English) ||
+|| {{{%B}}} || Full month name (English) ||
 
 = References =
 
