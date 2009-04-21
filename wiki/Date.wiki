@@ -1,0 +1,19 @@
+#summary management of dates
+
+= Introduction =
+
+Dates are coming. XForms can leverage the date datatype from XML schema and HTML5 has defined "date" as a new @type value for input (already supported in Opera). The future looks good. For the present …
+
+
+= Date library =
+{{{jQuery.forces.date.*}}}
+||Method/Property || Description || Return value ||
+|| {{{.format(<<date>>, <<format>>)}}} || formats a date || (String) format with patterns replaced by date values ||
+|| {{{.DD(date)}}} || same as {{{.format(date, 'DD')}}} || (String) two digit day of month ||
+|| {{{.MM(date)}}} || same as {{{.format(date, 'MM')}}} || (String) two digit month ||
+
+== Format patterns ==
+|| Pattern || Description || Sample values ||
+|| {{{YYYY}}} || 4 digit year || 2009, 1999 ||
+|| {{{DD}}} || 2 digit date (day of the month) || 01–31 ||
+|| {{{MM}}} || 2 digit month || 01–12 ||
