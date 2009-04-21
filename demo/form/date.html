@@ -43,9 +43,7 @@
 			<label for="my-date3">
 				<span class="xf-label">Forces date</span>
 			</label>
-			<input type="text" id="my-date3" value="foo" />
-			<input type="hidden" name="myDate3" value="foo" />
-			<span class="xf-output" id="test-output">foo</span>
+			<input type="text" id="my-date3" name="myDate3" value="foo" />
 		</li>
 
 
@@ -61,10 +59,16 @@
 <script type="text/javascript">
 <!-- //
 
+// http://code.google.com/p/usetheforces/wiki/date
+// http://code.google.com/p/usetheforces/wiki/output
+// creates a hidden input, moves @name to hidden input, creates an "output"
+// supports date formats
+// dateField([format]) ... makes a control a date control
+$('.xsd-date').forces_form_dateField('DD/MM/YYYY', '');
+
 var d = new Date();
-$('#test-output').text($.forces.date.format(d, 'YYYY-MM-DD'));
-$('#my-date3').val($.forces.date.format(d, 'DD/MM/YYYY'));
-$('#my-date3').next(':hidden').val($.forces.date.format(d, 'DD/MM/YYYY'));
+console.log($.forces_date_format(d, '%A DD %B YYYY'));
+
 
 // -->
 </script>
