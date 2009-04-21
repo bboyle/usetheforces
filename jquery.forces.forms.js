@@ -25,13 +25,15 @@
 	var EVENT_ENABLED = '-xf-enabled';
 	var EVENT_DISABLED = '-xf-disabled';
 	var EVENT_VALUE_CHANGED = '-xf-value-changed';
-
+	
 	// internal state data
 	var DATA_CALCULATE_RELEVANT = '-tf-relevant';
 	var DATA_CONSTRAINTS = '-xf-constraints';
 	var DATA_RELEVANT = '-xf-reabled';
 	var DATA_VALID = '-xf-valid';
 	var DATA_MSG_ALERT = '-tf-submit-alert';
+	var DATA_FORMAT_DATE_OUTPUT = '-tf-format-date-output';
+	var DATA_FORMAT_DATE_SUBMIT = '-tf-format-date-submit';
 
 
 // selectors
@@ -42,7 +44,7 @@ $.extend($.expr[':'], {
 		return v == null || $.trim(v).length == 0;
 	},
 	'-tf-date': function(e) {
-		return $(e).is('.xsd-date');
+		return $(e).data(DATA_FORMAT_DATE_SUBMIT);
 	},
 	// xforms
 	'-xf-alert': function(e) { 
@@ -66,6 +68,9 @@ $.extend($.expr[':'], {
 	'-xf-label': function(e) { 
 		return $(e).hasClass('xf-label'); 
 	}, 
+	'-xf-output': function(e) {
+		return $(e).hasClass('xf-output');
+	},
 	'-xf-relevant': function(e) {
 		return $(e).data(DATA_RELEVANT) != false;
 	},
@@ -104,34 +109,14 @@ var _private = {
 
 // format a date
 $.forces_date_format = function(date, format) {
-	// TODO consider splitting the format string, then running through it to replace
-	format = format.split(/\s+/);
-	for (var i = 0; i < format.length; i++) {
-		switch (format[i]) {
-			case 'YYYY':
-			case '%Y':
-				format[i] = date.getFullYear();
-			break;
-			
-			case 'MM':
-			case '%m':
-				format[i] = _private.pad(date.getMonth()+1, 2, '0');
-			break;
-			
-			case 'DD':
-			case '%d':
-				format[i] = _private.pad(date.getDate(), 2, '0');
-			break;
-			
-			case '%B':
-				format[i] = _tf_DATE_MONTHS[date.getMonth()];
-			break;
-
-			case '%A':
-				format[i] = _tf_DATE_WEEKDAYS[date.getDay()];
-		}
-	}
-	return format.join(' ');
+	if (!date) return '';
+	if (!format) return date.toString();
+	return format
+		.replace(/YYYY|%Y/, date.getFullYear())
+		.replace(/MM|%m/, _private.pad(date.getMonth()+1, 2, '0'))
+		.replace(/DD|%d/, _private.pad(date.getDate(), 2, '0'))
+		.replace(/%B/, _tf_DATE_MONTHS[date.getMonth()])
+		.replace(/%A/, _tf_DATE_WEEKDAYS[date.getDay()]);
 };
 
 
@@ -144,27 +129,35 @@ $.forces_date_parse = function(s) {
 
 
 // makes and returns date fields
-$.fn.forces_form_dateField = function(format, output) {
-	format = format || 'YYYY-MM-DD';
+$.fn.forces_form_dateField = function(formatSubmit, formatOutput) {
+	formatSubmit = formatSubmit || 'YYYY-MM-DD';
 	
-	console.log('dateField', this, format, output);
 	return this.forces_xform_control().filter(function() {
-		var e = $(this).find(':text');
-		if (e.length == 1) {
-			e = e.eq(0);
-			var date = $.forces_date_parse(e.val());
-			e.eq(0)
-				.after('<input type="hidden" name="' + e.attr('name') + '" />')
+		var e = $(this);
+		var i = e.find(':text');
+		if (i.length == 1) {
+			i = i.eq(0);
+			var date = $.forces_date_parse(i.val());
+			i.eq(0)
+				.after('<input type="hidden" name="' + i.attr('name') + '" />')
 				.removeAttr('name');
-			if (output) {
+			e.data(DATA_FORMAT_DATE_SUBMIT, formatSubmit);
+			if (formatOutput) {
 				var output = $('<span class="xf-output"></span>');
-				if (e.val()) {
+				if (i.val()) {
 					// TODO setup output.calculation()
 					// support for calculations
-					output.text($.forces_date_format(e.xfVal(), output));
+					output.text($.forces_date_format(e.xfValue(), formatOutput));
 				}
-				e.after(output);
+				i.after(output);
+				e.data(DATA_FORMAT_DATE_OUTPUT, formatOutput);
+			} else {
+				e.removeData(DATA_FORMAT_DATE_OUTPUT);
 			}
+			// TODO calculate without triggering "change" event processing
+			// e.triggerHandler('change');
+			
+			return true;
 		}		
 		return false;
 	});
@@ -217,7 +210,16 @@ $.fn.extend({
 
 	// recalculate controls within me
 	recalculate: function() {
-		return this.find(':-xf-control').relevant();
+		var relevant = this.find(':-xf-control').relevant();
+		// TODO switch (this.data('DATA_TYPE')) ??
+		relevant.filter(':-tf-date').each(function() {
+			var e = $(this);
+			e.find('input:hidden').val($.forces_date_format(e.xfValue(), e.data(DATA_FORMAT_DATE_SUBMIT)));
+			if (e.data(DATA_FORMAT_DATE_OUTPUT)) {
+				e.find(':-xf-output').text($.forces_date_format(e.xfValue(), e.data(DATA_FORMAT_DATE_OUTPUT)));
+			}
+		});
+		return relevant;
 	},
 
 
@@ -373,9 +375,9 @@ $.fn.extend({
 		var v = this._xfValue();
 		if (!v) return null;
 		
-		// switch (dataType)
+		// TODO switch (dataType)
 		if (this.is(':-tf-date')) {
-			v = new Date(v);
+			v = $.forces_date_parse(v);
 		}
 		return v;
 	},
@@ -430,7 +432,6 @@ $('form')
 	// focus
 	.bind('focus', function(eventObject) {
 		// TODO focus not captured at form level?
-		console.log('focus', $(eventObject.target));
 	})
 
 	// form was submitted

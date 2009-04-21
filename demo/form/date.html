@@ -4,13 +4,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>forces validate test</title>
+	<title>forces date test</title>
 	<link rel="stylesheet" href="../demo.css" type="text/css" />
 </head>
 
 <body id="usetheforces.googlecode.com">
 
-<h1>forces validate test</h1>
+<h1>forces date test</h1>
 
 <div class="xform">
 <form action="#" method="get">
@@ -64,7 +64,8 @@
 // creates a hidden input, moves @name to hidden input, creates an "output"
 // supports date formats
 // dateField([format]) ... makes a control a date control
-$('.xsd-date').forces_form_dateField('DD/MM/YYYY', '');
+$('.xsd-date').forces_form_dateField('DD/MM/YYYY', '%d %B %Y');
+$('#my-date3').forces_form_dateField('DD/MM/YYYY', '%A %d %B %Y');
 
 var d = new Date();
 var formats = "YYYY MM DD %Y %m %d %A %B".split(/ /);
