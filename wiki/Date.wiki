@@ -8,7 +8,7 @@ Dates are coming. XForms can leverage the date datatype from XML schema and HTML
 = Date library =
 {{{jQuery.forces.date.*}}}
 ||Method/Property || Description || Return value ||
-|| {{{.format(<<date>>, <<format>>)}}} || formats a date || (String) format with patterns replaced by date values ||
+|| {{{.format(date, format)}}} || formats a date || (String) format with patterns replaced by date values ||
 || {{{.DD(date)}}} || same as {{{.format(date, 'DD')}}} || (String) two digit day of month ||
 || {{{.MM(date)}}} || same as {{{.format(date, 'MM')}}} || (String) two digit month ||
 
