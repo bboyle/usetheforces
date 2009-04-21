@@ -4,7 +4,7 @@
 
 Dates are coming. XForms can leverage the date datatype from XML schema and HTML5 has defined "date" as a new @type value for input (already supported in Opera). The future looks good. For the present …
 
-= Date format -
+= Date format =
 {{{$.forces_date_format(date, format)}}}
 Supported formats:
 || {{{YYYY}}} || 4 digit year ||
