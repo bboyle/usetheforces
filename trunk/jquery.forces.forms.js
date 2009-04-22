@@ -495,7 +495,10 @@ $('form')
 	.bind('change ' + EVENT_VALUE_CHANGED, function(eventObject, target) {
 		var target = $(target || eventObject.target).forces_xform_control();
 		target.xForm().recalculate(target);
-		target.validate();
+	})
+
+	.bind('change', function(eventObject) {
+		$(eventObject.target).validate();
 	})
 
 	// focus
