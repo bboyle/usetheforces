@@ -64,16 +64,18 @@
 // creates a hidden input, moves @name to hidden input, creates an "output"
 // supports date formats
 // dateField([format]) ... makes a control a date control
-$('.xsd-date').forces_form_dateField('DD/MM/YYYY', '%d %B %Y');
-$('#my-date3').forces_form_dateField('DD/MM/YYYY', '%A %d %B %Y');
+$('.xsd-date').forces_form_dateField('dd/MM/yyyy', '%d %B %Y');
+$('#my-date3').forces_form_dateField('dd/MM/yyyy', '%A %d %B %Y');
 
 var d = new Date();
-var formats = "YYYY MM DD %Y %m %d %A %B".split(/ /);
+var d2 = new Date(1976, 4, 1);
+var formats = "YYYY yyyy MM dd d %A %B %d %e %m %Y".split(/ /);
 console.log('test formats:', formats)
 for (var i = 0; i < formats.length; i++) {
-	console.log(i+1, formats[i], $.forces_date_format(d, formats[i]))
+	console.log(i+1, formats[i], $.forces_dateFormat(d, formats[i]), $.forces_dateFormat(d2, formats[i]))
 }
-console.log($.forces_date_format(d, 'Once upon a time, %d %B in the year of %Y in fact, ...'));
+console.log($.forces_dateFormat(d, 'Once upon a time, %A %d %B in the year of %Y in fact, ...'));
+console.log($.forces_dateFormat(d2, 'or was it earlier, %A %d %B in the year of %Y perhaps, ...'));
 
 
 // -->
