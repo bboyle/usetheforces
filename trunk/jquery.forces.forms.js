@@ -6,15 +6,20 @@
  */
 
 ;if(typeof(jQuery)!="undefined") {
-	// (global) forces configuration
-	var _tf_SUBMIT_TOLERANCE = 2000; // ms
-	var _tf_SUBMIT_ERROR = "Unable to submit form";
-	var _tf_ALERT_REQUIRED = "must be completed";
-	var _tf_DATE_MONTHS = 'January February March April May June July August September October November December'.split(/ /);
-	var _tf_DATE_WEEKDAYS = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(/ /);
-
 
 (function($){
+
+	// forces
+	var _tf_ALERT_REQUIRED = "must be completed";
+	var _tf_ALERT_CONSTRAINT_MAX = "violates max constraint";
+	var _tf_ALERT_CONSTRAINT_MIN = "violates min constraint";
+	var _tf_ALERT_TYPE_DATE = "unrecognised date format";
+	var _tf_DATE_MONTHS = 'January February March April May June July August September October November December'.split(/ /);
+	var _tf_DATE_WEEKDAYS = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(/ /);
+	var _tf_SUBMIT_ERROR = "Unable to submit form";
+	var _tf_SUBMIT_TOLERANCE = 2000; // ms
+	var _tf_VALIDATE = true;
+	$.forces_DATE_TODAY = new Date();
 
 	// class names
 	var CLASS_ALERT = 'xf-alert';
@@ -25,13 +30,15 @@
 	var EVENT_ENABLED = '-xf-enabled';
 	var EVENT_DISABLED = '-xf-disabled';
 	var EVENT_VALUE_CHANGED = '-xf-value-changed';
-	
+
 	// internal state data
 	var DATA_CALCULATE_RELEVANT = '-tf-relevant';
 	var DATA_CONSTRAINTS = '-xf-constraints';
+	var DATA_CONSTRAINT_MIN = '-xf-constraints-min';
+	var DATA_CONSTRAINT_MAX = '-xf-constraints-max';
 	var DATA_RELEVANT = '-xf-reabled';
 	var DATA_VALID = '-xf-valid';
-	var DATA_MSG_ALERT = '-tf-submit-alert';
+	var DATA_MESSAGE_ALERT = '-tf-submit-alert';
 	var DATA_FORMAT_DATE_OUTPUT = '-tf-format-date-output';
 	var DATA_FORMAT_DATE_SUBMIT = '-tf-format-date-submit';
 
@@ -44,12 +51,12 @@ $.extend($.expr[':'], {
 		return v == null || $.trim(v).length == 0;
 	},
 	'-tf-date': function(e) {
-		return $(e).data(DATA_FORMAT_DATE_SUBMIT);
+		return $(e).data(DATA_FORMAT_DATE_SUBMIT) != null;
 	},
 	// xforms
-	'-xf-alert': function(e) { 
-		return $(e).hasClass(CLASS_ALERT); 
-	}, 
+	'-xf-alert': function(e) {
+		return $(e).hasClass(CLASS_ALERT);
+	},
 	'-xf-control': function(e) {
 		return $(e).is('.xf-input,.xf-select1,.xf-select,.xf-secret,.xf-textarea,.xf-group');
 	},
@@ -59,15 +66,15 @@ $.extend($.expr[':'], {
 	'-xf-hint': function(e) {
 		return $(e).hasClass('xf-hint');
 	},
-	'-xf-input': function(e) { 
-		return $(e).hasClass('xf-input'); 
+	'-xf-input': function(e) {
+		return $(e).hasClass('xf-input');
 	},
 	'-xf-invalid' : function(e) {
 		return $(e).data(DATA_VALID) === false;
 	},
-	'-xf-label': function(e) { 
-		return $(e).hasClass('xf-label'); 
-	}, 
+	'-xf-label': function(e) {
+		return $(e).hasClass('xf-label');
+	},
 	'-xf-output': function(e) {
 		return $(e).hasClass('xf-output');
 	},
@@ -103,67 +110,117 @@ var _private = {
 		s = String(s);
 		while (s.length < l) s = String(c) + s;
 		return s;
-	},
+	}
 };
 
 
 // format a date
-$.forces_date_format = function(date, format) {
+$.forces_dateFormat = function(date, format) {
 	if (!date) return '';
 	if (!format) return date.toString();
 	return format
-		.replace(/YYYY|%Y/, date.getFullYear())
+		.replace(/YYYY|yyyy|%Y/, date.getFullYear())
 		.replace(/MM|%m/, _private.pad(date.getMonth()+1, 2, '0'))
-		.replace(/DD|%d/, _private.pad(date.getDate(), 2, '0'))
+		.replace(/dd|%d/, _private.pad(date.getDate(), 2, '0'))
+		.replace(/%e/, _private.pad(date.getDate(), 2, ' '))
+		.replace(/d/, date.getDate())
 		.replace(/%B/, _tf_DATE_MONTHS[date.getMonth()])
 		.replace(/%A/, _tf_DATE_WEEKDAYS[date.getDay()]);
 };
 
 
 // parse a date
-$.forces_date_parse = function(s) {
-	// TODO - parse date
-	return new Date();
+$.forces_dateParse = function(s, min, max) {
+	s = s.split(/[^A-Za-z0-9]/);
+
+	var base = min || max || $.forces_DATE_TODAY; 
+
+	var date = {};
+	function setDate(property, value) {
+		date[property] = date[property] || value;
+	}
+
+	for (var i = 0; i < s.length; i++) {
+		if (s[i].match(/^\d{4}$/)) {
+			setDate('year', s[i]);
+		} else if (s[i].match(/^\d+$/)) {
+			// precedence: date, month, year
+			var property = date.date ? (date.month ? 'year' : 'month') : 'date';
+			if (property == 'year' && !date.year) {
+				s[i] = (base.getFullYear()+"").substring(0,2) + _private.pad(s[i], 2, '0');
+				if (min && min.getFullYear() > s[i]) {
+					s[i] += 100;
+				} else if (max && max.getFullYear() < s[i]) {
+					s[i] -= 100;
+				} else if (!min && !max && s[i] > base.getFullYear()+20) {
+					s[i] -= 100;
+				}
+			}
+			setDate(property, s[i]);
+		}
+	}
+
+	if (date.date && date.month && date.year) {
+		var d = new Date(date.year, date.month-1, date.date);
+		if ($.forces_dateEquals(d, date.year, date.month, date.date)) {
+			return d;
+		}
+	}
+
+	return null;
+};
+
+	
+// check date equality
+	$.forces_dateEquals = function(date, y, m, d) {
+		return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
+	};
+
+
+// calculate a date
+$.forces_dateCalc = function(date, delta) {
+	return new Date(date.getFullYear()+(delta.year||0), date.getMonth()+(delta.month||0), date.getDate()+(delta.date||0));
 };
 
 
-
 // makes and returns date fields
-$.fn.forces_form_dateField = function(formatSubmit, formatOutput) {
-	formatSubmit = formatSubmit || 'YYYY-MM-DD';
-	
+$.fn.forces_form_dateField = function(formatSubmit, formatOutput, min, max) {
+	formatSubmit = formatSubmit || 'YYYY-MM-dd';
+
 	return this.forces_xform_control().filter(function() {
 		var e = $(this);
+		var date = e.xfValueAsDate();
 		var i = e.find(':text');
 		if (i.length == 1) {
 			i = i.eq(0);
-			var date = $.forces_date_parse(i.val());
+			var hidden = $('<input type="hidden" name="' + i.attr('name') + '" />');
+			hidden.val($.forces_dateFormat(date, formatSubmit));
 			i.eq(0)
-				.after('<input type="hidden" name="' + i.attr('name') + '" />')
+				.after(hidden)
 				.removeAttr('name');
-			e.data(DATA_FORMAT_DATE_SUBMIT, formatSubmit);
+			e
+			.data(DATA_FORMAT_DATE_SUBMIT, formatSubmit)
+			.data(DATA_CONSTRAINT_MIN, min || null)
+			.data(DATA_CONSTRAINT_MAX, max || null);
 			if (formatOutput) {
 				var output = $('<span class="xf-output"></span>');
 				if (i.val()) {
 					// TODO setup output.calculation()
 					// support for calculations
-					output.text($.forces_date_format(e.xfValue(), formatOutput));
+					output.text($.forces_dateFormat(date, formatOutput));
 				}
 				i.after(output);
 				e.data(DATA_FORMAT_DATE_OUTPUT, formatOutput);
 			} else {
 				e.removeData(DATA_FORMAT_DATE_OUTPUT);
 			}
-			// TODO calculate without triggering "change" event processing
-			// e.triggerHandler('change');
-			
 			return true;
-		}		
+		}
 		return false;
 	});
 };
-	
-	
+
+
 // get form control element
 $.fn.forces_xform_control = function() {
 	return this.map(function() {
@@ -209,16 +266,17 @@ $.fn.extend({
 
 
 	// recalculate controls within me
-	recalculate: function() {
+	recalculate: function(target) {
 		var relevant = this.find(':-xf-control').relevant();
+
 		// TODO switch (this.data('DATA_TYPE')) ??
-		relevant.filter(':-tf-date').each(function() {
-			var e = $(this);
-			e.find('input:hidden').val($.forces_date_format(e.xfValue(), e.data(DATA_FORMAT_DATE_SUBMIT)));
-			if (e.data(DATA_FORMAT_DATE_OUTPUT)) {
-				e.find(':-xf-output').text($.forces_date_format(e.xfValue(), e.data(DATA_FORMAT_DATE_OUTPUT)));
+		if (target.is(':-tf-date')) {
+			var date = target.xfValueAsDate();
+			target.find('input:hidden').val($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_SUBMIT)));
+			if (target.data(DATA_FORMAT_DATE_OUTPUT)) {
+				target.find(':-xf-output').text($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_OUTPUT)));
 			}
-		});
+		}
 		return relevant;
 	},
 
@@ -280,21 +338,19 @@ $.fn.extend({
 	useForcesValidation: function(enable) {
 		var form = $(this).xForm();
 		if (enable) {
-			form.data(DATA_MSG_ALERT, enable);
+			form.data(DATA_MESSAGE_ALERT, enable);
 			return true;
 		} else if (enable === false) {
-			form.removeData(DATA_MSG_ALERT);
+			form.removeData(DATA_MESSAGE_ALERT);
 			return false;
 		}
-		return form.data(DATA_MSG_ALERT) != null;
+		return form.data(DATA_MESSAGE_ALERT) != null;
 	},
 
 
 	// is control valid
 	// returns jQuery (filtered, invalid controls remain)
 	validate: function() {
-		if (this.useForcesValidation() === false) return this;
-		
 		// set valid state
 		function _valid(e, isValid, alertMessage) {
 			e.data(DATA_VALID, isValid);
@@ -314,7 +370,6 @@ $.fn.extend({
 
 		return this.forces_xform_control().filter(function() {
 			var e = $(this);
-
 			if (e.is(':-tf-blank')) {
 				if (e.is(':-xf-required')) {
 					// blank + required = invalid
@@ -324,32 +379,47 @@ $.fn.extend({
 					return !_valid(e, true);
 				}
 			} else {
+				var min = e.data(DATA_CONSTRAINT_MIN) || null;
+				var max = e.data(DATA_CONSTRAINT_MAX) || null;
+				if (e.is(':-tf-date')) {
+					var date = e.xfValueAsDate();
+					if (!date) {
+						return !_valid(e, false, _tf_ALERT_TYPE_DATE);
+					}
+					if (min && date < min) {
+						return !_valid(e, false, _tf_ALERT_CONSTRAINT_MIN);
+					}
+					if (max && date > max) {
+						return !_valid(e, false, _tf_ALERT_CONSTRAINT_MAX);
+					}
+				}
+
 				var constraints = e.data(DATA_CONSTRAINTS) || [];
 				for (var i = 0; i < constraints.length; i++) {
-					if (constraints[i].test(e) == false) {
-						return !_valid(e, false, constraints[i].alertMessage)
+					if (!constraints[i].test(e)) {
+						return !_valid(e, false, constraints[i].alertMessage);
 					}
 				}
 				constraints = e.xForm().data(DATA_CONSTRAINTS) || [];
-				for (var i = 0; i < constraints.length; i++) {
-					if (e.is(constraints[i].selector) && constraints[i].test(e) == false) {
-						return !_valid(e, false, constraints[i].alertMessage)
+				for (i = 0; i < constraints.length; i++) {
+					if (e.is(constraints[i].selector) && !constraints[i].test(e)) {
+						return !_valid(e, false, constraints[i].alertMessage);
 					}
 				}
 			}
 			return !_valid(e, true);
 		});
 	},
-	
+
 
 	// get alert message text
 	xfAlert: function() {
-		return this.forces_xform_control().find(':-xf-alert').text();
+		return this.forces_xform_control().find(':-xf-alert').eq(0).text();
 	},
 
 
 	// get xform
-	xForm: function() { 
+	xForm: function() {
 		return this.hasClass('xform') ? this : this.parents('.xform');
 	},
 
@@ -366,7 +436,7 @@ $.fn.extend({
 			xfLabel.html(label + labelSeparator);
 		}
 
- 		return xfLabel;
+		return xfLabel;
 	},
 
 
@@ -374,12 +444,13 @@ $.fn.extend({
 	xfValue: function() {
 		var v = this._xfValue();
 		if (!v) return null;
-		
-		// TODO switch (dataType)
-		if (this.is(':-tf-date')) {
-			v = $.forces_date_parse(v);
-		}
 		return v;
+	},
+
+
+	// get value as Date
+	xfValueAsDate: function() {
+		return $.forces_dateParse(this._xfValue(), this.data(DATA_CONSTRAINT_MIN), this.data(DATA_CONSTRAINT_MAX));
 	},
 
 
@@ -423,15 +494,19 @@ $('form')
 	// form control changed
 	.bind('change ' + EVENT_VALUE_CHANGED, function(eventObject, target) {
 		var target = $(target || eventObject.target).forces_xform_control();
-		target.xForm().recalculate();
-		//target.validate().xForm().recalculate();
-		// evaluate relevance of all controls
-		//$(':-xf-control:-xf-relevant', target.xForm());
+		target.xForm().recalculate(target);
+		target.validate();
 	})
 
 	// focus
 	.bind('focus', function(eventObject) {
 		// TODO focus not captured at form level?
+//	// highlight active field
+//	$('input, select, textarea', content).focus(function() {
+//		$(this).parents('form').find('.active')
+//			.not($(this).parents('.input, .select, .select1, .textarea, .group').addClass('active'))
+//			.removeClass('active');
+//	});
 	})
 
 	// form was submitted
@@ -452,21 +527,18 @@ $('form')
 		}
 		xform.data('submitted', now);
 
-		// get all relevant controls		
-		var controls = $(':-xf-control', xform);
-		controls = $(':-xf-control:-xf-relevant', xform);
-
+		// get all relevant controls
+		var controls = $(':-xf-control:-xf-relevant', xform);
 		// validate controls that have not been validated (i.e. never changed)
-		controls.filter(':not(:-xf-valid):not(:-xf-invalid)').filter(function() {
-			$(this).validate();
-		});
+		controls.filter(':not(:-xf-valid):not(:-xf-invalid)').validate();
+
 		var invalid = controls.filter(':-xf-invalid');
-		if (invalid.length > 0) {
+		if (_tf_VALIDATE && invalid.length > 0) {
 			var status = xform.prev('.status');
 			if (status.length == 1) {
 				status.find('li').remove();
 			} else {
-				status = $('<div class="status alert"><h1>' + (xform.data(DATA_MSG_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
+				status = $('<div class="status alert"><h1>' + (xform.data(DATA_MESSAGE_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
 			}
 			invalid.each(function() {
 				var control = $(this);
@@ -481,17 +553,17 @@ $('form')
 
 
 // keyup early change trigger
-$(':text,:password,textarea')
-	// keyup (early change detection)
-	.keyup(function(eventObject){
-		var formInput = $(eventObject.target);
-		var control = formInput.forces_xform_control();
-		var val = control.xfValue();
-		if (control.data('previousValue') != val) {
-			control.data('previousValue', val);
-			control.form().trigger(EVENT_VALUE_CHANGED, [formInput]);
-		}
-	});
+//$(':text,:password,textarea')
+//	// keyup (early change detection)
+//	.keyup(function(eventObject){
+//		var formInput = $(eventObject.target);
+//		var control = formInput.forces_xform_control();
+//		var val = control.xfValue();
+//		if (control.data('previousValue') != val) {
+//			control.data('previousValue', val);
+//			control.form().trigger(EVENT_VALUE_CHANGED, [formInput]);
+//		}
+//	});
 
 
 // IE
@@ -511,26 +583,5 @@ if ($.browser.msie) {
 
 })(jQuery);
 
-
-
-
-
-// datatype constraints
-// TODO will this work when multiple forms are in the page?
-$('form').constraint(':-tf-date', "unrecognised date format", function(e) {
-	var d = e.xfValue().split(/\D/);
-	if (d.length == 3 && d.join('').match(/^\d{4,8}$/)) {
-		var date = new Date(d[2], d[1]-1, d[0]);
-		return date.getMonth()+1 == d[1] && date.getDate() == d[0] && (date.getFullYear() == d[2] || date.getYear() == d[2]);
-	}
-	return false;
-});
-
-
-// turn on validation
-// TODO selector becomes the forcesContainer element?
-$('form').each(function() {
-	$(this).useForcesValidation(_tf_ALERT_REQUIRED);
-});
 
 }
