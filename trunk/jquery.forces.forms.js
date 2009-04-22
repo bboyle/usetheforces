@@ -553,17 +553,17 @@ $('form')
 
 
 // keyup early change trigger
-//$(':text,:password,textarea')
-//	// keyup (early change detection)
-//	.keyup(function(eventObject){
-//		var formInput = $(eventObject.target);
-//		var control = formInput.forces_xform_control();
-//		var val = control.xfValue();
-//		if (control.data('previousValue') != val) {
-//			control.data('previousValue', val);
-//			control.form().trigger(EVENT_VALUE_CHANGED, [formInput]);
-//		}
-//	});
+$(':text,:password,textarea')
+	// keyup (early change detection)
+	.keyup(function(eventObject){
+		var formInput = $(eventObject.target);
+		var control = formInput.forces_xform_control();
+		var val = control.xfValue();
+		if (control.data('previousValue') != val) {
+			control.data('previousValue', val);
+			control.form().trigger(EVENT_VALUE_CHANGED, [formInput]);
+		}
+	});
 
 
 // IE
