@@ -46,6 +46,14 @@
 			<input type="text" id="my-date3" name="myDate3" value="foo" />
 		</li>
 
+		<!-- forces date input -->
+		<li class="xf-input">
+			<label for="my-date4">
+				<span class="xf-label">Date >= 1 January 2000</span>
+			</label>
+			<input type="text" id="my-date4" name="myDate4" value="" />
+		</li>
+
 
 		<li class="xf-submit">
 			<strong><input type="submit" value="Validate" /></strong>
@@ -66,6 +74,7 @@
 // dateField([format]) ... makes a control a date control
 $('.xsd-date').forces_form_dateField('dd/MM/yyyy', '%d %B %Y');
 $('#my-date3').forces_form_dateField('dd/MM/yyyy', '%A %d %B %Y');
+$('#my-date4').forces_form_dateField(null, '%e %B %Y', new Date(2000, 0, 1));
 
 var d = new Date();
 var d2 = new Date(1976, 4, 1);
