@@ -9,11 +9,15 @@
 
 (function($){
 
+	$.forces = function() {};
+	$.forces.triggerChangeOnInput = false;
+
 	// forces
 	var _tf_ALERT_REQUIRED = "must be completed";
 	var _tf_ALERT_CONSTRAINT_MAX = "violates max constraint";
 	var _tf_ALERT_CONSTRAINT_MIN = "violates min constraint";
 	var _tf_ALERT_TYPE_DATE = "unrecognised date format";
+	var _tf_ALERT_TYPE_NUMBER = "must be a number";
 	var _tf_DATE_MONTHS = 'January February March April May June July August September October November December'.split(/ /);
 	var _tf_DATE_WEEKDAYS = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(/ /);
 	var _tf_SUBMIT_ERROR = "Unable to submit form";
@@ -25,6 +29,7 @@
 	var CLASS_ALERT = 'xf-alert';
 	var CLASS_INVALID = 'xf-invalid';
 	var CLASS_VALID = 'xf-valid';
+	var CLASS_SUBMIT_ERROR = 'xf-submit-error';
 
 	// event types
 	var EVENT_ENABLED = '-xf-enabled';
@@ -38,6 +43,7 @@
 	var DATA_CONSTRAINT_MAX = '-xf-constraints-max';
 	var DATA_RELEVANT = '-xf-reabled';
 	var DATA_VALID = '-xf-valid';
+	var DATA_VALUE = '-tf-value';
 	var DATA_MESSAGE_ALERT = '-tf-submit-alert';
 	var DATA_FORMAT_DATE_OUTPUT = '-tf-format-date-output';
 	var DATA_FORMAT_DATE_SUBMIT = '-tf-format-date-submit';
@@ -52,6 +58,9 @@ $.extend($.expr[':'], {
 	},
 	'-tf-date': function(e) {
 		return $(e).data(DATA_FORMAT_DATE_SUBMIT) != null;
+	},
+	'-tf-number': function(e) {
+		return $(e).hasClass('number');
 	},
 	// xforms
 	'-xf-alert': function(e) {
@@ -133,7 +142,7 @@ $.forces_dateFormat = function(date, format) {
 $.forces_dateParse = function(s, min, max) {
 	s = s.split(/[^A-Za-z0-9]/);
 
-	var base = min || max || $.forces_DATE_TODAY; 
+	var base = min || max || $.forces_DATE_TODAY;
 
 	var date = {};
 	function setDate(property, value) {
@@ -170,11 +179,11 @@ $.forces_dateParse = function(s, min, max) {
 	return null;
 };
 
-	
+
 // check date equality
-	$.forces_dateEquals = function(date, y, m, d) {
-		return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
-	};
+$.forces_dateEquals = function(date, y, m, d) {
+	return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
+};
 
 
 // calculate a date
@@ -349,7 +358,7 @@ $.fn.extend({
 
 
 	// is control valid
-	// returns jQuery (filtered, invalid controls remain)
+	// returns jQuery (filtered, valid controls remain)
 	validate: function() {
 		// set valid state
 		function _valid(e, isValid, alertMessage) {
@@ -373,41 +382,47 @@ $.fn.extend({
 			if (e.is(':-tf-blank')) {
 				if (e.is(':-xf-required')) {
 					// blank + required = invalid
-					return !_valid(e, false, _tf_ALERT_REQUIRED);
+					return _valid(e, false, _tf_ALERT_REQUIRED);
 				} else {
 					// blank + not required = valid
-					return !_valid(e, true);
+					return _valid(e, true);
 				}
 			} else {
 				var min = e.data(DATA_CONSTRAINT_MIN) || null;
 				var max = e.data(DATA_CONSTRAINT_MAX) || null;
-				if (e.is(':-tf-date')) {
+				if (e.is(':-tf-number')) {
+					var number = e.xfValue();
+					// TODO only allow , as thousands separator (not randomly placed in string)
+					if (number.match(/[^0-9,.$]/)) {
+						return _valid(e, false, _tf_ALERT_TYPE_NUMBER);
+					}
+				} else if (e.is(':-tf-date')) {
 					var date = e.xfValueAsDate();
 					if (!date) {
-						return !_valid(e, false, _tf_ALERT_TYPE_DATE);
+						return _valid(e, false, _tf_ALERT_TYPE_DATE);
 					}
 					if (min && date < min) {
-						return !_valid(e, false, _tf_ALERT_CONSTRAINT_MIN);
+						return _valid(e, false, _tf_ALERT_CONSTRAINT_MIN);
 					}
 					if (max && date > max) {
-						return !_valid(e, false, _tf_ALERT_CONSTRAINT_MAX);
+						return _valid(e, false, _tf_ALERT_CONSTRAINT_MAX);
 					}
 				}
 
 				var constraints = e.data(DATA_CONSTRAINTS) || [];
 				for (var i = 0; i < constraints.length; i++) {
 					if (!constraints[i].test(e)) {
-						return !_valid(e, false, constraints[i].alertMessage);
+						return _valid(e, false, constraints[i].alertMessage);
 					}
 				}
 				constraints = e.xForm().data(DATA_CONSTRAINTS) || [];
 				for (i = 0; i < constraints.length; i++) {
 					if (e.is(constraints[i].selector) && !constraints[i].test(e)) {
-						return !_valid(e, false, constraints[i].alertMessage);
+						return _valid(e, false, constraints[i].alertMessage);
 					}
 				}
 			}
-			return !_valid(e, true);
+			return _valid(e, true);
 		});
 	},
 
@@ -442,34 +457,27 @@ $.fn.extend({
 
 	// get value
 	xfValue: function() {
-		var v = this._xfValue();
-		if (!v) return null;
-		return v;
-	},
-
-
-	// get value as Date
-	xfValueAsDate: function() {
-		return $.forces_dateParse(this._xfValue(), this.data(DATA_CONSTRAINT_MIN), this.data(DATA_CONSTRAINT_MAX));
-	},
-
-
-	// returns raw value
-	_xfValue: function() {
-		if (this.find(':text').length) {
-			return this.find(':text').val();
-		} else if (this.find('select').length) {
-			return this.find('select').val();
-		} else if (this.find(':radio').length) {
+		if (this.find(':radio').length) {
 			var checked = this.find(':radio:checked');
 			return checked.length > 0 ? checked.val() : null;
 		} else if (this.find(':checkbox').length) {
 			var checked = this.find(':checkbox:checked');
 			return checked.length > 0 ? checked.val() : null;
 		}
-		// TODO support textarea, password, and more datatypes
-		return null;
+		return this.find(':text').val()
+				|| this.find('select').val()
+				|| this.find('textarea').val()
+				|| this.find(':hidden').val()
+				|| this.find(':password').val();
+	},
+
+
+	// get value as Date
+	xfValueAsDate: function() {
+		var d = this.xfValue();
+		if (d) return $.forces_dateParse(this.xfValue(), this.data(DATA_CONSTRAINT_MIN), this.data(DATA_CONSTRAINT_MAX));
 	}
+
 
 });
 
@@ -491,26 +499,17 @@ $.xfVal = function(e) {
 
 // events
 $('form')
-	// form control changed
-	.bind('change ' + EVENT_VALUE_CHANGED, function(eventObject, target) {
-		var target = $(target || eventObject.target).forces_xform_control();
-		target.xForm().recalculate(target);
+	// form control changed (may be input/change event)
+	.bind(EVENT_VALUE_CHANGED, function(eventObject, target) {
+		$(this).recalculate(target);
 	})
+
 
 	.bind('change', function(eventObject) {
-		$(eventObject.target).validate();
+		var target = $(eventObject.target).forces_xform_control();
+		target.trigger(EVENT_VALUE_CHANGED, [target]).validate();
 	})
 
-	// focus
-	.bind('focus', function(eventObject) {
-		// TODO focus not captured at form level?
-//	// highlight active field
-//	$('input, select, textarea', content).focus(function() {
-//		$(this).parents('form').find('.active')
-//			.not($(this).parents('.input, .select, .select1, .textarea, .group').addClass('active'))
-//			.removeClass('active');
-//	});
-	})
 
 	// form was submitted
 	.bind('submit', function(eventObject) {
@@ -520,7 +519,7 @@ $('form')
 
 		function _cancel(xform) {
 			// TODO shake button (or form?) to indicate negative feedback
-			xform.addClass('xf-submit-error');
+			xform.addClass(CLASS_SUBMIT_ERROR);
 			return false;
 		}
 
@@ -556,29 +555,30 @@ $('form')
 
 
 // keyup early change trigger
-$(':text,:password,textarea')
-	// keyup (early change detection)
-	.keyup(function(eventObject){
-		var formInput = $(eventObject.target);
-		var control = formInput.forces_xform_control();
-		var val = control.xfValue();
-		if (control.data('previousValue') != val) {
-			control.data('previousValue', val);
-			control.form().trigger(EVENT_VALUE_CHANGED, [formInput]);
-		}
-	});
+if ($.forces.triggerChangeOnInput) {
+	$(':text,:password,textarea')
+		// keyup (early change detection)
+		.keyup(function(eventObject){
+			var control = $(eventObject.target);
+			var val = control.val();
+			control = control.forces_xform_control();
+			if (control.data(DATA_VALUE) != val) {
+				control.data(DATA_VALUE, val);
+				control.form().trigger(EVENT_VALUE_CHANGED, [control]);
+			}
+		});
+}
 
 
 // IE
 if ($.browser.msie) {
 	// trigger change on radio buttons and checkboxes
 	$(':radio,:checkbox').click(function(eventObject) {
-		var formInput = $(eventObject.target);
-		var control = formInput.forces_xform_control();
+		var control = $(eventObject.target).forces_xform_control();
 		var val = control.xfValue();
-		if (control.data('previousValue') != val) {
-			control.data('previousValue', val);
-			control.form().trigger(EVENT_VALUE_CHANGED,[formInput]);
+		if (control.data(DATA_VALUE) != val) {
+			control.data(DATA_VALUE, val);
+			control.form().trigger(EVENT_VALUE_CHANGED,[control]);
 		}
 	});
 }
