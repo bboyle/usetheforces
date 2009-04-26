@@ -37,16 +37,19 @@
 	var EVENT_VALUE_CHANGED = '-xf-value-changed';
 
 	// internal state data
-	var DATA_CALCULATE_RELEVANT = '-tf-relevant';
+	var DATA_PREFIX_ATTR = '-tf-attr-';
+	var DATA_PREFIX_CALC = '-tf-calc-';
 	var DATA_CONSTRAINTS = '-xf-constraints';
 	var DATA_CONSTRAINT_MIN = '-xf-constraints-min';
 	var DATA_CONSTRAINT_MAX = '-xf-constraints-max';
-	var DATA_RELEVANT = '-xf-reabled';
+	var DATA_DEPENDENCY_MAP = '-xf-dependency';
+	var DATA_RELEVANT = '-xf-enabled';
 	var DATA_VALID = '-xf-valid';
 	var DATA_VALUE = '-tf-value';
 	var DATA_MESSAGE_ALERT = '-tf-submit-alert';
 	var DATA_FORMAT_DATE_OUTPUT = '-tf-format-date-output';
 	var DATA_FORMAT_DATE_SUBMIT = '-tf-format-date-submit';
+	var DATA_SUBMIT_TIMESTAMP = '-tf-submit-time';
 
 
 // selectors
@@ -119,8 +122,92 @@ var _private = {
 		s = String(s);
 		while (s.length < l) s = String(c) + s;
 		return s;
+	},
+	xpath2js: function(expression) {
+		return expression
+			.replace(/ and /g, ' && ')
+			.replace(/ or /, ' || ')
+			.replace(/ = /g, ' == ');
+	},
+	regexNamesXpath: /(?:^|\s+|\()([_A-Za-z][_A-Za-z0-9]*)(?:\)|\s+|$)/g
+};
+
+
+// extension to attr() to support @relevant
+$.fn.forces_attr = function(name, value) {
+	switch (name) {
+		case 'relevant':
+			if (value !== undefined) {
+				var controls = this.forces_xform_control();
+				// store the attribute value
+				controls.data(DATA_PREFIX_ATTR+name, value);
+				// convert xpath expression to javascript
+				value = _private.xpath2js(value);
+				// extract names of dependencies
+				var names = {};
+				var vars;
+				while (vars = _private.regexNamesXpath.exec(value)) {
+					if (names[vars[1]] === undefined) {
+						var source = $.forces_form_field(vars[1]);
+						source.data(DATA_DEPENDENCY_MAP, controls.add(source.data(DATA_DEPENDENCY_MAP)));
+						names[vars[1]] = source;
+					}
+				}
+				// create a function from the expression
+				vars = '';
+				for (var n in names) {
+					vars += 'var ' + n + '=$.forces_val("' + n + '");';
+				}
+				controls.data(DATA_PREFIX_CALC+name, new Function(vars + 'return ' + value + ';')).forces_relevant();
+				return this;
+			} else {
+				return this.forces_xform_control().data(DATA_PREFIX_ATTR+name);
+			}
+		break;
+		
+		default:
+			// fallback on default .attr() behaviour
+			return this.attr(name, value);
 	}
 };
+$.fn.forces_removeAttr = function(name) {
+	switch (name) {
+		case 'relevant':
+			this.forces_xform_control()
+				.removeData(DATA_PREFIX_ATTR+name)
+				.removeData(DATA_PREFIX_CALC+name);
+			return this;
+	}
+	return this.removeAttr(name);
+};
+
+
+// set a constraint
+$.fn.constraint = function(selector, alertMessage, test) {
+	var e = this.xForm();
+
+	function _constraint(selector, alertMessage, test) {
+		if (e.data(DATA_CONSTRAINTS) == null) e.data(DATA_CONSTRAINTS, []);
+		e.data(DATA_CONSTRAINTS).push({
+			selector: selector,
+			alertMessage: alertMessage,
+			test: test
+		});
+	}
+
+	if (test == null) {
+		this.each(function() {
+			var id = $(this);
+			id = id.attr('id') || id.forces_xform_control().find('*[id]').attr('id');
+			_constraint('#' + id, selector, alertMessage);
+		});
+	} else {
+		_constraint(selector, alertMessage, test);
+	}
+
+	return this;
+};
+
 
 
 // format a date
@@ -180,15 +267,21 @@ $.forces_dateParse = function(s, min, max) {
 };
 
 
+// calculate a date
+$.forces_dateCalc = function(date, delta) {
+	return new Date(date.getFullYear()+(delta.year||0), date.getMonth()+(delta.month||0), date.getDate()+(delta.date||0));
+};
+
+
 // check date equality
 $.forces_dateEquals = function(date, y, m, d) {
 	return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
 };
 
 
-// calculate a date
-$.forces_dateCalc = function(date, delta) {
-	return new Date(date.getFullYear()+(delta.year||0), date.getMonth()+(delta.month||0), date.getDate()+(delta.date||0));
+// get form
+$.fn.form = function() {
+	return this.is('form') ? this : this.parents('form');
 };
 
 
@@ -230,6 +323,91 @@ $.fn.forces_form_dateField = function(formatSubmit, formatOutput, min, max) {
 };
 
 
+// get a forces field
+$.forces_form_field = function(e) {
+	// xfVal('#id') or xfVal('name') or xfVal(jQuery)
+	if (typeof(e) == 'string') {
+		e = e.charAt(0) == '#' ? $(e) : $('*[name="' + e + '"]').eq(0);
+	}
+	return e.forces_xform_control();
+};
+
+
+// extension to val()
+$.forces_val = function(e) {
+	return $.forces_form_field(e).xfValue();
+};
+
+
+// get/set label
+$.fn.forces_label = function(label, labelSeparator) {
+	this.each(function() {
+		var eLabel = $(this);
+		if (label) {
+			if (labelSeparator == null) {
+				var m = new RegExp('([:?]+)$').exec(eLabel.text());
+				labelSeparator = m ? m[1] : '';
+			}
+			eLabel.html(label + labelSeparator);
+		}
+	});
+
+	return this;
+};
+
+
+// recalculate controls within me
+$.fn.forces_recalculate = function() {
+	return this.forces_relevant();
+};
+
+
+// get/set relevance
+// returns jQuery (filtered, relevant controls remain)
+$.fn.forces_relevant = function() {
+	function _enable(e, enabled) {
+		if (enabled == false) {
+			if (e.data(DATA_RELEVANT) != false) {
+				e
+				.hide()
+				.trigger(EVENT_DISABLED)
+				.add(e.find(':xf-control'))
+				.data(DATA_RELEVANT, false)
+				.find('input,select,textarea')
+					.attr('disabled', 'disabled');
+			}
+			return false;
+		} else {
+			if (e.data(DATA_RELEVANT) != null) {
+				e
+				.slideDown()
+				.trigger(EVENT_ENABLED)
+				.add(e.find(':xf-control'))
+				.removeData(DATA_RELEVANT)
+				.find('input,select,textarea')
+					.removeAttr('disabled');
+			}
+			return true;
+		}
+	}
+
+	return this.filter(function() {
+		var e = $(this);
+		if (e.data(DATA_PREFIX_CALC+'relevant')) {
+			return _enable(e, e.data(DATA_PREFIX_CALC+'relevant')());
+		}
+		return true;
+	});
+};
+
+
+// set required conditions
+$.fn.required = function(test) {
+	if (test) $(this).forces_xform_control().data('required', test);
+	return this;
+};
+
+
 // get form control element
 $.fn.forces_xform_control = function() {
 	return this.map(function() {
@@ -239,45 +417,130 @@ $.fn.forces_xform_control = function() {
 };
 
 
-// legacy $ extensions
-$.fn.extend({
-	// set contraints
-	constraint: function(selector, alertMessage, test) {
-		var e = this.xForm();
+// use validation
+$.fn.useForcesValidation = function(enable) {
+	var form = $(this).xForm();
+	if (enable) {
+		form.data(DATA_MESSAGE_ALERT, enable);
+		return true;
+	} else if (enable === false) {
+		form.removeData(DATA_MESSAGE_ALERT);
+		return false;
+	}
+	return form.data(DATA_MESSAGE_ALERT) != null;
+};
 
-		function _constraint(selector, alertMessage, test) {
-			if (e.data(DATA_CONSTRAINTS) == null) e.data(DATA_CONSTRAINTS, []);
-			e.data(DATA_CONSTRAINTS).push({
-				selector: selector,
-				alertMessage: alertMessage,
-				test: test
-			});
-		}
 
-		if (test == null) {
-			this.each(function() {
-				var id = $(this);
-				id = id.attr('id') || id.forces_xform_control().find('*[id]').attr('id');
-				_constraint('#' + id, selector, alertMessage);
-			});
+// is control valid
+// returns jQuery (filtered, valid controls remain)
+$.fn.validate = function() {
+	// set valid state
+	function _valid(e, isValid, alertMessage) {
+		e.data(DATA_VALID, isValid);
+		if (isValid) {
+			e.find(':-xf-alert').remove();
+			e.removeClass(CLASS_INVALID).addClass(CLASS_VALID);
 		} else {
-			_constraint(selector, alertMessage, test);
+			e.removeClass(CLASS_VALID).addClass(CLASS_INVALID).find(':-xf-label')
+				.parent()
+					.find(':-xf-alert')
+						.remove()
+					.end()
+				.append('<em class="' + CLASS_ALERT + '">' + alertMessage + '</em>');
 		}
+		return isValid;
+	}
 
-		return this;
-	},
+	return this.forces_xform_control().filter(function() {
+		var e = $(this);
+		if (e.is(':-tf-blank')) {
+			if (e.is(':-xf-required')) {
+				// blank + required = invalid
+				return _valid(e, false, _tf_ALERT_REQUIRED);
+			} else {
+				// blank + not required = valid
+				return _valid(e, true);
+			}
+		} else {
+			var min = e.data(DATA_CONSTRAINT_MIN) || null;
+			var max = e.data(DATA_CONSTRAINT_MAX) || null;
+			if (e.is(':-tf-number')) {
+				var number = e.xfValue();
+				// TODO only allow , as thousands separator (not randomly placed in string)
+				if (number.match(/[^0-9,.$]/)) {
+					return _valid(e, false, _tf_ALERT_TYPE_NUMBER);
+				}
+			} else if (e.is(':-tf-date')) {
+				var date = e.xfValueAsDate();
+				if (!date) {
+					return _valid(e, false, _tf_ALERT_TYPE_DATE);
+				}
+				if (min && date < min) {
+					return _valid(e, false, _tf_ALERT_CONSTRAINT_MIN);
+				}
+				if (max && date > max) {
+					return _valid(e, false, _tf_ALERT_CONSTRAINT_MAX);
+				}
+			}
+
+			var constraints = e.data(DATA_CONSTRAINTS) || [];
+			for (var i = 0; i < constraints.length; i++) {
+				if (!constraints[i].test(e)) {
+					return _valid(e, false, constraints[i].alertMessage);
+				}
+			}
+			constraints = e.xForm().data(DATA_CONSTRAINTS) || [];
+			for (i = 0; i < constraints.length; i++) {
+				if (e.is(constraints[i].selector) && !constraints[i].test(e)) {
+					return _valid(e, false, constraints[i].alertMessage);
+				}
+			}
+		}
+		return _valid(e, true);
+	});
+};
 
 
-	// get form
-	form: function() {
-		return this.is('form') ? this : this.parents('form');
-	},
+// get alert message text
+$.fn.xfAlert = function() {
+	return this.forces_xform_control().find(':-xf-alert').eq(0).text();
+};
 
 
-	// recalculate controls within me
-	recalculate: function(target) {
-		var relevant = this.find(':-xf-control').relevant();
+// get xform
+$.fn.xForm = function() {
+	return this.hasClass('xform') ? this : this.parents('.xform');
+};
 
+
+// get value
+$.fn.xfValue = function() {
+	if (this.find(':radio').length) {
+		var checked = this.find(':radio:checked');
+		return checked.length > 0 ? checked.val() : null;
+	} else if (this.find(':checkbox').length) {
+		var checked = this.find(':checkbox:checked');
+		return checked.length > 0 ? checked.val() : null;
+	}
+	return this.find(':text').val()
+			|| this.find('select').val()
+			|| this.find('textarea').val()
+			|| this.find(':hidden').val()
+			|| this.find(':password').val();
+};
+
+
+// get value as Date
+$.fn.xfValueAsDate = function() {
+	var d = this.xfValue();
+	if (d) return $.forces_dateParse(this.xfValue(), this.data(DATA_CONSTRAINT_MIN), this.data(DATA_CONSTRAINT_MAX));
+};
+
+
+// events
+$('form')
+	// form control changed (may be input/change event)
+	.bind(EVENT_VALUE_CHANGED, function(eventObject, target) {
 		// TODO switch (this.data('DATA_TYPE')) ??
 		if (target.is(':-tf-date')) {
 			var date = target.xfValueAsDate();
@@ -286,222 +549,9 @@ $.fn.extend({
 				target.find(':-xf-output').text($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_OUTPUT)));
 			}
 		}
-		return relevant;
-	},
 
-
-	// get/set relevance
-	// returns jQuery (filtered, relevant controls remain)
-	relevant: function(expression) {
-		function _enable(e, enabled) {
-			if (enabled == false) {
-				if (e.data(DATA_RELEVANT) != false) {
-					e
-					.hide()
-					.trigger(EVENT_DISABLED)
-					.add(e.find(':xf-control'))
-					.data(DATA_RELEVANT, false)
-					.find('input,select,textarea')
-						.attr('disabled', 'disabled');
-				}
-				return false;
-			} else {
-				if (e.data(DATA_RELEVANT) != null) {
-					e
-					.slideDown()
-					.trigger(EVENT_ENABLED)
-					.add(e.find(':xf-control'))
-					.removeData(DATA_RELEVANT)
-					.find('input,select,textarea')
-						.removeAttr('disabled');
-				}
-				return true;
-			}
-		}
-
-		return this.forces_xform_control().filter(function() {
-			var e = $(this);
-			if (expression) {
-				if (expression === true) {
-					e.removeData(DATA_CALCULATE_RELEVANT);
-				} else {
-					e.data(DATA_CALCULATE_RELEVANT, expression);
-					return _enable(e, expression(e));
-				}
-			} else if (e.data(DATA_CALCULATE_RELEVANT)) {
-				return _enable(e, e.data(DATA_CALCULATE_RELEVANT)(e));
-			}
-			return true;
-		});
-	},
-
-
-	// set required conditions
-	required: function(test) {
-		if (test) $(this).forces_xform_control().data('required', test);
-		return this;
-	},
-
-
-	// use validation
-	useForcesValidation: function(enable) {
-		var form = $(this).xForm();
-		if (enable) {
-			form.data(DATA_MESSAGE_ALERT, enable);
-			return true;
-		} else if (enable === false) {
-			form.removeData(DATA_MESSAGE_ALERT);
-			return false;
-		}
-		return form.data(DATA_MESSAGE_ALERT) != null;
-	},
-
-
-	// is control valid
-	// returns jQuery (filtered, valid controls remain)
-	validate: function() {
-		// set valid state
-		function _valid(e, isValid, alertMessage) {
-			e.data(DATA_VALID, isValid);
-			if (isValid) {
-				e.find(':-xf-alert').remove();
-				e.removeClass(CLASS_INVALID).addClass(CLASS_VALID);
-			} else {
-				e.removeClass(CLASS_VALID).addClass(CLASS_INVALID).find(':-xf-label')
-					.parent()
-						.find(':-xf-alert')
-							.remove()
-						.end()
-					.append('<em class="' + CLASS_ALERT + '">' + alertMessage + '</em>');
-			}
-			return isValid;
-		}
-
-		return this.forces_xform_control().filter(function() {
-			var e = $(this);
-			if (e.is(':-tf-blank')) {
-				if (e.is(':-xf-required')) {
-					// blank + required = invalid
-					return _valid(e, false, _tf_ALERT_REQUIRED);
-				} else {
-					// blank + not required = valid
-					return _valid(e, true);
-				}
-			} else {
-				var min = e.data(DATA_CONSTRAINT_MIN) || null;
-				var max = e.data(DATA_CONSTRAINT_MAX) || null;
-				if (e.is(':-tf-number')) {
-					var number = e.xfValue();
-					// TODO only allow , as thousands separator (not randomly placed in string)
-					if (number.match(/[^0-9,.$]/)) {
-						return _valid(e, false, _tf_ALERT_TYPE_NUMBER);
-					}
-				} else if (e.is(':-tf-date')) {
-					var date = e.xfValueAsDate();
-					if (!date) {
-						return _valid(e, false, _tf_ALERT_TYPE_DATE);
-					}
-					if (min && date < min) {
-						return _valid(e, false, _tf_ALERT_CONSTRAINT_MIN);
-					}
-					if (max && date > max) {
-						return _valid(e, false, _tf_ALERT_CONSTRAINT_MAX);
-					}
-				}
-
-				var constraints = e.data(DATA_CONSTRAINTS) || [];
-				for (var i = 0; i < constraints.length; i++) {
-					if (!constraints[i].test(e)) {
-						return _valid(e, false, constraints[i].alertMessage);
-					}
-				}
-				constraints = e.xForm().data(DATA_CONSTRAINTS) || [];
-				for (i = 0; i < constraints.length; i++) {
-					if (e.is(constraints[i].selector) && !constraints[i].test(e)) {
-						return _valid(e, false, constraints[i].alertMessage);
-					}
-				}
-			}
-			return _valid(e, true);
-		});
-	},
-
-
-	// get alert message text
-	xfAlert: function() {
-		return this.forces_xform_control().find(':-xf-alert').eq(0).text();
-	},
-
-
-	// get xform
-	xForm: function() {
-		return this.hasClass('xform') ? this : this.parents('.xform');
-	},
-
-
-	// get/set label
-	xfLabel: function(label, labelSeparator) {
-		var xfLabel = this.forces_xform_control().find(':-xf-label').eq(0);
-
-		if (label) {
-			if (labelSeparator == null) {
-				var m = new RegExp('([:?]+)$').exec(xfLabel.text());
-				labelSeparator = m ? m[1] : '';
-			}
-			xfLabel.html(label + labelSeparator);
-		}
-
-		return xfLabel;
-	},
-
-
-	// get value
-	xfValue: function() {
-		if (this.find(':radio').length) {
-			var checked = this.find(':radio:checked');
-			return checked.length > 0 ? checked.val() : null;
-		} else if (this.find(':checkbox').length) {
-			var checked = this.find(':checkbox:checked');
-			return checked.length > 0 ? checked.val() : null;
-		}
-		return this.find(':text').val()
-				|| this.find('select').val()
-				|| this.find('textarea').val()
-				|| this.find(':hidden').val()
-				|| this.find(':password').val();
-	},
-
-
-	// get value as Date
-	xfValueAsDate: function() {
-		var d = this.xfValue();
-		if (d) return $.forces_dateParse(this.xfValue(), this.data(DATA_CONSTRAINT_MIN), this.data(DATA_CONSTRAINT_MAX));
-	}
-
-
-});
-
-
-// aliases
-
-// xfVal('#id') or xfVal('name') or xfVal(jQuery)
-// shortcut for $(jquery).xfValue()
-$.xfVal = function(e) {
-	if (typeof(e) == 'string') {
-		e = e.charAt(0) == '#' ? $(e) : $('*[name="' + e + '"]');
-	}
-	return e.forces_xform_control().xfValue();
-};
-
-
-
-
-
-// events
-$('form')
-	// form control changed (may be input/change event)
-	.bind(EVENT_VALUE_CHANGED, function(eventObject, target) {
-		$(this).recalculate(target);
+		// recalculate this and any dependent elements
+		if (target.data(DATA_DEPENDENCY_MAP)) target.data(DATA_DEPENDENCY_MAP).forces_recalculate();
 	})
 
 
@@ -524,10 +574,10 @@ $('form')
 		}
 
 		// suppress, if repeated submit within timeframe (milliseconds)
-		if (xform.data('submitted') && now - xform.data('submitted') < _tf_SUBMIT_TOLERANCE) {
+		if (xform.data(DATA_SUBMIT_TIMESTAMP) && now - xform.data(DATA_SUBMIT_TIMESTAMP) < _tf_SUBMIT_TOLERANCE) {
 			return _cancel(xform);
 		}
-		xform.data('submitted', now);
+		xform.data(DATA_SUBMIT_TIMESTAMP, now);
 
 		// get all relevant controls
 		var controls = $(':-xf-control:-xf-relevant', xform);
@@ -536,6 +586,7 @@ $('form')
 
 		var invalid = controls.filter(':-xf-invalid');
 		if (_tf_VALIDATE && invalid.length > 0) {
+
 			var status = xform.prev('.status');
 			if (status.length == 1) {
 				status.find('li').remove();
@@ -544,7 +595,7 @@ $('form')
 			}
 			invalid.each(function() {
 				var control = $(this);
-				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.xfLabel().text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
+				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.forces_label().text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
 			});
 			xform.before(status);
 			// TODO scrollTo/focus status
@@ -582,7 +633,6 @@ if ($.browser.msie) {
 		}
 	});
 }
-
 
 })(jQuery);
 
