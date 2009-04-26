@@ -77,8 +77,8 @@
 
 function readLabels() {
 	var debug = $('ol', '#debug');
-	$(':-xf-control', '.xform').each(function () {
-		debug.append($('<li>' + $(this).xfLabel().html() + '</li>'));
+	$(':-xf-label', '.xform').each(function () {
+		debug.append($('<li>' + $(this).forces_label().html() + '</li>'));
 	});
 }
 
@@ -91,8 +91,8 @@ function loremLabels(separator) {
 		"Nunc ac ligula non velit tempus venenatis"
 	];
 	
-	$(':-xf-control', '.xform').each(function (i) {
-		$(this).xfLabel(lorem[i], separator);
+	$(':-xf-label', '.xform').each(function (i) {
+		$(this).forces_label(lorem[i], separator);
 	});
 	readLabels();
 }

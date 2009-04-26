@@ -30,7 +30,7 @@
 			<abbr class="required" title="required">*</abbr>
 		</li>
 		<li class="xf-select">
-			<label for="make-a-donation"><input type="checkbox" id="make-a-donation" />I would like to donate some money too</label>
+			<label for="make-a-donation"><input type="checkbox" id="make-a-donation" name="makeDonation" value="true" />I would like to donate some money too</label>
 		</li>
 		<li class="xf-input">
 			<label for="my-donation">
@@ -47,10 +47,10 @@
 					</span>
 				</legend>
 				<ul class="choices">
-					<li><label for="my-answer-sword"><input type="radio" name="my-answer" id="my-answer-sword" value="sword" />Grab the sword</li>
-					<li><label for="my-answer-gate"><input type="radio" name="my-answer" id="my-answer-gate" value="gate" />Open the gate</li>
-					<li><label for="my-answer-sword-gate"><input type="radio" name="my-answer" id="my-answer-sword-gate" value="sword" />Grab the sword and open the gate</li>
-					<li><label for="my-answer-null"><input type="radio" name="my-answer" id="my-answer-null" value="" checked="checked" />I can't decide</li>
+					<li><label for="my-answer-sword"><input type="radio" name="myAnswer" id="my-answer-sword" value="sword" />Grab the sword</li>
+					<li><label for="my-answer-gate"><input type="radio" name="myAnswer" id="my-answer-gate" value="gate" />Open the gate</li>
+					<li><label for="my-answer-sword-gate"><input type="radio" name="myAnswer" id="my-answer-sword-gate" value="sword-gate" />Grab the sword and open the gate</li>
+					<li><label for="my-answer-null"><input type="radio" name="myAnswer" id="my-answer-null" value="" checked="checked" />I can't decide</li>
 				</ul>
 			</fieldset>
 		</li>
@@ -95,23 +95,13 @@
 <script type="text/javascript">
 <!-- //
 
-	// http://code.google.com/p/usetheforces/wiki/Relevant
-	$('#my-discount').relevant(function() {
-		return $.xfVal('#my-amount') > 1000;
-	});
-	
-	// checkbox driven relevance
-	$('#my-donation').relevant(function() {
-	  return $('#make-a-donation').is(':checked');
-	});
+	// TODO update http://code.google.com/p/usetheforces/wiki/Relevant
+	$('#my-discount').forces_attr('relevant', 'myAmount > 1000');
+	$('#my-donation').forces_attr('relevant', 'makeDonation = "true"');
 	
 	// radio button driven relevance
-	$('#sword-swings').relevant(function() {
-	  return $('#my-answer-sword').is(':checked') || $('#my-answer-sword-gate').is(':checked');
-	});
-	$('#gate-open').relevant(function() {
-	  return $('#my-answer-gate').is(':checked') || $('#my-answer-sword-gate').is(':checked');
-	});
+	$('#sword-swings').forces_attr('relevant', 'myAnswer = "sword" or myAnswer = "sword-gate"');
+	$('#gate-open').forces_attr('relevant', 'myAnswer = "gate" or myAnswer = "sword-gate"');
 
 
 	// DEBUGGING
