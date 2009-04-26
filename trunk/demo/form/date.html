@@ -76,6 +76,9 @@ $('.xsd-date').forces_form_dateField('dd/MM/yyyy', '%d %B %Y');
 $('#my-date3').forces_form_dateField('dd/MM/yyyy', '%A %d %B %Y');
 $('#my-date4').forces_form_dateField(null, '%e %B %Y', new Date(2000, 0, 1));
 
+$('body').append('type="date" returns: ' + $('#my-date2').attr('type'));
+
+
 var d = new Date();
 var d2 = new Date(1976, 4, 1);
 var formats = "YYYY yyyy MM dd d %A %B %d %e %m %Y".split(/ /);
