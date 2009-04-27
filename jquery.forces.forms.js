@@ -129,7 +129,7 @@ var _private = {
 			.replace(/ or /, ' || ')
 			.replace(/ = /g, ' == ');
 	},
-	regexNamesXpath: /(?:^|\s+|\()([_A-Za-z][_A-Za-z0-9]*)(?:\)|\s+|$)/g
+	regexNamesXpath: /(?:^|\s+|\()([_A-Za-z][_A-Za-z0-9.]*)(?:\)|\s+|$)/g
 };
 
 
@@ -155,16 +155,20 @@ $.fn.forces_attr = function(name, value) {
 				}
 				// create a function from the expression
 				vars = '';
+				var i = 1;
 				for (var n in names) {
-					vars += 'var ' + n + '=$.forces_val("' + n + '");';
+					vars += 'var v' + i + '=$.forces_val("' + n + '");';
+					value = value.replace(new RegExp(n, 'g'), 'v'+i);
+					i++;
 				}
-				controls.data(DATA_PREFIX_CALC+name, new Function(vars + 'return ' + value + ';')).forces_relevant();
+				var f = new Function(vars + 'return ' + value + ';');
+				controls.data(DATA_PREFIX_CALC+name, f).forces_relevant();
 				return this;
 			} else {
 				return this.forces_xform_control().data(DATA_PREFIX_ATTR+name);
 			}
 		break;
-		
+
 		default:
 			// fallback on default .attr() behaviour
 			return this.attr(name, value);
@@ -351,7 +355,6 @@ $.fn.forces_label = function(label, labelSeparator) {
 			eLabel.html(label + labelSeparator);
 		}
 	});
-
 	return this;
 };
 
@@ -368,24 +371,18 @@ $.fn.forces_relevant = function() {
 	function _enable(e, enabled) {
 		if (enabled == false) {
 			if (e.data(DATA_RELEVANT) != false) {
-				e
-				.hide()
+				e.find('input,select,textarea').attr('disabled', 'disabled');
+				e.data(DATA_RELEVANT, false)
 				.trigger(EVENT_DISABLED)
-				.add(e.find(':xf-control'))
-				.data(DATA_RELEVANT, false)
-				.find('input,select,textarea')
-					.attr('disabled', 'disabled');
+				.stop(true, true).hide();
 			}
 			return false;
 		} else {
 			if (e.data(DATA_RELEVANT) != null) {
-				e
-				.slideDown()
+				e.find('input,select,textarea').removeAttr('disabled');
+				e.slideDown(300)
 				.trigger(EVENT_ENABLED)
-				.add(e.find(':xf-control'))
-				.removeData(DATA_RELEVANT)
-				.find('input,select,textarea')
-					.removeAttr('disabled');
+				.removeData(DATA_RELEVANT);
 			}
 			return true;
 		}
@@ -595,7 +592,7 @@ $('form')
 			}
 			invalid.each(function() {
 				var control = $(this);
-				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.forces_label().text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
+				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.find(':-xf-label').text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
 			});
 			xform.before(status);
 			// TODO scrollTo/focus status
