@@ -96,6 +96,7 @@
 <!-- //
 
 	// TODO update http://code.google.com/p/usetheforces/wiki/Relevant
+	// TODO myAmount returns a string, not a number!
 	$('#my-discount').forces_attr('relevant', 'myAmount > 1000');
 	$('#my-donation').forces_attr('relevant', 'makeDonation = "true"');
 	
@@ -103,14 +104,6 @@
 	$('#sword-swings').forces_attr('relevant', 'myAnswer = "sword" or myAnswer = "sword-gate"');
 	$('#gate-open').forces_attr('relevant', 'myAnswer = "gate" or myAnswer = "sword-gate"');
 
-
-	// DEBUGGING
-	$('form')
-		.bind('-xf-enabled -xf-disabled', function(ev) {
-			console.log("event", ev.type, ev.target);
-		})
-	;
-	
 // -->
 </script>
 
