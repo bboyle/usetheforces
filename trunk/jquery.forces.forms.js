@@ -43,7 +43,7 @@
 	var DATA_CONSTRAINT_MIN = '-xf-constraints-min';
 	var DATA_CONSTRAINT_MAX = '-xf-constraints-max';
 	var DATA_DEPENDENCY_MAP = '-xf-dependency';
-	var DATA_RELEVANT = '-xf-enabled';
+	var DATA_DISABLED = '-xf-disabled';
 	var DATA_VALID = '-xf-valid';
 	var DATA_VALUE = '-tf-value';
 	var DATA_MESSAGE_ALERT = '-tf-submit-alert';
@@ -91,7 +91,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-output');
 	},
 	'-xf-relevant': function(e) {
-		return $(e).data(DATA_RELEVANT) != false;
+		return $(e).find(':enabled').length > 0;
 	},
 	'-xf-required': function(e) {
 		e = $(e);
@@ -130,6 +130,12 @@ var _private = {
 			.replace(/ = /g, ' == ');
 	},
 	regexNamesXpath: /(?:^|\s+|\()([_A-Za-z][_A-Za-z0-9.]*)(?:\)|\s+|$)/g
+};
+
+
+// forces config
+$.forces_validate = function(enabled) {
+	 _tf_VALIDATE = (enabled == true);
 };
 
 
@@ -345,6 +351,7 @@ $.forces_val = function(e) {
 
 // get/set label
 $.fn.forces_label = function(label, labelSeparator) {
+	// TODO return :-xf-label elements .find() only returns decendents, not self
 	this.each(function() {
 		var eLabel = $(this);
 		if (label) {
@@ -369,22 +376,16 @@ $.fn.forces_recalculate = function() {
 // returns jQuery (filtered, relevant controls remain)
 $.fn.forces_relevant = function() {
 	function _enable(e, enabled) {
-		if (enabled == false) {
-			if (e.data(DATA_RELEVANT) != false) {
-				e.find('input,select,textarea').attr('disabled', 'disabled');
-				e.data(DATA_RELEVANT, false)
-				.trigger(EVENT_DISABLED)
-				.stop(true, true).hide();
-			}
-			return false;
-		} else {
-			if (e.data(DATA_RELEVANT) != null) {
-				e.find('input,select,textarea').removeAttr('disabled');
-				e.slideDown(300)
-				.trigger(EVENT_ENABLED)
-				.removeData(DATA_RELEVANT);
+		if (enabled) {
+			if (e.data(DATA_DISABLED) != null) {
+				e.trigger(EVENT_ENABLED);
 			}
 			return true;
+		} else {
+			if (e.data(DATA_DISABLED) == null) {
+				e.trigger(EVENT_DISABLED);
+			}
+			return false;
 		}
 	}
 
@@ -450,7 +451,7 @@ $.fn.validate = function() {
 
 	return this.forces_xform_control().filter(function() {
 		var e = $(this);
-		if (e.is(':-tf-blank')) {
+		if (!e.is(':-xf-group') && e.is(':-tf-blank')) {
 			if (e.is(':-xf-required')) {
 				// blank + required = invalid
 				return _valid(e, false, _tf_ALERT_REQUIRED);
@@ -572,7 +573,7 @@ $('form')
 
 		// suppress, if repeated submit within timeframe (milliseconds)
 		if (xform.data(DATA_SUBMIT_TIMESTAMP) && now - xform.data(DATA_SUBMIT_TIMESTAMP) < _tf_SUBMIT_TOLERANCE) {
-			return _cancel(xform);
+			return false;
 		}
 		xform.data(DATA_SUBMIT_TIMESTAMP, now);
 
@@ -617,6 +618,26 @@ if ($.forces.triggerChangeOnInput) {
 		});
 }
 
+
+// default enable/disable action
+$(document)
+.bind(EVENT_DISABLED, function(eventObject) {
+	$(eventObject.target)
+	.data(DATA_DISABLED, true)
+	.stop(true, true)
+	.hide()
+	.find('input,select,textarea')
+		.attr('disabled', 'disabled');
+})
+.bind(EVENT_ENABLED, function(eventObject) {
+	$(eventObject.target)
+	.removeData(DATA_DISABLED)
+	.find('input,select,textarea')
+		.removeAttr('disabled')
+		.end()
+	.stop(true, true)
+	.slideDown(300);
+});
 
 // IE
 if ($.browser.msie) {
