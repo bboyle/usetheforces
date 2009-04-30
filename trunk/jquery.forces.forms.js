@@ -24,6 +24,7 @@
 	var _tf_SUBMIT_TOLERANCE = 2000; // ms
 	var _tf_VALIDATE = true;
 	$.forces_DATE_TODAY = new Date();
+	$.forces_DATE_TODAY = new Date($.forces_DATE_TODAY.getFullYear(), $.forces_DATE_TODAY.getMonth(), $.forces_DATE_TODAY.getDate());
 
 	// class names
 	var CLASS_ALERT = 'xf-alert';
@@ -130,6 +131,11 @@ var _private = {
 			.replace(/ = /g, ' == ');
 	},
 	regexNamesXpath: /(?:^|\s+|\()([_A-Za-z][_A-Za-z0-9.]*)(?:\)|\s+|$)/g
+};
+
+
+$.forces_frag = function(fragmentIdentifier) {
+	window.location.hash = fragmentIdentifier;
 };
 
 
@@ -589,14 +595,16 @@ $('form')
 			if (status.length == 1) {
 				status.find('li').remove();
 			} else {
-				status = $('<div class="status alert"><h1>' + (xform.data(DATA_MESSAGE_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
+				// TODO generate-id
+				status = $('<div id="status" class="status alert"><h1>' + (xform.data(DATA_MESSAGE_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
 			}
 			invalid.each(function() {
 				var control = $(this);
 				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.find(':-xf-label').text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
 			});
 			xform.before(status);
-			// TODO scrollTo/focus status
+			// TODO generate-id (robust, no conflicts in document)
+			$.forces_frag(status.attr('id'));
 			return _cancel(xform);
 		}
 		return true;
