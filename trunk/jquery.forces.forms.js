@@ -92,7 +92,7 @@ $.extend($.expr[':'], {
 		return $(e).hasClass('xf-output');
 	},
 	'-xf-relevant': function(e) {
-		return $(e).find(':enabled').length > 0;
+		return $(e).find('input:enabled,select:enabled,textarea:enabled').length > 0;
 	},
 	'-xf-required': function(e) {
 		e = $(e);
@@ -541,92 +541,6 @@ $.fn.xfValueAsDate = function() {
 };
 
 
-// events
-$('form')
-	// form control changed (may be input/change event)
-	.bind(EVENT_VALUE_CHANGED, function(eventObject, target) {
-		// TODO switch (this.data('DATA_TYPE')) ??
-		if (target.is(':-tf-date')) {
-			var date = target.xfValueAsDate();
-			target.find('input:hidden').val($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_SUBMIT)));
-			if (target.data(DATA_FORMAT_DATE_OUTPUT)) {
-				target.find(':-xf-output').text($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_OUTPUT)));
-			}
-		}
-
-		// recalculate this and any dependent elements
-		if (target.data(DATA_DEPENDENCY_MAP)) target.data(DATA_DEPENDENCY_MAP).forces_recalculate();
-	})
-
-
-	.bind('change', function(eventObject) {
-		var target = $(eventObject.target).forces_xform_control();
-		target.trigger(EVENT_VALUE_CHANGED, [target]).validate();
-	})
-
-
-	// form was submitted
-	.bind('submit', function(eventObject) {
-
-		var now = new Date().getTime();
-		var xform = $(eventObject.target).xForm();
-
-		function _cancel(xform) {
-			// TODO shake button (or form?) to indicate negative feedback
-			xform.addClass(CLASS_SUBMIT_ERROR);
-			return false;
-		}
-
-		// suppress, if repeated submit within timeframe (milliseconds)
-		if (xform.data(DATA_SUBMIT_TIMESTAMP) && now - xform.data(DATA_SUBMIT_TIMESTAMP) < _tf_SUBMIT_TOLERANCE) {
-			return false;
-		}
-		xform.data(DATA_SUBMIT_TIMESTAMP, now);
-
-		// get all relevant controls
-		var controls = $(':-xf-control:-xf-relevant', xform);
-		// validate controls that have not been validated (i.e. never changed)
-		controls.filter(':not(:-xf-valid):not(:-xf-invalid)').validate();
-
-		var invalid = controls.filter(':-xf-invalid');
-		if (_tf_VALIDATE && invalid.length > 0) {
-
-			var status = xform.prev('.status');
-			if (status.length == 1) {
-				status.find('li').remove();
-			} else {
-				// TODO generate-id
-				status = $('<div id="status" class="status alert"><h1>' + (xform.data(DATA_MESSAGE_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
-			}
-			invalid.each(function() {
-				var control = $(this);
-				status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.find(':-xf-label').text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
-			});
-			xform.before(status);
-			// TODO generate-id (robust, no conflicts in document)
-			$.forces_frag(status.attr('id'));
-			return _cancel(xform);
-		}
-		return true;
-	});
-
-
-// keyup early change trigger
-if ($.forces.triggerChangeOnInput) {
-	$(':text,:password,textarea')
-		// keyup (early change detection)
-		.keyup(function(eventObject){
-			var control = $(eventObject.target);
-			var val = control.val();
-			control = control.forces_xform_control();
-			if (control.data(DATA_VALUE) != val) {
-				control.data(DATA_VALUE, val);
-				control.form().trigger(EVENT_VALUE_CHANGED, [control]);
-			}
-		});
-}
-
-
 // default enable/disable action
 $(document)
 .bind(EVENT_DISABLED, function(eventObject) {
@@ -647,8 +561,95 @@ $(document)
 	.slideDown(300);
 });
 
+
+// form events
+$('form')
+// form control changed (may be input/change event)
+.bind(EVENT_VALUE_CHANGED, function(eventObject, target) {
+	// TODO switch (this.data('DATA_TYPE')) ??
+	if (target.is(':-tf-date')) {
+		var date = target.xfValueAsDate();
+		target.find('input:hidden').val($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_SUBMIT)));
+		if (target.data(DATA_FORMAT_DATE_OUTPUT)) {
+			target.find(':-xf-output').text($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_OUTPUT)));
+		}
+	}
+	target.validate();
+
+	// recalculate this and any dependent elements
+	if (target.data(DATA_DEPENDENCY_MAP)) target.data(DATA_DEPENDENCY_MAP).forces_recalculate();
+})
+
+
+// form was submitted
+.bind('submit', function(eventObject) {
+
+	var now = new Date().getTime();
+	var xform = $(eventObject.target).xForm();
+
+	function _cancel(xform) {
+		// TODO shake button (or form?) to indicate negative feedback
+		xform.addClass(CLASS_SUBMIT_ERROR);
+		return false;
+	}
+
+	// suppress, if repeated submit within timeframe (milliseconds)
+	if (xform.data(DATA_SUBMIT_TIMESTAMP) && now - xform.data(DATA_SUBMIT_TIMESTAMP) < _tf_SUBMIT_TOLERANCE) {
+		return false;
+	}
+	xform.data(DATA_SUBMIT_TIMESTAMP, now);
+
+	// get all relevant controls
+	var controls = $(':-xf-control:-xf-relevant', xform);
+	// validate controls that have not been validated (i.e. never changed)
+	controls.filter(':not(:-xf-valid):not(:-xf-invalid)').validate();
+
+	var invalid = controls.filter(':-xf-invalid');
+	if (_tf_VALIDATE && invalid.length > 0) {
+
+		var status = xform.prev('.status');
+		if (status.length == 1) {
+			status.find('li').remove();
+		} else {
+			// TODO generate-id
+			status = $('<div id="status" class="status alert"><h1>' + (xform.data(DATA_MESSAGE_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
+		}
+		invalid.each(function() {
+			var control = $(this);
+			status.find('ol').append($('<li><a href="#' + control.find('*[id]').attr('id') + '">' + control.find(':-xf-label').eq(0).text().replace(/([:?]*)$/, ': ') + control.xfAlert() + '</a></li>'));
+		});
+		xform.before(status);
+		// TODO generate-id (robust, no conflicts in document)
+		$.forces_frag(status.attr('id'));
+		return _cancel(xform);
+	}
+	return true;
+});
+
+
+// control events
+$('input,select,textarea')
+.change(function(eventObject) {
+	var control = $(eventObject.target).forces_xform_control();
+	control.form().trigger(EVENT_VALUE_CHANGED,[control]);
+})
+// keyup (early change detection)
+$(':text,:password,textarea')
+.keyup(function(eventObject){
+	if (!$.forces.triggerChangeOnInput) return;
+
+	var control = $(eventObject.target);
+	var val = control.val();
+	control = control.forces_xform_control();
+	if (control.data(DATA_VALUE) != val) {
+		control.data(DATA_VALUE, val);
+		control.form().trigger(EVENT_VALUE_CHANGED, [control]);
+	}
+});
+
+
 // IE
-if ($.browser.msie) {
+if ($.browser.msie || $.browser.opera) {
 	// trigger change on radio buttons and checkboxes
 	$(':radio,:checkbox').click(function(eventObject) {
 		var control = $(eventObject.target).forces_xform_control();
