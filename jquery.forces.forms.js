@@ -43,7 +43,8 @@
 	var DATA_CONSTRAINTS = '-xf-constraints';
 	var DATA_CONSTRAINT_MIN = '-xf-constraints-min';
 	var DATA_CONSTRAINT_MAX = '-xf-constraints-max';
-	var DATA_DEPENDENCY_MAP = '-xf-dependency';
+	var DATA_DEPENDENCY_CALCULATIONS = '-tf-depend-c';
+	var DATA_DEPENDENCY_VALIDATIONS = '-tf-depdend-v'
 	var DATA_DISABLED = '-xf-disabled';
 	var DATA_VALID = '-xf-valid';
 	var DATA_VALUE = '-tf-value';
@@ -161,7 +162,7 @@ $.fn.forces_attr = function(name, value) {
 				while (vars = _private.regexNamesXpath.exec(value)) {
 					if (names[vars[1]] === undefined) {
 						var source = $.forces_form_field(vars[1]);
-						source.data(DATA_DEPENDENCY_MAP, controls.add(source.data(DATA_DEPENDENCY_MAP)));
+						source.data(DATA_DEPENDENCY_CALCULATIONS, controls.add(source.data(DATA_DEPENDENCY_CALCULATIONS)));
 						names[vars[1]] = source;
 					}
 				}
@@ -445,7 +446,7 @@ $.fn.validate = function() {
 			e.find(':-xf-alert').remove();
 			e.removeClass(CLASS_INVALID).addClass(CLASS_VALID);
 		} else {
-			e.removeClass(CLASS_VALID).addClass(CLASS_INVALID).find(':-xf-label')
+			e.removeClass(CLASS_VALID).addClass(CLASS_INVALID).find(':-xf-label').eq(0)
 				.parent()
 					.find(':-xf-alert')
 						.remove()
@@ -526,11 +527,7 @@ $.fn.xfValue = function() {
 		var checked = this.find(':checkbox:checked');
 		return checked.length > 0 ? checked.val() : null;
 	}
-	return this.find(':text').val()
-			|| this.find('select').val()
-			|| this.find('textarea').val()
-			|| this.find(':hidden').val()
-			|| this.find(':password').val();
+	return this.find('input,select,textarea').eq(0).val();
 };
 
 
@@ -574,10 +571,10 @@ $('form')
 			target.find(':-xf-output').text($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_OUTPUT)));
 		}
 	}
-	target.validate();
+	target.add(target.data(DATA_DEPENDENCY_VALIDATIONS)).validate();
 
 	// recalculate this and any dependent elements
-	if (target.data(DATA_DEPENDENCY_MAP)) target.data(DATA_DEPENDENCY_MAP).forces_recalculate();
+	if (target.data(DATA_DEPENDENCY_CALCULATIONS)) target.data(DATA_DEPENDENCY_CALCULATIONS).forces_recalculate();
 })
 
 
