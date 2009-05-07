@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>forces unit tests</title>
+
+	<!--CSS--> 
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/logger/assets/logger.css" /> 
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.7.0/build/yuitest/assets/testlogger.css" /> 
+	 
+	<!-- Dependencies -->  
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yahoo-dom-event/yahoo-dom-event.js"></script> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/logger/logger-min.js"></script> 
+	 
+	<!-- Source File --> 
+	<script type="text/javascript" src="http://yui.yahooapis.com/2.7.0/build/yuitest/yuitest-min.js"></script> 
+
+</head>
+
+<body id="usetheforces.googlecode.com">
+
+<h1>forces unit tests</h1>
+
+<div class="xform">
+<form action="#" method="get" class="forces">
+	<ol class="questions">
+		<li class="xf-input">
+			<label for="my-amount">
+				<span class="xf-label">Amount</span>
+				<abbr class="required" title="required">*</abbr>
+			</label>
+			<input type="text" id="my-amount" name="myAmount" value="999" />
+		</li>
+		<li class="xf-input">
+			<label for="my-discount">
+				<span class="xf-label">Discount</span>
+			</label>
+			<input type="text" id="my-discount" name="myDiscount" />
+			<abbr class="required" title="required">*</abbr>
+		</li>
+		<li class="xf-select">
+			<label for="make-a-donation"><input type="checkbox" id="make-a-donation" name="makeDonation" value="true" />I would like to donate some money too</label>
+		</li>
+		<li class="xf-input">
+			<label for="my-donation">
+				<span class="xf-label">Donation</span>
+				<abbr class="required" title="required">*</abbr>
+			</label>
+			<input type="text" id="my-donation" name="myDonation" value="" />
+		</li>
+		<li class="xf-select1">
+			<fieldset id="my-answer">
+				<legend>
+					<span>
+						<span class="xf-label">Choose your own adventure</span>
+					</span>
+				</legend>
+				<ul class="choices">
+					<li><label for="my-answer-sword"><input type="radio" name="myAnswer" id="my-answer-sword" value="sword" />Grab the sword</label></li>
+					<li><label for="my-answer-gate"><input type="radio" name="myAnswer" id="my-answer-gate" value="gate" />Open the gate</label></li>
+					<li><label for="my-answer-sword-gate"><input type="radio" name="myAnswer" id="my-answer-sword-gate" value="sword-gate" />Grab the sword and open the gate</label></li>
+					<li><label for="my-answer-null"><input type="radio" name="myAnswer" id="my-answer-null" value="" checked="checked" />I can't decide</label></li>
+				</ul>
+			</fieldset>
+		</li>
+		<li class="xf-select">
+			<label for="sword-swings">
+				<span class="xf-label">How many times do you want to swing the sword?</span>
+				<abbr class="required" title="required">*</abbr>
+			</label>
+			<select id="sword-swings">
+				<option value="">— please select —</option>
+				<option value="1">1 master stroke</option>
+				<option value="2">2 broad swings</option>
+				<option value="3">3 swift slashes</option>
+				<option value="5">5 quick jabs</option>
+				<option value="7">7 unstoppable melee</option>
+			</select>
+		</li>
+		<li class="xf-select1">
+			<fieldset id="gate-open">
+				<legend>
+					<span>
+						<span class="xf-label">How do you open the gate?</span>
+						<abbr class="required" title="required">*</abbr>
+					</span>
+				</legend>
+				<ul class="choices">
+					<li><label for="gate-open-key"><input type="radio" name="gate-open" id="gate-open-key" value="key" />Use a key</label></li>
+					<li><label for="gate-open-sword"><input type="radio" name="gate-open" id="gate-open-sword" value="sword" />Smash it with the sword</label></li>
+					<li><label for="gate-open-magic"><input type="radio" name="gate-open" id="gate-open-magic" value="magic" />Blast it open with magic</label></li>
+				</ul>
+			</fieldset>
+		</li>
+		<li class="xf-submit">
+			<strong><input type="submit" value="Validate" /></strong>
+		</li>
+	</ol>
+</form>
+</div>
+
+<script type="text/javascript" src="../jquery-1.3.2.js"></script>
+<script type="text/javascript" src="../jquery.forces.forms.js"></script>
+
+
+<script type="text/javascript">
+<!-- //
+		var Assert = YAHOO.util.Assert;
+		var UserAction = YAHOO.util.UserAction;
+
+
+		var disclosureRadioTestCase = new YAHOO.tool.TestCase({ 
+		 
+			name: "Radio button triggers relevant()", 
+			 
+			//--------------------------------------------- 
+			// Setup and tear down 
+			//--------------------------------------------- 
+
+			setUp : function () { 
+				$('#sword-swings').forces_attr('relevant', 'myAnswer = "sword" or myAnswer = "sword-gate"');	            
+			}, 
+		 
+			tearDown : function () { 
+				$('#sword-swings').forces_removeAttr('relevant');	            
+			}, 
+
+			//--------------------------------------------- 
+			// Tests 
+			//--------------------------------------------- 
+	 
+			testEnable: function () { 
+				UserAction.click(document.getElementById('my-answer-sword'));
+				var control = $('#sword-swings').forces_xform_control();
+				Assert.areSame(control.is(':-xf-relevant'), true, ':-xf-relevant selector failed');
+				Assert.areEqual(control.find('input[disabled],select[disabled],textarea[disabled]').length, 0, '@disabled control found');
+			},     
+
+			testDisable: function () { 
+				UserAction.click(document.getElementById('my-answer-null'));
+				var control = $('#sword-swings').forces_xform_control();
+				Assert.areSame(control.is(':-xf-relevant'), false, ':-xf-relevant selector failed');
+				Assert.areNotEqual(control.find('input[disabled],select[disabled],textarea[disabled]').length, 0, '@disabled control not found');
+			}, 
+		 
+		}); 
+
+		
+		var requiredRadioTestCase = new YAHOO.tool.TestCase({ 
+		 
+			name: "Radio button triggers required()", 
+			 
+			//--------------------------------------------- 
+			// Setup and tear down 
+			//--------------------------------------------- 
+
+			setUp : function () { 
+				$('#sword-swings').forces_attr('required', 'myAnswer = "sword" or myAnswer = "sword-gate"');	            
+			}, 
+		 
+			tearDown : function () { 
+				$('#sword-swings').forces_removeAttr('required');	            
+			}, 
+
+			//--------------------------------------------- 
+			// Tests 
+			//--------------------------------------------- 
+	 
+			testRequired: function () { 
+				UserAction.click(document.getElementById('my-answer-sword'));
+				var control = $('#sword-swings').forces_xform_control();
+				Assert.areSame(control.is(':-xf-required'), true, ':-xf-required selector failed');
+				Assert.areEqual(control.find('.required').length, 1, 'required indicator not found');
+			},     
+
+			testOptional: function () { 
+				UserAction.click(document.getElementById('my-answer-null'));
+				var control = $('#sword-swings').forces_xform_control();
+				Assert.areSame(control.is(':-xf-required'), false, ':-xf-required selector failed');
+				Assert.areEqual(control.find('.required').length, 0, 'required indicator found');
+			}, 
+		 
+		}); 
+		
+		
+		//create the test suite 
+		var disclosureTestSuite = new YAHOO.tool.TestSuite("Progressive disclosure"); 
+		var requiredTestSuite = new YAHOO.tool.TestSuite("Required toggles"); 
+		 
+		//add test cases 
+		disclosureTestSuite.add(disclosureRadioTestCase); 
+		requiredTestSuite.add(requiredRadioTestCase); 
+
+		
+		//add the test cases and suites 
+		YAHOO.tool.TestRunner.add(disclosureTestSuite); 
+		YAHOO.tool.TestRunner.add(requiredTestSuite); 
+		 
+		//run all tests 
+		var oLogger = new YAHOO.tool.TestLogger();
+		YAHOO.tool.TestRunner.run(); 
+			
+	// -->
+</script>
+
+
+</body>
+</html>
