@@ -30,11 +30,14 @@
 	var CLASS_ALERT = 'xf-alert';
 	var CLASS_INVALID = 'xf-invalid';
 	var CLASS_VALID = 'xf-valid';
+	var CLASS_REQUIRED = 'xf-required';
 	var CLASS_SUBMIT_ERROR = 'xf-submit-error';
 
 	// event types
 	var EVENT_ENABLED = '-xf-enabled';
 	var EVENT_DISABLED = '-xf-disabled';
+	var EVENT_REQUIRED = '-xf-required';
+	var EVENT_OPTIONAL = '-xf-optional';
 	var EVENT_VALUE_CHANGED = '-xf-value-changed';
 
 	// internal state data
@@ -97,7 +100,7 @@ $.extend($.expr[':'], {
 	},
 	'-xf-required': function(e) {
 		e = $(e);
-		return e.find('.required').size() > 0 || (e.data('required') != null && e.data('required')(e));
+		return e.find('.required').size() > 0;
 	},
 	'-xf-secret': function(e) {
 		return $(e).hasClass('xf-secret');
@@ -150,6 +153,7 @@ $.forces_validate = function(enabled) {
 $.fn.forces_attr = function(name, value) {
 	switch (name) {
 		case 'relevant':
+		case 'required':
 			if (value !== undefined) {
 				var controls = this.forces_xform_control();
 				// store the attribute value
@@ -175,7 +179,7 @@ $.fn.forces_attr = function(name, value) {
 					i++;
 				}
 				var f = new Function(vars + 'return ' + value + ';');
-				controls.data(DATA_PREFIX_CALC+name, f).forces_relevant();
+				controls.data(DATA_PREFIX_CALC+name, f).forces_recalculate();
 				return this;
 			} else {
 				return this.forces_xform_control().data(DATA_PREFIX_ATTR+name);
@@ -190,6 +194,7 @@ $.fn.forces_attr = function(name, value) {
 $.fn.forces_removeAttr = function(name) {
 	switch (name) {
 		case 'relevant':
+		case 'required':
 			this.forces_xform_control()
 				.removeData(DATA_PREFIX_ATTR+name)
 				.removeData(DATA_PREFIX_CALC+name);
@@ -375,41 +380,32 @@ $.fn.forces_label = function(label, labelSeparator) {
 
 // recalculate controls within me
 $.fn.forces_recalculate = function() {
-	return this.forces_relevant();
-};
-
-
-// get/set relevance
-// returns jQuery (filtered, relevant controls remain)
-$.fn.forces_relevant = function() {
-	function _enable(e, enabled) {
-		if (enabled) {
-			if (e.data(DATA_DISABLED) != null) {
-				e.trigger(EVENT_ENABLED);
+	var e, newStatus;
+	return this.each(function() {
+		e = $(this);
+		// @relevant
+		if (newStatus = e.data(DATA_PREFIX_CALC+'relevant')) {
+			newStatus = newStatus();
+			if (newStatus != e.is(':-xf-relevant')) {
+				if (newStatus) {
+					e.trigger(EVENT_ENABLED);
+				} else {
+					e.trigger(EVENT_DISABLED);
+				}
 			}
-			return true;
-		} else {
-			if (e.data(DATA_DISABLED) == null) {
-				e.trigger(EVENT_DISABLED);
+		}
+		// @required
+		if (newStatus = e.data(DATA_PREFIX_CALC+'required')) {
+			newStatus = newStatus();
+			if (newStatus != e.is(':-xf-required')) {
+				if (newStatus) {
+					e.trigger(EVENT_REQUIRED);
+				} else {
+					e.trigger(EVENT_OPTIONAL);
+				}
 			}
-			return false;
 		}
-	}
-
-	return this.filter(function() {
-		var e = $(this);
-		if (e.data(DATA_PREFIX_CALC+'relevant')) {
-			return _enable(e, e.data(DATA_PREFIX_CALC+'relevant')());
-		}
-		return true;
 	});
-};
-
-
-// set required conditions
-$.fn.required = function(test) {
-	if (test) $(this).forces_xform_control().data('required', test);
-	return this;
 };
 
 
@@ -556,6 +552,20 @@ $(document)
 		.end()
 	.stop(true, true)
 	.slideDown(300);
+})
+.bind(EVENT_REQUIRED, function(eventObject) {
+	$(eventObject.target)
+	.addClass(CLASS_REQUIRED)
+	.find('.xf-label')
+	.eq(0)
+	.after('<abbr title="required" class="required">*</abbr>');
+})
+.bind(EVENT_OPTIONAL, function(eventObject) {
+	// TODO remove "required" alerts?
+	$(eventObject.target)
+	.removeClass(CLASS_REQUIRED)
+	.find('abbr.required')
+		.remove();
 });
 
 
@@ -598,8 +608,10 @@ $('form')
 
 	// get all relevant controls
 	var controls = $(':-xf-control:-xf-relevant', xform);
-	// validate controls that have not been validated (i.e. never changed)
-	controls.filter(':not(:-xf-valid):not(:-xf-invalid)').validate();
+	// TODO validate controls that have not been validated (i.e. never changed)
+	// TODO cater for recalculate() changes in relevance and required states
+	// controls.filter(':not(:-xf-valid):not(:-xf-invalid)').validate();
+	controls.validate();
 
 	var invalid = controls.filter(':-xf-invalid');
 	if (_tf_VALIDATE && invalid.length > 0) {

@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>forces relevant test</title>
+	<link rel="stylesheet" href="../demo.css" type="text/css" />
+</head>
+
+<body id="usetheforces.googlecode.com">
+
+<h1>forces relevant test</h1>
+
+<div class="xform">
+<form action="#" method="get" class="forces">
+	<ol class="questions">
+		<li class="xf-input">
+			<label for="my-amount">
+				<span class="xf-label">Amount</span>
+			</label>
+			<input type="text" id="my-amount" name="myAmount" value="999" />
+		</li>
+		<li class="xf-input">
+			<label for="my-discount">
+				<span class="xf-label">Discount</span>
+			</label>
+			<input type="text" id="my-discount" name="myDiscount" />
+		</li>
+		<li class="xf-select">
+			<label for="make-a-donation"><input type="checkbox" id="make-a-donation" name="makeDonation" value="true" />I would like to donate some money too</label>
+		</li>
+		<li class="xf-input">
+			<label for="my-donation">
+				<span class="xf-label">Donation</span>
+			</label>
+			<input type="text" id="my-donation" name="myDonation" value="" />
+		</li>
+		<li class="xf-select1">
+			<fieldset id="my-answer">
+				<legend>
+					<span>
+						<span class="xf-label">Choose your own adventure</span>
+					</span>
+				</legend>
+				<ul class="choices">
+					<li><label for="my-answer-sword"><input type="radio" name="myAnswer" id="my-answer-sword" value="sword" />Grab the sword</li>
+					<li><label for="my-answer-gate"><input type="radio" name="myAnswer" id="my-answer-gate" value="gate" />Open the gate</li>
+					<li><label for="my-answer-sword-gate"><input type="radio" name="myAnswer" id="my-answer-sword-gate" value="sword-gate" />Grab the sword and open the gate</li>
+					<li><label for="my-answer-null"><input type="radio" name="myAnswer" id="my-answer-null" value="" checked="checked" />I can't decide</li>
+				</ul>
+			</fieldset>
+		</li>
+		<li class="xf-select">
+			<label for="sword-swings">
+				<span class="xf-label">How many times do you want to swing the sword?</span>
+			</label>
+			<select id="sword-swings">
+				<option value="">— please select —</option>
+				<option value="1">1 master stroke</option>
+				<option value="2">2 broad swings</option>
+				<option value="3">3 swift slashes</option>
+				<option value="5">5 quick jabs</option>
+				<option value="7">7 unstoppable melee</option>
+			</select>
+		</li>
+		<li class="xf-select1">
+			<fieldset id="gate-open">
+				<legend>
+					<span>
+						<span class="xf-label">How do you open the gate?</span>
+					</span>
+				</legend>
+				<ul class="choices">
+					<li><label for="gate-open-key"><input type="radio" name="gate-open" id="gate-open-key" value="key" />Use a key</li>
+					<li><label for="gate-open-sword"><input type="radio" name="gate-open" id="gate-open-sword" value="sword" />Smash it with the sword</li>
+					<li><label for="gate-open-magic"><input type="radio" name="gate-open" id="gate-open-magic" value="magic" />Blast it open with magic</li>
+				</ul>
+			</fieldset>
+		</li>
+		<li class="xf-submit">
+			<strong><input type="submit" value="Validate" /></strong>
+		</li>
+  	</ol>
+</form>
+</div>
+
+<script type="text/javascript" src="../../jquery-1.3.2.js"></script>
+<script type="text/javascript" src="../../jquery.forces.forms.js"></script>
+<script type="text/javascript">
+<!-- //
+
+	$('#my-discount').forces_attr('required', 'myAmount > 1000');
+	$('#my-donation').forces_attr('required', 'makeDonation = "true"');
+	
+	// radio button driven required
+	$('#sword-swings').forces_attr('required', 'myAnswer = "sword" or myAnswer = "sword-gate"');
+	$('#gate-open').forces_attr('required', 'myAnswer = "gate" or myAnswer = "sword-gate"');
+
+// -->
+</script>
+
+</body>
+</html>
