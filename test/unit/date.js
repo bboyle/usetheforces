@@ -114,6 +114,92 @@ var TC_dateParse = new YAHOO.tool.TestCase({
 });
 
 
-//add test cases 
+// forces.TC_dateCalc unit tests
+var TC_dateCalc = new YAHOO.tool.TestCase({
+
+	name: "forces.TC_dateCalc unit tests",
+
+	//---------------------------------------------
+	// Setup and tear down
+	//---------------------------------------------
+
+	setUp: function () {
+		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1975
+	},
+
+	tearDown: function () {
+		delete releaseStarWarsIV;
+	},
+
+	//---------------------------------------------
+	// Tests
+	//---------------------------------------------
+
+	test_plus1day: function () {
+		DateAssert.datesAreEqual(new Date(1977, 4, 26), $.forces.dateCalc(releaseStarWarsIV, {date:1}));
+	},
+	test_plus30days: function () {
+		DateAssert.datesAreEqual(new Date(1977, 5, 24), $.forces.dateCalc(releaseStarWarsIV, {date:30}));
+	},
+	test_plus1month: function () {
+		DateAssert.datesAreEqual(new Date(1977, 5, 25), $.forces.dateCalc(releaseStarWarsIV, {month:1}));
+	},
+	test_plus12months: function () {
+		DateAssert.datesAreEqual(new Date(1978, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {month:12}));
+	},
+	test_plus1year: function () {
+		DateAssert.datesAreEqual(new Date(1978, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {year:1}));
+	},
+	test_minus1day: function () {
+		DateAssert.datesAreEqual(new Date(1977, 4, 24), $.forces.dateCalc(releaseStarWarsIV, {date:-1}));
+	},
+	test_minus30days: function () {
+		DateAssert.datesAreEqual(new Date(1977, 3, 25), $.forces.dateCalc(releaseStarWarsIV, {date:-30}));
+	},
+	test_minus1month: function () {
+		DateAssert.datesAreEqual(new Date(1977, 3, 25), $.forces.dateCalc(releaseStarWarsIV, {month:-1}));
+	},
+	test_minus12months: function () {
+		DateAssert.datesAreEqual(new Date(1976, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {month:-12}));
+	},
+	test_minus1year: function () {
+		DateAssert.datesAreEqual(new Date(1976, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {year:-1}));
+	}
+});
+
+
+// forces.dateEquals unit tests
+var TC_dateEquals = new YAHOO.tool.TestCase({
+
+	name: "forces.dateEquals unit tests",
+
+	//---------------------------------------------
+	// Setup and tear down
+	//---------------------------------------------
+
+	setUp: function () {
+		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1975
+	},
+
+	tearDown: function () {
+		delete releaseStarWarsIV;
+	},
+
+	//---------------------------------------------
+	// Tests
+	//---------------------------------------------
+
+	test_equals: function () {
+		Assert.areSame(true, $.forces.dateEquals(releaseStarWarsIV, 1977, 5, 25));
+	},
+	test_notEquals: function () {
+		Assert.areSame(false, $.forces.dateEquals(releaseStarWarsIV, 1977, 4, 25));
+	}
+});
+
+
+//add test cases
 TS_date.add(TC_dateFormat);
 TS_date.add(TC_dateParse);
+TS_date.add(TC_dateCalc);
+TS_date.add(TC_dateEquals);
