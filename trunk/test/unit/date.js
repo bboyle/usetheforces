@@ -9,7 +9,7 @@ var DateAssert = YAHOO.util.DateAssert;
 // forces.dateFormat unit tests
 var TC_dateFormat = new YAHOO.tool.TestCase({
 
-	name: "Date formats",
+	name: "forces.dateFormat unit tests",
 
 	//---------------------------------------------
 	// Setup and tear down
@@ -79,7 +79,7 @@ var TC_dateFormat = new YAHOO.tool.TestCase({
 // forces.dateParse unit tests
 var TC_dateParse = new YAHOO.tool.TestCase({
 
-	name: "Date formats",
+	name: "forces.dateParse unit tests",
 
 	//---------------------------------------------
 	// Setup and tear down
@@ -99,9 +99,13 @@ var TC_dateParse = new YAHOO.tool.TestCase({
 	// Tests
 	//---------------------------------------------
 
-	test_dmy_slash: function () {
+	test_dmyyyy_slash: function () {
 		DateAssert.datesAreEqual(epoch, $.forces.dateParse('1/1/1970'));
 		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25/5/1977'));
+	},
+	test_ddmmyyyy_slash: function () {
+		DateAssert.datesAreEqual(epoch, $.forces.dateParse('01/01/1970'));
+		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25/05/1977'));
 	},
 	test_dmy_space: function () {
 		DateAssert.datesAreEqual(epoch, $.forces.dateParse('1 1 1970'));
