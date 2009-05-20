@@ -17,7 +17,7 @@ var TC_dateFormat = new YAHOO.tool.TestCase({
 
 	setUp: function () {
 		epoch = new Date(1970, 0, 1); // 1 January 1970
-		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1975
+		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1977
 	},
 
 	tearDown: function () {
@@ -87,7 +87,7 @@ var TC_dateParse = new YAHOO.tool.TestCase({
 
 	setUp: function () {
 		epoch = new Date(1970, 0, 1); // 1 January 1970
-		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1975
+		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1977
 	},
 
 	tearDown: function () {
@@ -124,46 +124,66 @@ var TC_dateCalc = new YAHOO.tool.TestCase({
 	//---------------------------------------------
 
 	setUp: function () {
-		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1975
+		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1977
+		releaseStarWarsIVplusOneDay = new Date(1977, 4, 26); // 26 May 1977
+		releaseStarWarsIVplusThirtyDays = new Date(1977, 5, 24); // 24 June 1977
+		releaseStarWarsIVplusOneMonth = new Date(1977, 5, 25); // 25 June 1977
+		releaseStarWarsIVplusTwelveMonths = new Date(1978, 4, 25); // 25 May 1978
+		releaseStarWarsIVplusOneYear = new Date(1978, 4, 25); // 26 May 1978
+		releaseStarWarsIVminusOneDay = new Date(1977, 4, 24); // 24 May 1977
+		releaseStarWarsIVminusThirtyDays = new Date(1977, 3, 25); // 25 April 1977
+		releaseStarWarsIVminusOneMonth = new Date(1977, 3, 25); // 25 April 1977
+		releaseStarWarsIVminusTwelveMonths = new Date(1976, 4, 25); // 25 May 1976
+		releaseStarWarsIVminusOneYear = new Date(1976, 4, 25); // 26 May 1976
 	},
 
 	tearDown: function () {
 		delete releaseStarWarsIV;
+		delete releaseStarWarsIVplusOneDay;
+		delete releaseStarWarsIVplusThirtyDays;
+		delete releaseStarWarsIVplusOneMonth;
+		delete releaseStarWarsIVplusTwelveMonths;
+		delete releaseStarWarsIVplusOneYear;
+		delete releaseStarWarsIVminusOneDay;
+		delete releaseStarWarsIVminusThirtyDays;
+		delete releaseStarWarsIVminusOneMonth;
+		delete releaseStarWarsIVminusTwelveMonths;
+		delete releaseStarWarsIVminusOneYear;
 	},
 
 	//---------------------------------------------
 	// Tests
 	//---------------------------------------------
 
-	test_plus1day: function () {
-		DateAssert.datesAreEqual(new Date(1977, 4, 26), $.forces.dateCalc(releaseStarWarsIV, {date:1}));
+	test_plusOneDday: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVplusOneDay, $.forces.dateCalc(releaseStarWarsIV, {date:1}));
 	},
-	test_plus30days: function () {
-		DateAssert.datesAreEqual(new Date(1977, 5, 24), $.forces.dateCalc(releaseStarWarsIV, {date:30}));
+	test_plusThirtyDays: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVplusThirtyDays, $.forces.dateCalc(releaseStarWarsIV, {date:30}));
 	},
-	test_plus1month: function () {
-		DateAssert.datesAreEqual(new Date(1977, 5, 25), $.forces.dateCalc(releaseStarWarsIV, {month:1}));
+	test_plusOneMonth: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVplusOneMonth, $.forces.dateCalc(releaseStarWarsIV, {month:1}));
 	},
-	test_plus12months: function () {
-		DateAssert.datesAreEqual(new Date(1978, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {month:12}));
+	test_plusTwelveMonths: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVplusTwelveMonths, $.forces.dateCalc(releaseStarWarsIV, {month:12}));
 	},
-	test_plus1year: function () {
-		DateAssert.datesAreEqual(new Date(1978, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {year:1}));
+	test_plusOneYear: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVplusOneYear, $.forces.dateCalc(releaseStarWarsIV, {year:1}));
 	},
-	test_minus1day: function () {
-		DateAssert.datesAreEqual(new Date(1977, 4, 24), $.forces.dateCalc(releaseStarWarsIV, {date:-1}));
+	test_minusOneDay: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVminusOneDay, $.forces.dateCalc(releaseStarWarsIV, {date:-1}));
 	},
-	test_minus30days: function () {
-		DateAssert.datesAreEqual(new Date(1977, 3, 25), $.forces.dateCalc(releaseStarWarsIV, {date:-30}));
+	test_minusThirtyDays: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVminusThirtyDays, $.forces.dateCalc(releaseStarWarsIV, {date:-30}));
 	},
-	test_minus1month: function () {
-		DateAssert.datesAreEqual(new Date(1977, 3, 25), $.forces.dateCalc(releaseStarWarsIV, {month:-1}));
+	test_minusOneMonth: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVminusOneMonth, $.forces.dateCalc(releaseStarWarsIV, {month:-1}));
 	},
-	test_minus12months: function () {
-		DateAssert.datesAreEqual(new Date(1976, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {month:-12}));
+	test_minusTwelveMonths: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVminusTwelveMonths, $.forces.dateCalc(releaseStarWarsIV, {month:-12}));
 	},
-	test_minus1year: function () {
-		DateAssert.datesAreEqual(new Date(1976, 4, 25), $.forces.dateCalc(releaseStarWarsIV, {year:-1}));
+	test_minusOneYear: function () {
+		DateAssert.datesAreEqual(releaseStarWarsIVminusOneYear, $.forces.dateCalc(releaseStarWarsIV, {year:-1}));
 	}
 });
 
@@ -178,7 +198,7 @@ var TC_dateEquals = new YAHOO.tool.TestCase({
 	//---------------------------------------------
 
 	setUp: function () {
-		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1975
+		releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1977
 	},
 
 	tearDown: function () {
