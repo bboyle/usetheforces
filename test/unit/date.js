@@ -94,6 +94,12 @@ var TC_dateParse = new YAHOO.tool.TestCase({
 		delete epoch;
 		delete releaseStarWarsIV;
 	},
+	
+	_should: {
+		error: {
+			test_error_dmyyy_slash: true
+		}
+	},
 
 	//---------------------------------------------
 	// Tests
@@ -110,7 +116,11 @@ var TC_dateParse = new YAHOO.tool.TestCase({
 	test_dmy_space: function () {
 		DateAssert.datesAreEqual(epoch, $.forces.dateParse('1 1 1970'));
 		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25 5 1977'));
+	},
+	test_error_dmyyy_slash: function() {
+		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25/5/077'));
 	}
+
 });
 
 
