@@ -56,7 +56,7 @@ $F.dateParse = function(s, min, max) {
 	for (var i = 0; i < s.length; i++) {
 		if (s[i].match(/^\d{4}$/)) {
 			setDate('year', s[i]);
-		} else if (s[i].match(/^\d+$/)) {
+		} else if (s[i].match(/^\d{1,2}$/)) {
 			// precedence: date, month, year
 			var property = date.date ? (date.month ? 'year' : 'month') : 'date';
 			if (property == 'year' && !date.year) {
@@ -70,6 +70,8 @@ $F.dateParse = function(s, min, max) {
 				}
 			}
 			setDate(property, s[i]);
+		} else {
+			throw 'cannot parse date';
 		}
 	}
 
