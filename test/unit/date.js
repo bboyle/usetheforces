@@ -96,7 +96,7 @@ var TC_dateParse = new YAHOO.tool.TestCase({
 	},
 	
 	_should: {
-		error: {
+		fail: {
 			test_error_dmyyy_slash: true
 		}
 	},
@@ -106,19 +106,22 @@ var TC_dateParse = new YAHOO.tool.TestCase({
 	//---------------------------------------------
 
 	test_dmyyyy_slash: function () {
-		DateAssert.datesAreEqual(epoch, $.forces.dateParse('1/1/1970'));
+		Assert.isInstanceOf(Date, $.forces.dateParse('25/5/1977'));
 		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25/5/1977'));
+		DateAssert.datesAreEqual(epoch, $.forces.dateParse('1/1/1970'));
 	},
 	test_ddmmyyyy_slash: function () {
-		DateAssert.datesAreEqual(epoch, $.forces.dateParse('01/01/1970'));
+		Assert.isInstanceOf(Date, $.forces.dateParse('25/05/1977'));
 		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25/05/1977'));
+		DateAssert.datesAreEqual(epoch, $.forces.dateParse('01/01/1970'));
 	},
 	test_dmy_space: function () {
-		DateAssert.datesAreEqual(epoch, $.forces.dateParse('1 1 1970'));
+		Assert.isInstanceOf(Date, $.forces.dateParse('25 5 1977'));
 		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25 5 1977'));
+		DateAssert.datesAreEqual(epoch, $.forces.dateParse('1 1 1970'));
 	},
 	test_error_dmyyy_slash: function() {
-		DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('25/5/077'));
+		Assert.isInstanceOf(Date, $.forces.dateParse('25/5/077'));
 	}
 
 });
