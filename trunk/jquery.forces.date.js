@@ -70,8 +70,6 @@ $F.dateParse = function(s, min, max) {
 				}
 			}
 			setDate(property, s[i]);
-		} else {
-			throw 'cannot parse date';
 		}
 	}
 
