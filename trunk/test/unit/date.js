@@ -231,8 +231,24 @@ var TC_dateEquals = new YAHOO.tool.TestCase({
 });
 
 
+// forces.DATE_TODAY unit tests
+var TC_dateToday = new YAHOO.tool.TestCase({
+
+	name: "forces.DATE_TODAY unit tests",
+
+	//---------------------------------------------
+	// Tests
+	//---------------------------------------------
+
+	test_isToday: function () {
+		DateAssert.datesAreEqual(new Date(), $.forces.DATE_TODAY());
+	}
+});
+
+
 //add test cases
 TS_date.add(TC_dateFormat);
 TS_date.add(TC_dateParse);
 TS_date.add(TC_dateCalc);
 TS_date.add(TC_dateEquals);
+TS_date.add(TC_dateToday);

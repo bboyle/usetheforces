@@ -9,14 +9,13 @@
 (function($){
 
 	// jquery.forces
-	var $F = $.forces = $.forces || function() {};
+	var $F = $.forces = $.forces || {};
 
 
 	// constants
 	var MONTHS = 'January February March April May June July August September October November December'.split(/ /);
 	var WEEKDAYS = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(/ /);
 	var TODAY = new Date();
-	TODAY = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
 
 
 	// private functions
@@ -93,6 +92,11 @@ $F.dateCalc = function(date, delta) {
 // check date equality
 $F.dateEquals = function(date, y, m, d) {
 	return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
+};
+
+
+$F.DATE_TODAY = function() {
+	return new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
 };
 
 
