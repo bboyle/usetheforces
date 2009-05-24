@@ -9,8 +9,8 @@
 
 (function($){
 
-	$.forces = function() {};
-	$.forces.triggerChangeOnInput = false;
+	var $F = $.forces = $.forces || {};
+	$F.triggerChangeOnInput = false;
 
 	// forces
 	var _tf_ALERT_REQUIRED = "must be completed";
@@ -23,8 +23,6 @@
 	var _tf_SUBMIT_ERROR = "Unable to submit form";
 	var _tf_SUBMIT_TOLERANCE = 2000; // ms
 	var _tf_VALIDATE = true;
-	$.forces_DATE_TODAY = new Date();
-	$.forces_DATE_TODAY = new Date($.forces_DATE_TODAY.getFullYear(), $.forces_DATE_TODAY.getMonth(), $.forces_DATE_TODAY.getDate());
 
 	// class names
 	var CLASS_ALERT = 'xf-alert';
@@ -232,75 +230,6 @@ $.fn.constraint = function(selector, alertMessage, test) {
 
 
 
-// format a date
-$.forces_dateFormat = function(date, format) {
-	if (!date) return '';
-	if (!format) return date.toString();
-	return format
-		.replace(/YYYY|yyyy|%Y/, date.getFullYear())
-		.replace(/MM|%m/, _private.pad(date.getMonth()+1, 2, '0'))
-		.replace(/dd|%d/, _private.pad(date.getDate(), 2, '0'))
-		.replace(/%e/, _private.pad(date.getDate(), 2, ' '))
-		.replace(/d/, date.getDate())
-		.replace(/%B/, _tf_DATE_MONTHS[date.getMonth()])
-		.replace(/%A/, _tf_DATE_WEEKDAYS[date.getDay()]);
-};
-
-
-// parse a date
-$.forces_dateParse = function(s, min, max) {
-	s = s.split(/[^A-Za-z0-9]/);
-
-	var base = min || max || $.forces_DATE_TODAY;
-
-	var date = {};
-	function setDate(property, value) {
-		date[property] = date[property] || value;
-	}
-
-	for (var i = 0; i < s.length; i++) {
-		if (s[i].match(/^\d{4}$/)) {
-			setDate('year', s[i]);
-		} else if (s[i].match(/^\d+$/)) {
-			// precedence: date, month, year
-			var property = date.date ? (date.month ? 'year' : 'month') : 'date';
-			if (property == 'year' && !date.year) {
-				s[i] = (base.getFullYear()+"").substring(0,2) + _private.pad(s[i], 2, '0');
-				if (min && min.getFullYear() > s[i]) {
-					s[i] += 100;
-				} else if (max && max.getFullYear() < s[i]) {
-					s[i] -= 100;
-				} else if (!min && !max && s[i] > base.getFullYear()+20) {
-					s[i] -= 100;
-				}
-			}
-			setDate(property, s[i]);
-		}
-	}
-
-	if (date.date && date.month && date.year) {
-		var d = new Date(date.year, date.month-1, date.date);
-		if ($.forces_dateEquals(d, date.year, date.month, date.date)) {
-			return d;
-		}
-	}
-
-	return null;
-};
-
-
-// calculate a date
-$.forces_dateCalc = function(date, delta) {
-	return new Date(date.getFullYear()+(delta.year||0), date.getMonth()+(delta.month||0), date.getDate()+(delta.date||0));
-};
-
-
-// check date equality
-$.forces_dateEquals = function(date, y, m, d) {
-	return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
-};
-
-
 // get form
 $.fn.form = function() {
 	return this.is('form') ? this : this.parents('form');
@@ -318,7 +247,7 @@ $.fn.forces_form_dateField = function(formatSubmit, formatOutput, min, max) {
 		if (i.length == 1) {
 			i = i.eq(0);
 			var hidden = $('<input type="hidden" name="' + i.attr('name') + '" />');
-			hidden.val($.forces_dateFormat(date, formatSubmit));
+			hidden.val($F.dateFormat(date, formatSubmit));
 			i.eq(0)
 				.after(hidden)
 				.removeAttr('name');
@@ -331,7 +260,7 @@ $.fn.forces_form_dateField = function(formatSubmit, formatOutput, min, max) {
 				if (i.val()) {
 					// TODO setup output.calculation()
 					// support for calculations
-					output.text($.forces_dateFormat(date, formatOutput));
+					output.text($F.dateFormat(date, formatOutput));
 				}
 				i.after(output);
 				e.data(DATA_FORMAT_DATE_OUTPUT, formatOutput);
@@ -530,7 +459,7 @@ $.fn.xfValue = function() {
 // get value as Date
 $.fn.xfValueAsDate = function() {
 	var d = this.xfValue();
-	if (d) return $.forces_dateParse(this.xfValue(), this.data(DATA_CONSTRAINT_MIN), this.data(DATA_CONSTRAINT_MAX));
+	if (d) return $F.dateParse(this.xfValue(), this.data(DATA_CONSTRAINT_MIN), this.data(DATA_CONSTRAINT_MAX));
 };
 
 
@@ -576,9 +505,9 @@ $('form')
 	// TODO switch (this.data('DATA_TYPE')) ??
 	if (target.is(':-tf-date')) {
 		var date = target.xfValueAsDate();
-		target.find('input:hidden').val($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_SUBMIT)));
+		target.find('input:hidden').val($F.dateFormat(date, target.data(DATA_FORMAT_DATE_SUBMIT)));
 		if (target.data(DATA_FORMAT_DATE_OUTPUT)) {
-			target.find(':-xf-output').text($.forces_dateFormat(date, target.data(DATA_FORMAT_DATE_OUTPUT)));
+			target.find(':-xf-output').text($F.dateFormat(date, target.data(DATA_FORMAT_DATE_OUTPUT)));
 		}
 	}
 	target.add(target.data(DATA_DEPENDENCY_VALIDATIONS)).validate();
@@ -645,7 +574,7 @@ $('input,select,textarea')
 // keyup (early change detection)
 $(':text,:password,textarea')
 .keyup(function(eventObject){
-	if (!$.forces.triggerChangeOnInput) return;
+	if (!$F.triggerChangeOnInput) return;
 
 	var control = $(eventObject.target);
 	var val = control.val();
