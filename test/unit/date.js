@@ -252,3 +252,6 @@ TS_date.add(TC_dateParse);
 TS_date.add(TC_dateCalc);
 TS_date.add(TC_dateEquals);
 TS_date.add(TC_dateToday);
+
+//add the test suite
+YAHOO.tool.TestRunner.add(TS_date);
