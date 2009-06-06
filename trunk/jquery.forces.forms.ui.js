@@ -11,7 +11,15 @@
 
 	var $F = $.forces = $.forces || {};
 
+$(document).bind($.forces.EVENT_REQUIRED, function(evt) {
+	console.log('REQUIRED', evt.target);
+	$(evt.target).before('<abbr style="color: red">*</abbr>');
+});
+$(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
+	console.log('OPTIONAL', evt.target);
+	$(evt.target).prev('abbr').remove();
+});
+
+
 })(jQuery);
-
-
 }
