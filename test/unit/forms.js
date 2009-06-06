@@ -16,16 +16,19 @@ var TC_formsRequired = new YAHOO.tool.TestCase({
 
 	setUp: function () {
 		$(
-			'<form id="form" action="#form">' +
-				'<input type="text" name="input01" id="input01" />' +
-				'<input type="text" name="input02" id="input02" />' +
-			'</form>'
+			'<form id="form" action="#form"><ol>' +
+				'<li><input type="text" name="input01" id="input01" /></li>' +
+				'<li><input type="text" name="input02" id="input02" /></li>' +
+				'<li class="required"><input type="text" name="input03" id="input03" /></li>' +
+				'<li class="required"><input type="text" name="input04" id="input04" /></li>' +
+			'</ol></form>'
 		).appendTo('body');
 		$('#input02').forces_attr('required', true);
+		$('.required input').forces_attr('required', true);
 	},
 
 	tearDown: function () {
-		$('#form').remove();
+		//$('#form').remove();
 	},
 
 	//---------------------------------------------
@@ -33,14 +36,19 @@ var TC_formsRequired = new YAHOO.tool.TestCase({
 	//---------------------------------------------
 
 	test_selector_tf_required: function () {
-		Assert.areSame(true, $('#input02').is(':-tf-required'));
-		Assert.areSame(false, $('#input01').is(':-tf-required'));
+		Assert.areSame(true, $('#input02').is(':-tf-REQUIRED'));
+		Assert.areSame(false, $('#input01').is(':-tf-REQUIRED'));
 	},
 	
 	test_forces_attr_required: function () {
-		Assert.areSame(true, $('#input01').forces_attr('required', true).is(':-tf-required'));
-		Assert.areSame(false, $('#input01').forces_attr('required', false).is(':-tf-required'));
-		Assert.areSame(false, $('#input01').forces_removeAttr('required').is(':-tf-required'));
+		Assert.areSame(true, $('#input01').forces_attr('required', true).is(':-tf-REQUIRED'));
+		Assert.areSame(false, $('#input01').forces_attr('required', false).is(':-tf-REQUIRED'));
+		Assert.areSame(false, $('#input01').forces_removeAttr('required').is(':-tf-REQUIRED'));
+	},
+
+	test_setRequiredFromAncestorClass: function () {
+		Assert.areSame(true, $('#input03').is(':-tf-REQUIRED'));
+		Assert.areSame(true, $('#input04').is(':-tf-REQUIRED'));
 	}
 });
 
