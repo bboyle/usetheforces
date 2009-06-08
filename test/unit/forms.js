@@ -28,7 +28,7 @@ var TC_formsRequired = new YAHOO.tool.TestCase({
 	},
 
 	tearDown: function () {
-		//$('#form').remove();
+		$('#form').remove();
 	},
 
 	//---------------------------------------------
@@ -49,6 +49,23 @@ var TC_formsRequired = new YAHOO.tool.TestCase({
 	test_setRequiredFromAncestorClass: function () {
 		Assert.areSame(true, $('#input03').is(':-tf-REQUIRED'));
 		Assert.areSame(true, $('#input04').is(':-tf-REQUIRED'));
+	},
+	
+	test_requiredEvents: function () {
+		$(document).bind($.forces.EVENT_REQUIRED, function(evt) {
+			$(evt.target).before('<span class="required">REQUIRED</span>');
+		});
+		$(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
+			$(evt.target).before('<span class="required">OPTIONAL</span>');
+		});
+
+		Assert.areSame(0, $('#input01').prev('.required').length);
+		Assert.areSame(1, $('#input01').forces_attr('required', true).prev('.required').length);
+		Assert.areSame('REQUIRED', $('#input01').prev('.required').text());
+
+		Assert.areSame(0, $('#input02').prev('.required').length);
+		Assert.areSame(1, $('#input02').forces_attr('required', false).prev('.required').length);
+		Assert.areSame('OPTIONAL', $('#input02').prev('.required').text());
 	}
 });
 
