@@ -12,12 +12,10 @@
 	var $F = $.forces = $.forces || {};
 
 $(document).bind($.forces.EVENT_REQUIRED, function(evt) {
-	console.log('REQUIRED', evt.target);
-	$(evt.target).before('<abbr style="color: red">*</abbr>');
+	$(evt.target).before('<abbr class="required" title="required">*</abbr>');
 });
 $(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
-	console.log('OPTIONAL', evt.target);
-	$(evt.target).prev('abbr').remove();
+	$(evt.target).prev('abbr.required').remove();
 });
 
 
