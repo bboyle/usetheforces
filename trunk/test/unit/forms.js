@@ -1,5 +1,5 @@
 //create the test suite
-var TS_forms = new YAHOO.tool.TestSuite("forces.forms test suite"); 
+var TS_forms = new YAHOO.tool.TestSuite("forces.forms unit test suite"); 
 
 
 var Assert = YAHOO.util.Assert;
@@ -35,44 +35,73 @@ var TC_formsRequired = new YAHOO.tool.TestCase({
 	// Tests
 	//---------------------------------------------
 
-	test_selector_tf_required: function () {
-		Assert.areSame(true, $('#input02').is(':-tf-REQUIRED'));
-		Assert.areSame(false, $('#input01').is(':-tf-REQUIRED'));
+	test_requiredSelectorReturnsCorrectBoolean: function () {
+		Assert.areSame(true, $('#input02').is(':-tf-required'));
+		Assert.areSame(false, $('#input01').is(':-tf-required'));
 	},
 	
-	test_forces_attr_required: function () {
-		Assert.areSame(true, $('#input01').forces_attr('required', true).is(':-tf-REQUIRED'));
-		Assert.areSame(false, $('#input01').forces_attr('required', false).is(':-tf-REQUIRED'));
-		Assert.areSame(false, $('#input01').forces_removeAttr('required').is(':-tf-REQUIRED'));
+	test_canSetRequiredUsingForcesAttr: function () {
+		Assert.areSame(true, $('#input01').forces_attr('required', true).is(':-tf-required'));
+		Assert.areSame(false, $('#input01').forces_attr('required', false).is(':-tf-required'));
+		Assert.areSame(false, $('#input01').forces_removeAttr('required').is(':-tf-required'));
 	},
 
 	test_setRequiredFromAncestorClass: function () {
-		Assert.areSame(true, $('#input03').is(':-tf-REQUIRED'));
-		Assert.areSame(true, $('#input04').is(':-tf-REQUIRED'));
-	},
-	
-	test_requiredEvents: function () {
-		$(document).bind($.forces.EVENT_REQUIRED, function(evt) {
-			$(evt.target).before('<span class="required">REQUIRED</span>');
-		});
-		$(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
-			$(evt.target).before('<span class="required">OPTIONAL</span>');
-		});
-
-		Assert.areSame(0, $('#input01').prev('.required').length);
-		Assert.areSame(1, $('#input01').forces_attr('required', true).prev('.required').length);
-		Assert.areSame('REQUIRED', $('#input01').prev('.required').text());
-
-		Assert.areSame(0, $('#input02').prev('.required').length);
-		Assert.areSame(1, $('#input02').forces_attr('required', false).prev('.required').length);
-		Assert.areSame('OPTIONAL', $('#input02').prev('.required').text());
+		Assert.areSame(true, $('#input03').is(':-tf-required'));
+		Assert.areSame(true, $('#input04').is(':-tf-required'));
 	}
 });
 
 
+// relevant fields unit tests
+var TC_formsRelevant = new YAHOO.tool.TestCase({
+
+	name: "Relevant fields unit tests",
+
+	//---------------------------------------------
+	// Setup and tear down
+	//---------------------------------------------
+
+	setUp: function () {
+		$(
+			'<form id="form" action="#form"><ol>' +
+				'<li><input type="text" name="input01" id="input01" /></li>' +
+				'<li><input type="text" name="input02" id="input02" /></li>' +
+			'</ol></form>'
+		).appendTo('body');
+		$('#input02').forces_attr('relevant', false);
+	},
+
+	tearDown: function () {
+		$('#form').remove();
+	},
+
+	//---------------------------------------------
+	// Tests
+	//---------------------------------------------
+
+	test_fieldsAreRelevantByDefault: function () {
+		Assert.areSame(true, $('#input01').is(':-tf-relevant'));
+		Assert.areSame(false, $('#input01').is(':-tf-irrelevant'));
+	},
+
+	test_relevantSelectorReturnsCorrectBoolean: function () {
+		Assert.areSame(true, $('#input01').is(':-tf-relevant'));
+		Assert.areSame(true, $('#input02').is(':-tf-irrelevant'));
+		Assert.areSame(false, $('#input02').is(':-tf-relevant'));
+	},
+
+	test_canSetRelevantUsingForcesAttr: function () {
+		Assert.areSame(true, $('#input01').forces_attr('relevant', true).is(':-tf-relevant'));
+		Assert.areSame(false, $('#input01').forces_attr('relevant', false).is(':-tf-relevant'));
+		Assert.areSame(true, $('#input01').forces_removeAttr('relevant').is(':-tf-relevant'));
+	}
+});
+
 
 //add test cases
 TS_forms.add(TC_formsRequired);
+TS_forms.add(TC_formsRelevant);
 
 //add the test suite
 YAHOO.tool.TestRunner.add(TS_forms);
