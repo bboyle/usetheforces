@@ -13,7 +13,7 @@
 	// constants
 	var IRRELEVANT = '-tf-irrelevant';
 	var OPTIONAL = '-tf-optional';
-	var RELEVANT = '-tf-FOO';
+	var RELEVANT = '-tf-relevant';
 	var REQUIRED = '-tf-required';
 	// attr
 	var RELEVANTa = '@'+RELEVANT;
@@ -81,21 +81,26 @@ $.fn.forces_recalculate = function() {
 		// @relevant
 		attr = e.forces_attr('relevant');
 		if (attr == null) attr = true;
+		
+		// bit flags! http://javascript.about.com/library/blbitop.htm
+		// forces.toggleState(target, state)
+		// where state == bit flags.
+		// default bit flags might be 01 == 0(not required)1(relevant)
+		
 		if (e.is(RELEVANTs) != attr) {
 			if (attr) {
-				console.log('trigger', e, RELEVANT);
-				e.data(RELEVANT, true).trigger(RELEVANT);
+				$(document).trigger(RELEVANT, [e.data(RELEVANT, true)]);
 			} else {
-				e.data(RELEVANT, false).trigger(IRRELEVANT);
+				$(document).trigger(IRRELEVANT, [e.data(RELEVANT, false)]);
 			}
 		}
 		// @required
 		attr = e.forces_attr('required');
 		if (e.is(REQUIREDs) != attr) {
 			if (attr) {
-				e.data(REQUIRED, true).trigger(REQUIRED);
+				$(document).trigger(REQUIRED, [e.data(REQUIRED, true)]);
 			} else {
-				e.data(REQUIRED, false).trigger(OPTIONAL);
+				$(document).trigger(OPTIONAL, [e.data(REQUIRED, false)]);
 			}
 		}
 	});

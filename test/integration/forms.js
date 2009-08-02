@@ -32,16 +32,16 @@ var TC_formEventIntegration = new YAHOO.tool.TestCase({
 	//---------------------------------------------
 
 	test_relevantEventsFireCorrectly: function () {
-		$(document).bind($.forces.EVENT_RELEVANT, function(evt) {
-			$(evt.target).before('<span class="relevant">RELEVANT</span>');
+		$(document).bind($.forces.EVENT_RELEVANT, function(evt, target) {
+			target.before('<span class="relevant">RELEVANT</span>');
 		});
-		$(document).bind($.forces.EVENT_IRRELEVANT, function(evt) {
-			$(evt.target).before('<span class="relevant">IRRELEVANT</span>');
+		$(document).bind($.forces.EVENT_IRRELEVANT, function(evt, target) {
+			target.before('<span class="relevant">IRRELEVANT</span>');
 		});
 
 		Assert.areSame(0, $('#input01').prev('.relevant').length);
 		Assert.areSame(0, $('#input01').forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event fired when relevance did not change');
-		Assert.areSame(1, $('#input01').forces_attr('relevant', false).forces_attr('relevant', true).prev('.relevant').length);
+		Assert.areSame(1, $('#input01').forces_attr('relevant', false).forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event not detected');
 		Assert.areSame('RELEVANT', $('#input01').prev('.relevant').text());
 
 		Assert.areSame(0, $('#input02').prev('.relevant').length);
@@ -51,11 +51,11 @@ var TC_formEventIntegration = new YAHOO.tool.TestCase({
 	
 
 	test_requiredEventsFireCorrectly: function () {
-		$(document).bind($.forces.EVENT_REQUIRED, function(evt) {
-			$(evt.target).before('<span class="required">REQUIRED</span>');
+		$(document).bind($.forces.EVENT_REQUIRED, function(evt, target) {
+			target.before('<span class="required">REQUIRED</span>');
 		});
-		$(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
-			$(evt.target).before('<span class="required">OPTIONAL</span>');
+		$(document).bind($.forces.EVENT_OPTIONAL, function(evt, target) {
+			target.before('<span class="required">OPTIONAL</span>');
 		});
 
 		Assert.areSame(0, $('#input01').prev('.required').length);
