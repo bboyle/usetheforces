@@ -8,8 +8,11 @@
 ;if(typeof(jQuery)!="undefined") {
 (function($){
 
+	// jquery.forces
 	var $F = $.forces = $.forces || {};
 
+<<<<<<< .mine
+=======
 	// constants
 	var IRRELEVANT = '-tf-irrelevant';
 	var OPTIONAL = '-tf-optional';
@@ -18,66 +21,82 @@
 	// attr
 	var RELEVANTa = '@'+RELEVANT;
 	var REQUIREDa = '@'+REQUIRED;
-
+>>>>>>> .r93
 
 // selectors
 $.extend($.expr[':'], {
 	'-tf-irrelevant': function(e) {
-		return $(e).data(RELEVANT) === false;
+		return ($(e).data('-tf-FLAGS') & 1) != 0;
 	},
 	'-tf-relevant': function(e) {
-		var relevance = $(e).data(RELEVANT);
-		return relevance === undefined || relevance === true;
+		return ($(e).data('-tf-FLAGS') & 1) == 0;
 	},
 	'-tf-required': function(e) {
-		return $(e).data(REQUIRED) === true;
+		return ($(e).data('-tf-FLAGS') & 4) != 0;
 	}
 });
 
 
-// (PUBLIC) constants
-var IRRELEVANTs = $F.SELECTOR_IRRELEVANT = ':-tf-irrelevant';
-var RELEVANTs = $F.SELECTOR_RELEVANT = ':-tf-relevant';
-var REQUIREDs = $F.SELECTOR_REQUIRED = ':-tf-required';
-$F.EVENT_IRRELEVANT = IRRELEVANT;
-$F.EVENT_OPTIONAL = OPTIONAL;
-$F.EVENT_RELEVANT = RELEVANT;
-$F.EVENT_REQUIRED = REQUIRED;
-
-
-// pseudo attr() to support @required
+// pseudo attr() to support @required and @relevant
 $.fn.forces_attr = function(name, value) {
+	// read
+	if (typeof(value) == 'undefined') {
+		value = this.data('-tf-@'+name);
+		return  value ? value : (this.is(':-tf-'+name) ? name : null);
+	}
+	// write
 	switch (name) {
-		case 'relevant':
-			return typeof(value) == 'undefined' ? this.data(RELEVANTa) :
-				this.data(RELEVANTa, value === true || value === 'relevant').forces_recalculate();
+		case 'relevant': // irrelevant
+			this.forces__flags(2, value !== true && value != 'relevant');
+			break;
 		case 'required':
-			return typeof(value) == 'undefined' ? this.data(REQUIREDa) :
-				this.data(REQUIREDa, value === true || value === 'required').forces_recalculate();
+			this.forces__flags(8, value === true || value == 'required');
+			break;
 		default:
+			// exit
 			return this;
 	}
+	return this.data('-tf-@'+name, value === true ? name : value).forces_recalculate();
 };
 $.fn.forces_removeAttr = function(name) {
 	switch (name) {
-		case 'relevant':
-			name = RELEVANTa;
+		case 'relevant': // irrelevant
+			this.forces__flags(2, false);
 			break;
 		case 'required':
-			name = REQUIREDa;
+			this.forces__flags(8, false);
 			break;
 		default:
-			name = null;
+			// exit
+			return this;
 	}
-	return name ? this.removeData(name).forces_recalculate() : this;
+	return this.removeData('-tf-@'+name).forces_recalculate();
 };
 
 
 // recalculate all fields
 $.fn.forces_recalculate = function() {
-	var e, attr;
+	var e, f = 0, d = $(document);
+	
+	var _flagEvent = function(e, flag, set, event) {
+		e.forces__flags(flag, set);
+		d.trigger(event, [e]);
+	};
+	
+	
 	return this.each(function() {
 		e = $(this);
+<<<<<<< .mine
+		f = e.data('-tf-FLAGS');
+		// relevant
+		switch (f & 3) {
+			case 2: // -> irrelevant
+				_flagEvent(e, 1, true, '-tf-irrelevant');
+			break;
+			case 1: // -> relevant
+				_flagEvent(e, 1, false, '-tf-relevant');
+			break;
+=======
 		// @relevant
 		attr = e.forces_attr('relevant');
 		if (attr == null) attr = true;
@@ -93,7 +112,18 @@ $.fn.forces_recalculate = function() {
 			} else {
 				$(document).trigger(IRRELEVANT, [e.data(RELEVANT, false)]);
 			}
+>>>>>>> .r93
 		}
+<<<<<<< .mine
+
+		switch (f & 12) {
+			case 8: // -> required
+				_flagEvent(e, 4, true, '-tf-required');
+			break;
+			case 4: // -> optional
+				_flagEvent(e, 4, false, '-tf-optional');
+			break;
+=======
 		// @required
 		attr = e.forces_attr('required');
 		if (e.is(REQUIREDs) != attr) {
@@ -102,9 +132,27 @@ $.fn.forces_recalculate = function() {
 			} else {
 				$(document).trigger(OPTIONAL, [e.data(REQUIRED, false)]);
 			}
+>>>>>>> .r93
 		}
+
 	});
 };
+
+
+// toggle flags
+$.fn.forces__flags = function(flag, add) {
+	var e;
+	this.set = function() {
+		e = $(this);
+		e.data('-tf-FLAGS', e.data('-tf-FLAGS') | flag);
+	};
+	this.unset = function() {
+		e = $(this);
+		e.data('-tf-FLAGS', e.data('-tf-FLAGS') & ~flag);
+	};
+	return add ? this.each(this.set) : this.each(this.unset);
+};
+
 
 
 })(jQuery);
