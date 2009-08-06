@@ -61,12 +61,6 @@ var TC_formsRequired = new YAHOO.tool.TestCase({
 
 	test_readCalculationFromRequiredAttribute: function () {
 		Assert.areSame('input01 = "5 is required"', $('#input05').forces_attr('required'));
-	},
-
-	test_setRequiredFromCalculation: function () {
-		Assert.areSame(false, $('#input05').is(':-tf-required'));
-		$('#input01', '#form').val('5 is required');
-		Assert.areSame(true, $('#input05').is(':-tf-required'));
 	}
 });
 
