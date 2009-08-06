@@ -32,21 +32,11 @@ var TC_formEventIntegration = new YAHOO.tool.TestCase({
 	//---------------------------------------------
 
 	test_relevantEventsFireCorrectly: function () {
-<<<<<<< .mine
 		$(document).bind('-tf-relevant', function(evt, target) {
 			target.before('<span class="relevant">RELEVANT</span>');
-=======
-		$(document).bind($.forces.EVENT_RELEVANT, function(evt, target) {
-			target.before('<span class="relevant">RELEVANT</span>');
->>>>>>> .r93
 		});
-<<<<<<< .mine
 		$(document).bind('-tf-irrelevant', function(evt, target) {
 			target.before('<span class="relevant">IRRELEVANT</span>');
-=======
-		$(document).bind($.forces.EVENT_IRRELEVANT, function(evt, target) {
-			target.before('<span class="relevant">IRRELEVANT</span>');
->>>>>>> .r93
 		});
 
 		Assert.areSame(0, $('#input01').prev('.relevant').length);
@@ -61,21 +51,11 @@ var TC_formEventIntegration = new YAHOO.tool.TestCase({
 	
 
 	test_requiredEventsFireCorrectly: function () {
-<<<<<<< .mine
 		$(document).bind('-tf-required', function(evt, target) {
 			target.before('<span class="required">REQUIRED</span>');
-=======
-		$(document).bind($.forces.EVENT_REQUIRED, function(evt, target) {
-			target.before('<span class="required">REQUIRED</span>');
->>>>>>> .r93
 		});
-<<<<<<< .mine
 		$(document).bind('-tf-optional', function(evt, target) {
 			target.before('<span class="required">OPTIONAL</span>');
-=======
-		$(document).bind($.forces.EVENT_OPTIONAL, function(evt, target) {
-			target.before('<span class="required">OPTIONAL</span>');
->>>>>>> .r93
 		});
 
 		Assert.areSame(0, $('#input01').prev('.required').length);

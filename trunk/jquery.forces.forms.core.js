@@ -11,17 +11,6 @@
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
 
-<<<<<<< .mine
-=======
-	// constants
-	var IRRELEVANT = '-tf-irrelevant';
-	var OPTIONAL = '-tf-optional';
-	var RELEVANT = '-tf-relevant';
-	var REQUIRED = '-tf-required';
-	// attr
-	var RELEVANTa = '@'+RELEVANT;
-	var REQUIREDa = '@'+REQUIRED;
->>>>>>> .r93
 
 // selectors
 $.extend($.expr[':'], {
@@ -86,8 +75,8 @@ $.fn.forces_recalculate = function() {
 	
 	return this.each(function() {
 		e = $(this);
-<<<<<<< .mine
 		f = e.data('-tf-FLAGS');
+
 		// relevant
 		switch (f & 3) {
 			case 2: // -> irrelevant
@@ -96,25 +85,7 @@ $.fn.forces_recalculate = function() {
 			case 1: // -> relevant
 				_flagEvent(e, 1, false, '-tf-relevant');
 			break;
-=======
-		// @relevant
-		attr = e.forces_attr('relevant');
-		if (attr == null) attr = true;
-		
-		// bit flags! http://javascript.about.com/library/blbitop.htm
-		// forces.toggleState(target, state)
-		// where state == bit flags.
-		// default bit flags might be 01 == 0(not required)1(relevant)
-		
-		if (e.is(RELEVANTs) != attr) {
-			if (attr) {
-				$(document).trigger(RELEVANT, [e.data(RELEVANT, true)]);
-			} else {
-				$(document).trigger(IRRELEVANT, [e.data(RELEVANT, false)]);
-			}
->>>>>>> .r93
 		}
-<<<<<<< .mine
 
 		switch (f & 12) {
 			case 8: // -> required
@@ -123,16 +94,6 @@ $.fn.forces_recalculate = function() {
 			case 4: // -> optional
 				_flagEvent(e, 4, false, '-tf-optional');
 			break;
-=======
-		// @required
-		attr = e.forces_attr('required');
-		if (e.is(REQUIREDs) != attr) {
-			if (attr) {
-				$(document).trigger(REQUIRED, [e.data(REQUIRED, true)]);
-			} else {
-				$(document).trigger(OPTIONAL, [e.data(REQUIRED, false)]);
-			}
->>>>>>> .r93
 		}
 
 	});
