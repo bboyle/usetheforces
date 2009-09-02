@@ -21,4 +21,7 @@ Inline validation should:
  * display a message advising how to correct the error for 'invalid' state
  * use consistent terminology (the same message as onsubmit errors)
 
-Issue: "oninput" should not be triggered to often. Wait for a pause in input (typing) before acting. Consider: onkeyup starts a timer which will fire an oninput event. An onkeydown event cancels this timer. An onblur event cancels the timer _and_ fires the oninput event.
+Issue: "oninput" should not be triggered too often. Wait for a pause in input (typing) before acting. Consider: onkeyup starts a timer which will fire an oninput event. An onkeydown event cancels this timer. An onblur event cancels the timer _and_ fires the oninput event. Additionally, validation may be suppressed until sufficient input is entered. For example, there might be a 3 character minimum before a message is displayed. Validation messages should avoid frustrating users, validating before they have finished/paused in their input is overwhelming.
+
+Special cases where oninput feedback is beneficial are for answers that are 'created' and the user cannot know in advance if the value is valid. Examples: checking if a new username is already reserved, testing if a new password meets security requirements.
+Oninput validation must not be used for 'slot-in' answers. Checking for typos (e.g. credit card numbers) should not occur until onblur.
