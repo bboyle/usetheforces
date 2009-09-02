@@ -88,7 +88,6 @@ ul.choices input {
 	position: absolute;
 	left: 0;
 	_left: -20px;
-	height: 1.5em; /* == line height; helps with vertical alignment? */
 }
 }}}
 
