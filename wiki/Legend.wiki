@@ -13,13 +13,29 @@ Tips and tricks for using HTML's {{{legend}}} element.
  * Reset text colour (older versions of IE use blue for legend text)
 
 {{{
+fieldset {
+	border: none;
+}
 legend {
-  margin: 0;
-  padding: 0;
-  white-space: normal;
-  *color: #000;
-  *margin-left: -5px;
-  *margin-right -5px;
+	margin: 0;
+	padding: 0;
+	white-space: normal;
+	width: 100%;
+	color: inherit;
+	*color: #000;
+	*margin-left: -7px;
+	*margin-right: -7px;
+}
+legend > span {
+	display: block;
+}
+legend span {
+	*display: block;
+	*float: left;
+}
+legend span span {
+	*display: inline;
+	*float: none;
 }
 }}}
 
