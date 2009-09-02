@@ -51,7 +51,7 @@ Use _checkboxes_ or _multiple select lists_ when more than one choice may be sel
     <legend>
       <span class="xf-label">Flavor</span>
     </legend>
-    <ul>
+    <ul class="choices">
       <li><label for="my-flavor-v"><input type="radio" … id="my-flavor-v" value="v" />Vanilla</label></li>
       <li><label for="my-flavor-s"><input type="radio" … id="my-flavor-s" value="s" />Strawberry</label></li>
       <li><label for="my-flavor-c"><input type="radio" … id="my-flavor-c" value="c" />Chocolate</label></li>
@@ -67,6 +67,30 @@ _These examples have been written to illustrate the code above_
 || {{{:-xf-select1 select}}} || accesses the control widget ({{{select}}} element) ||
 || {{{:-xf-select1 :radio}}} || accesses the control widget ({{{input}}} elements) ||
 || {{{:-xf-select1 :radio:checked}}} || accesses the checked control widget ({{{input}}} elements) ||
+
+== CSS for 'choices' ==
+{{{
+/* choices */
+ul.choices {
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+ul.choices li {
+	display: block;
+	list-style: none;
+	margin: .3em 0;
+	padding: 0 0 0 20px;
+	position: relative;
+}
+ul.choices input {
+	position: absolute;
+	left: 0;
+	_left: -20px;
+	height: 1.5em; /* == line height; helps with vertical alignment? */
+}
+}}}
 
 = References =
   * [http://www.w3.org/TR/xforms/#ui-selectOne the select1 element (XForms)]
