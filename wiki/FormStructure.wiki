@@ -7,9 +7,9 @@ Building on the work of Caroline Jarrett, Designing usable forms: the three-laye
 = Details =
 
  # Perceptual layer
- # # _Page furniture_ — everything around the form, page layout, branding, titling. Use standard HTML markup.
- # # _Instructions_ — how to make these accessible within the form remains a great challenge... do they need to be embedded within legend/label elements, or use ARIA?
- # # The first instructions, the _preamble_, should be placed before the {{{form}}} element in the HTML source.
- ## _Prompt/response pairs_ — use the forces markup and styles directly address this.
+  # _Page furniture_ — everything around the form, page layout, branding, titling. Use standard HTML markup.
+  # _Instructions_ — how to make these accessible within the form remains a great challenge... do they need to be embedded within legend/label elements, or use ARIA?
+   # The first instructions, the _preamble_, should be placed before the {{{form}}} element in the HTML source.
+  # _Prompt/response pairs_ — use the forces markup and styles directly address this.
  # Conversational layer
  # Relationship layer
