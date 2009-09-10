@@ -1,4 +1,4 @@
-#summary The structure of forms
+#summary Structuring forms with HTML
 
 = Introduction =
 
