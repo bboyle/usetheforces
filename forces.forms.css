@@ -46,6 +46,7 @@ legend span span {
 .xf-group legend,
 .xf-select legend,
 .xf-select1 legend {
+	font-family: inherit;
 	font-weight: normal;
 	font-size: 1em;
 	margin-bottom: 0;
