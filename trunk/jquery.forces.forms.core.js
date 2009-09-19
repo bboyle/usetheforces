@@ -7,7 +7,6 @@
 
 ;if(typeof(jQuery)!="undefined") {
 (function($){
-
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
 
