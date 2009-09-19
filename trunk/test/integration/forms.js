@@ -32,10 +32,10 @@ var TC_formEventIntegration = new YAHOO.tool.TestCase({
 	//---------------------------------------------
 
 	test_relevantEventsFireCorrectly: function () {
-		$(document).bind('-tf-relevant', function(evt, target) {
+		$(document).bind($.forces.EVENT_RELEVANT, function(evt, target) {
 			target.before('<span class="relevant">RELEVANT</span>');
 		});
-		$(document).bind('-tf-irrelevant', function(evt, target) {
+		$(document).bind($.forces.EVENT_IRRELEVANT, function(evt, target) {
 			target.before('<span class="relevant">IRRELEVANT</span>');
 		});
 
@@ -51,10 +51,10 @@ var TC_formEventIntegration = new YAHOO.tool.TestCase({
 	
 
 	test_requiredEventsFireCorrectly: function () {
-		$(document).bind('-tf-required', function(evt, target) {
+		$(document).bind($.forces.EVENT_REQUIRED, function(evt, target) {
 			target.before('<span class="required">REQUIRED</span>');
 		});
-		$(document).bind('-tf-optional', function(evt, target) {
+		$(document).bind($.forces.EVENT_OPTIONAL, function(evt, target) {
 			target.before('<span class="required">OPTIONAL</span>');
 		});
 

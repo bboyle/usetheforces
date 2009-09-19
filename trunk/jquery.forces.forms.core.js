@@ -9,6 +9,11 @@
 (function($){
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
+	// CONSTANTS
+	var EVENT_REQUIRED = $F.EVENT_REQUIRED = '-xf-required';
+	var EVENT_OPTIONAL = $F.EVENT_OPTIONAL = '-xf-optional';
+	var EVENT_RELEVANT = $F.EVENT_RELEVANT = '-xf-relevant';
+	var EVENT_IRRELEVANT = $F.EVENT_IRRELEVANT = '-xf-irrelevant';
 
 
 // selectors
@@ -79,19 +84,19 @@ $.fn.forces_recalculate = function() {
 		// relevant
 		switch (f & 3) {
 			case 2: // -> irrelevant
-				_flagEvent(e, 1, true, '-tf-irrelevant');
+				_flagEvent(e, 1, true, EVENT_IRRELEVANT);
 			break;
 			case 1: // -> relevant
-				_flagEvent(e, 1, false, '-tf-relevant');
+				_flagEvent(e, 1, false, EVENT_RELEVANT);
 			break;
 		}
 
 		switch (f & 12) {
 			case 8: // -> required
-				_flagEvent(e, 4, true, '-tf-required');
+				_flagEvent(e, 4, true, EVENT_REQUIRED);
 			break;
 			case 4: // -> optional
-				_flagEvent(e, 4, false, '-tf-optional');
+				_flagEvent(e, 4, false, EVENT_OPTIONAL);
 			break;
 		}
 
