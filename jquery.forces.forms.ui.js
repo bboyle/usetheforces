@@ -16,6 +16,9 @@
 $.extend($.expr[':'], {
 	'-xf-control': function(e) {
 		return $(e).is('.xf-input,.xf-select');
+	},
+	'-xf-label': function(e) {
+		return $(e).is('.xf-label');
 	}
 });
 
@@ -29,14 +32,28 @@ $.fn.forces_control = function() {
 };
 
 
-/*
-$(document).bind($.forces.EVENT_REQUIRED, function(evt) {
-	$(evt.target).before('<abbr class="required" title="required">*</abbr>');
+// find "label" element
+$.fn.forces_label = function() {
+	return this.map(function() {
+		var e = $(this);
+		if (e.is(':-xf-label')) {
+			return e;
+		}
+		if (!e.is(':-xf-control')) {
+			e = e.forces_control();
+		}
+		return e.find('.xf-label').get(0);
+	});
+};
+
+
+// event: required/optional toggle
+$(document).bind($F.EVENT_REQUIRED, function(evt, target) {
+	target.forces_label().after('<abbr class="xf-required" title="required">*</abbr>');
 });
-$(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
-	$(evt.target).prev('abbr.required').remove();
+$(document).bind($F.EVENT_OPTIONAL, function(evt, target) {
+	target.forces_control().find('.xf-required').remove();
 });
-*/
 
 
 })(jQuery);
