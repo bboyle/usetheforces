@@ -119,6 +119,27 @@ $.fn.forces__flags = function(flag, add) {
 };
 
 
+// form submission
+$(document).bind('submit', function(evt) {
+	var form = $(evt.target);
+
+	// is this form being managed by forces?
+		
+		// is this submit event too soon after the last one?
+			// cancel the submit event
+		// prevent repeat submit events (store time of submit)
+		
+		// validate all fields of unknown validity
+		// are there invalid fields?
+			// throw a submit error
+			// re-enable submit events (delete the stored submit time)
+			// cancel this submit event
+
+	// submission is ok
+	return true;
+});
+
+
 
 })(jQuery);
 }
