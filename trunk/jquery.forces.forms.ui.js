@@ -15,7 +15,10 @@
 // selectors
 $.extend($.expr[':'], {
 	'-xf-control': function(e) {
-		return $(e).is('.xf-input,.xf-select');
+		return $(e).is('.xf-input,.xf-select,.xf-group');
+	},
+	'-xf-group': function(e) {
+		return $(e).is('.xf-group');
 	},
 	'-xf-label': function(e) {
 		return $(e).is('.xf-label');
@@ -28,6 +31,15 @@ $.fn.forces_control = function() {
 	return this.map(function() {
 		var e = $(this);
 		return (e.is(':-xf-control') ? e : e.parents(':-xf-control')).get(0);
+	});
+};
+
+
+// find "group" element
+$.fn.forces_group = function() {
+	return this.map(function() {
+		var e = $(this);
+		return (e.is(':-xf-group') ? e : e.parents(':-xf-group')).get(0);
 	});
 };
 
