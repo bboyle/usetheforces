@@ -196,29 +196,23 @@ strong input {
 
 
 /* status messages (default: info) */
-.status {
-	width: 67%;
-	min-width: 10em;
-	float:  left;
-	position: relative;
-	font-size: 80%;
+.tf-status {
 	color: #000;
 }
-.status .inner {
+.tf-status .inner {
 	background: #eef4f6 url(info.png) 12px 12px no-repeat;
-	margin: 0 0 .5em .5em;
-	overflow: hidden;
+	margin: 0 0 .5em;
 	padding: .5em 1em .5em 54px;
 	border-radius: 13px;
 	-moz-border-radius: 13px;
 	-webkit-border-radius: 13px;
 }
-.status .success {
+.tf-status .tf-success {
 	background: #f2f7ea url(success.png) 12px 12px no-repeat;
 }
-.status .alert {
+.tf-status .tf-alert {
 	background: #fff9ce url(alert.png) 12px 12px no-repeat;
 }
-.status .fail {
+.tf-status .tf-fail {
 	background: #fee6e8 url(fail.png) 12px 12px no-repeat;
 }

@@ -545,12 +545,12 @@ $('form')
 	var invalid = controls.filter(':-xf-invalid');
 	if (_tf_VALIDATE && invalid.length > 0) {
 
-		var status = xform.prev('.status');
+		var status = xform.prev('.tf-status');
 		if (status.length == 1) {
 			status.find('li').remove();
 		} else {
 			// TODO generate-id
-			status = $('<div id="status" class="status alert"><h1>' + (xform.data(DATA_MESSAGE_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
+			status = $('<div id="status" class="tf-status tf-alert"><h1>' + (xform.data(DATA_MESSAGE_ALERT) || _tf_SUBMIT_ERROR) + '</h1><ol></ol></div>');
 		}
 		invalid.each(function() {
 			var control = $(this);
