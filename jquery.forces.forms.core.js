@@ -14,6 +14,7 @@
 	var EVENT_OPTIONAL = $F.EVENT_OPTIONAL = '-xf-optional';
 	var EVENT_RELEVANT = $F.EVENT_RELEVANT = '-xf-relevant';
 	var EVENT_IRRELEVANT = $F.EVENT_IRRELEVANT = '-xf-irrelevant';
+	$F.SUBMIT_TOLERANCE = 10000;
 
 
 // selectors
@@ -126,8 +127,14 @@ $(document).bind('submit', function(evt) {
 	// is this form being managed by forces?
 		
 		// is this submit event too soon after the last one?
+		if (form.data('-tf-submit') && evt.timeStamp - form.data('-tf-submit') < $F.SUBMIT_TOLERANCE) {
 			// cancel the submit event
+			evt.stopImmediatePropagation();
+			return false;
+		}
+
 		// prevent repeat submit events (store time of submit)
+		form.data('-tf-submit', evt.timeStamp);
 		
 		// validate all fields of unknown validity
 		// are there invalid fields?
