@@ -14,6 +14,9 @@
 
 // selectors
 $.extend($.expr[':'], {
+	'-tf-form': function(e) {
+		return $(e).is('.tf-form');
+	},
 	'-xf-control': function(e) {
 		return $(e).is('.xf-input,.xf-select,.xf-group');
 	},
@@ -26,45 +29,16 @@ $.extend($.expr[':'], {
 });
 
 
-// find "control" element
-$.fn.forces_control = function() {
-	return this.map(function() {
-		var e = $(this);
-		return (e.is(':-xf-control') ? e : e.parents(':-xf-control')).get(0);
-	});
-};
-
-
-// find "group" element
-$.fn.forces_group = function() {
-	return this.map(function() {
-		var e = $(this);
-		return (e.is(':-xf-group') ? e : e.parents(':-xf-group')).get(0);
-	});
-};
-
-
-// find "label" element
-$.fn.forces_label = function() {
-	return this.map(function() {
-		var e = $(this);
-		if (e.is(':-xf-label')) {
-			return e;
-		}
-		if (!e.is(':-xf-control')) {
-			e = e.forces_control();
-		}
-		return e.find('.xf-label').get(0);
-	});
-};
-
-
 // event: required/optional toggle
-$(document).bind($F.EVENT_REQUIRED, function(evt, target) {
-	target.forces_label().after('<abbr class="xf-required" title="required">*</abbr>');
+$(document).bind($F.EVENT_REQUIRED, function(evt) {
+	// TODO don't duplicate * if already present in UI!
+	$(evt.target).closest(':-xf-control').find(':-xf-label').after('<abbr class="xf-required" title="required">*</abbr>');
 });
-$(document).bind($F.EVENT_OPTIONAL, function(evt, target) {
-	target.forces_control().find('.xf-required').remove();
+$(document).bind($F.EVENT_OPTIONAL, function(evt) {
+	$(evt.target).closest(':-xf-control').find('.xf-required').remove();
+});
+$(document).bind($F.EVENT_SUBMIT_ERROR, function(evt, invalidFields) {
+	$(evt.target).closest(':-tf-form').before('<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1></div></div>');
 });
 
 

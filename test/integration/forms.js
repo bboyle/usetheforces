@@ -32,11 +32,11 @@ Tester.use('console', 'test', function(Y){
 		//---------------------------------------------
 
 		test_relevantEventsFireCorrectly: function () {
-			$(document).bind($.forces.EVENT_RELEVANT, function(evt, target) {
-				target.before('<span class="relevant">RELEVANT</span>');
+			$(document).bind($.forces.EVENT_RELEVANT, function(evt) {
+				$(evt.target).before('<span class="relevant">RELEVANT</span>');
 			});
-			$(document).bind($.forces.EVENT_IRRELEVANT, function(evt, target) {
-				target.before('<span class="relevant">IRRELEVANT</span>');
+			$(document).bind($.forces.EVENT_IRRELEVANT, function(evt) {
+				$(evt.target).before('<span class="relevant">IRRELEVANT</span>');
 			});
 
 			Assert.areSame(0, $('#input01').prev('.relevant').length);
@@ -51,11 +51,11 @@ Tester.use('console', 'test', function(Y){
 
 
 		test_requiredEventsFireCorrectly: function () {
-			$(document).bind($.forces.EVENT_REQUIRED, function(evt, target) {
-				target.before('<span class="required">REQUIRED</span>');
+			$(document).bind($.forces.EVENT_REQUIRED, function(evt) {
+				$(evt.target).before('<span class="required">REQUIRED</span>');
 			});
-			$(document).bind($.forces.EVENT_OPTIONAL, function(evt, target) {
-				target.before('<span class="required">OPTIONAL</span>');
+			$(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
+				$(evt.target).before('<span class="required">OPTIONAL</span>');
 			});
 
 			Assert.areSame(0, $('#input01').prev('.required').length);
@@ -69,6 +69,18 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_submitErrorEventFiresCorrectly: function () {
+			$(document).bind($.forces.EVENT_SUBMIT_ERROR, function(evt) {
+				$(evt.target).prepend('<span class="submit-error">SUBMIT ERROR</span>');
+			});
+			
+			Assert.areSame(0, $('.submit-error').length, 'SUBMIT ERROR should not be present before submit event');
+			$('#input01').forces_attr('required', true);
+			$('#form').submit();
+			Assert.areSame('SUBMIT ERROR', $('#form').find('.submit-error').text(), 'SUBMIT ERROR should occur on submit with invalid control');
+		},
+
+
 		test_submitEventSuppression: function () {
 			var submitted = 0;
 			$(document).submit(function() { ++submitted; });
@@ -79,10 +91,11 @@ Tester.use('console', 'test', function(Y){
 			}
 			
 			Assert.areSame(true, wasSubmitted(submitted));
-			Assert.areSame(false, wasSubmitted(submitted), 'repeated submit not suppressed'); 
-			this.wait(function(){ 
-				Assert.areSame(true, wasSubmitted(submitted), 'submit after tolerance should proceed'); 
-			}, $.forces.SUBMIT_TOLERANCE + 100); 
+			Assert.areSame(false, wasSubmitted(submitted), 'repeated submit not suppressed');
+			Y.log('test_submitEventSuppression called timeout ' + $.forces.SUBMIT_TOLERANCE + 'ms, please wait ...', 'wait', 'TestRunner');
+			this.wait(function() {
+				Assert.areSame(true, wasSubmitted(submitted), 'submit after tolerance should proceed');
+			}, $.forces.SUBMIT_TOLERANCE + 100);
 		}
 	}));
 
