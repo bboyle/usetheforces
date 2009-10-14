@@ -17,7 +17,7 @@ Tester.use('console', 'test', function(Y){
 		setUp: function() {
 			$(
 				'<div id="form-container" class="tf-form">'+
-				'<form id="form" action="#form"><ol class="ftw-questions">' +
+				'<form id="form" action="#form" onsubmit="return false"><ol class="ftw-questions">' +
 					'<li class="xf-input" id="input01-container"><label for="input01" id="label-input"><span class="xf-label">Input</span></label>' +
 					'<input type="text" name="input01" id="input01" /></li>' +
 					'<li class="xf-select" id="select-container"><fieldset><legend id="legend-select"><span><span class="xf-label">Select</span></legend>' +
@@ -85,6 +85,63 @@ Tester.use('console', 'test', function(Y){
 		}
 	}));
 
+
+	// form UI manipulation unit tests
+	Y.forces.test.FormUiUnitSuite.add(new Y.Test.Case({
+		name: "Form UI manipulation unit tests",
+
+		//---------------------------------------------
+		// Setup and tear down
+		//---------------------------------------------
+
+		setUp: function() {
+			$(
+				'<div id="form-container" class="tf-form">'+
+					'<form id="form" action="#form"><ol class="ftw-questions">' +
+						'<li class="xf-input" id="question1"><label for="input1"><span class="xf-label">Input</span></label>' +
+							'<input type="text" name="input1" id="input1" /></li>' +
+						'<li class="xf-input" id="question2">' +
+							'<label for="input2">' +
+								'<span class="xf-label">Input</span>' +
+								'<abbr class="xf-required" title="required">*</abbr>' +
+							'</label>' +
+							'<input type="text" name="input2" id="input2" />' +
+						'</li>' +
+					'</ol></form>' +
+				'</div>'
+			).appendTo('body');
+		},
+
+		tearDown: function() {
+			$('#form-container').remove();
+		},
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+
+		test_requiredFieldMarkerShown: function() {
+			$('#input1, #input2').forces_attr('required', true);
+			Assert.areSame(true, $('#question1').find('abbr.xf-required').length > 0, 'required marker should be shown');
+			Assert.areSame('*', $('#question1').find('abbr.xf-required').text(), 'required marker should contain *');
+			Assert.areSame('required', $('#question1').find('abbr.xf-required').attr('title'), 'required marker @title should be "required"');
+			Assert.areSame(true, $('#question2').find('abbr.xf-required').length > 0, 'required marker should be shown');
+			Assert.areSame(1, $('#question2').find('abbr.xf-required').length, 'only one required marker should be shown');
+			$('#input1, #input2').forces_attr('required', false);
+			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
+			Assert.areSame(0, $('#question2').find('abbr.xf-required').length, 'required marker should not be shown');
+		},
+		test_requiredFieldMarkerHidden: function() {
+			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
+			Assert.areSame(1, $('#question2').find('abbr.xf-required').length, 'required marker should be shown');
+			$('#input1, #input2').forces_attr('required', false);
+			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
+			// event not triggered if field not known to be "required"
+			//Assert.areSame(0, $('#question2').find('abbr.xf-required').length, 'required marker should not be shown');
+		}
+	}));
+
+
 	// form validation UI unit tests
 	Y.forces.test.FormUiUnitSuite.add(new Y.Test.Case({
 		name: "Form validation UI unit tests",
@@ -96,9 +153,9 @@ Tester.use('console', 'test', function(Y){
 		setUp: function() {
 			$(
 				'<div id="form-container" class="tf-form">'+
-				'<form id="form" action="#form"><ol class="ftw-questions">' +
-					'<li class="xf-input" id="input01-container"><label for="input01" id="label-input"><span class="xf-label">Input</span></label>' +
-					'<input type="text" name="input01" id="input01" /></li>' +
+				'<form id="form" action="javascript:" onsubmit="return false;"><ol class="ftw-questions">' +
+					'<li class="xf-input"><label for="input1"><span class="xf-label">Input</span></label>' +
+					'<input type="text" name="input1" id="input1" /></li>' +
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body');
@@ -121,10 +178,20 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('Unable to submit form', status.find('h1').text());
 			// clean up
 			status.remove();
+		},
+
+
+		test_labelShownOnSubmitError: function() {
+			$('#input1').forces_attr('required', true);
+			$('#form').submit();
+			var status = $('div.tf-status');
+			Assert.areSame($('#input1').closest(':-xf-control').find(':-xf-label').text(), status.find('li').text(), 'control label not shown in alert');
+			// clean up
+			status.remove();
 		}
 	}));
-
-
+	
+	
 	//add the test suite
 	Y.Test.Runner.add(Y.forces.test.FormUiUnitSuite);
 

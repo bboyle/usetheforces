@@ -8,12 +8,25 @@
 
 	<!-- Pass and fail background colors not applied to Console categories, see: http://yuilibrary.com/projects/yui3/ticket/2528275 -->
 	<style type="text/css">
+		.yui-console-entry-wait {
+			background: #EEE;
+		}
+		.yui-console-entry-pass {
+			background: #EFE;
+		}
+		.yui-console-entry-fail {
+			background: #FEE;
+		}
 		.yui-console-entry-pass .yui-console-entry-cat {
 			background: green !important;
 			color: white !important;
 		}
 		.yui-console-entry-fail .yui-console-entry-cat {
 			background: red !important;
+			color: white !important;
+		}
+		.yui-console-entry-wait .yui-console-entry-cat {
+			background: #777 !important;
 			color: white !important;
 		}
 	</style>

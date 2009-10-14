@@ -16,9 +16,9 @@ Tester.use('console', 'test', function(Y){
 
 		setUp: function () {
 			$(
-				'<form id="form" action="#form"><ol>' +
-					'<li><input type="text" name="input01" id="input01" /></li>' +
-					'<li><input type="text" name="input02" id="input02" /></li>' +
+				'<form id="form" action="javascript:"><ol>' +
+					'<li><input type="text" name="input1" id="input1" /></li>' +
+					'<li><input type="text" name="input2" id="input2" /></li>' +
 				'</ol></form>'
 			).appendTo('body');
 		},
@@ -39,14 +39,14 @@ Tester.use('console', 'test', function(Y){
 				$(evt.target).before('<span class="relevant">IRRELEVANT</span>');
 			});
 
-			Assert.areSame(0, $('#input01').prev('.relevant').length);
-			Assert.areSame(0, $('#input01').forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event fired when relevance did not change');
-			Assert.areSame(1, $('#input01').forces_attr('relevant', false).forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event not detected');
-			Assert.areSame('RELEVANT', $('#input01').prev('.relevant').text());
+			Assert.areSame(0, $('#input1').prev('.relevant').length);
+			Assert.areSame(0, $('#input1').forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event fired when relevance did not change');
+			Assert.areSame(1, $('#input1').forces_attr('relevant', false).forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event not detected');
+			Assert.areSame('RELEVANT', $('#input1').prev('.relevant').text());
 
-			Assert.areSame(0, $('#input02').prev('.relevant').length);
-			Assert.areSame(1, $('#input02').forces_attr('relevant', false).prev('.relevant').length);
-			Assert.areSame('IRRELEVANT', $('#input02').prev('.relevant').text());
+			Assert.areSame(0, $('#input2').prev('.relevant').length);
+			Assert.areSame(1, $('#input2').forces_attr('relevant', false).prev('.relevant').length);
+			Assert.areSame('IRRELEVANT', $('#input2').prev('.relevant').text());
 		},
 
 
@@ -58,14 +58,14 @@ Tester.use('console', 'test', function(Y){
 				$(evt.target).before('<span class="required">OPTIONAL</span>');
 			});
 
-			Assert.areSame(0, $('#input01').prev('.required').length);
-			Assert.areSame(1, $('#input01').forces_attr('required', true).prev('.required').length);
-			Assert.areSame('REQUIRED', $('#input01').prev('.required').text());
+			Assert.areSame(0, $('#input1').prev('.required').length);
+			Assert.areSame(1, $('#input1').forces_attr('required', true).prev('.required').length);
+			Assert.areSame('REQUIRED', $('#input1').prev('.required').text());
 
-			Assert.areSame(0, $('#input02').prev('.required').length);
-			Assert.areSame(0, $('#input02').forces_attr('required', false).prev('.required').length, 'OPTIONAL event fired when required state did not change');
-			Assert.areSame(1, $('#input02').forces_attr('required', true).forces_attr('required', false).prev('.required').length);
-			Assert.areSame('OPTIONAL', $('#input02').prev('.required').text());
+			Assert.areSame(0, $('#input2').prev('.required').length);
+			Assert.areSame(0, $('#input2').forces_attr('required', false).prev('.required').length, 'OPTIONAL event fired when required state did not change');
+			Assert.areSame(1, $('#input2').forces_attr('required', true).forces_attr('required', false).prev('.required').length);
+			Assert.areSame('OPTIONAL', $('#input2').prev('.required').text());
 		},
 
 
@@ -75,7 +75,7 @@ Tester.use('console', 'test', function(Y){
 			});
 			
 			Assert.areSame(0, $('.submit-error').length, 'SUBMIT ERROR should not be present before submit event');
-			$('#input01').forces_attr('required', true);
+			$('#input1').forces_attr('required', true);
 			$('#form').submit();
 			Assert.areSame('SUBMIT ERROR', $('#form').find('.submit-error').text(), 'SUBMIT ERROR should occur on submit with invalid control');
 		},
@@ -96,7 +96,25 @@ Tester.use('console', 'test', function(Y){
 			this.wait(function() {
 				Assert.areSame(true, wasSubmitted(submitted), 'submit after tolerance should proceed');
 			}, $.forces.SUBMIT_TOLERANCE + 100);
+		},
+
+		
+		test_submitErrorsDoNotSuppressSubmit: function () {
+			var submitted = 0;
+			$('#form').submit(function() { ++submitted; });
+			$('#form').bind($.forces.EVENT_SUBMIT_ERROR, function() { --submitted; });
+			
+			function wasSubmitted(wasSubmitted) {
+				$('#form').submit();
+				return submitted > wasSubmitted;
+			}
+			
+			$('#input1').forces_attr('required', true);
+			Assert.areSame(false, wasSubmitted(submitted), 'submitted blank (required) field');
+			$('#input1').val('foo');
+			Assert.areSame(true, wasSubmitted(submitted), 'unable to submit (suppressed) after correcting invalid field');
 		}
+		
 	}));
 
 

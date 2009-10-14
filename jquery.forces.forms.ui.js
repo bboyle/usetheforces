@@ -31,14 +31,19 @@ $.extend($.expr[':'], {
 
 // event: required/optional toggle
 $(document).bind($F.EVENT_REQUIRED, function(evt) {
-	// TODO don't duplicate * if already present in UI!
-	$(evt.target).closest(':-xf-control').find(':-xf-label').after('<abbr class="xf-required" title="required">*</abbr>');
+	$(evt.target).closest(':-xf-control')
+		.find('.xf-required').remove().end()
+		.find(':-xf-label').after('<abbr class="xf-required" title="required">*</abbr>');
 });
 $(document).bind($F.EVENT_OPTIONAL, function(evt) {
 	$(evt.target).closest(':-xf-control').find('.xf-required').remove();
 });
 $(document).bind($F.EVENT_SUBMIT_ERROR, function(evt, invalidFields) {
-	$(evt.target).closest(':-tf-form').before('<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1></div></div>');
+	var errorList = '';
+	if (invalidFields) invalidFields.each(function() {
+		errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
+	});
+	$(evt.target).closest(':-tf-form').before('<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol>' + errorList + '</ol></div></div>');
 });
 
 
