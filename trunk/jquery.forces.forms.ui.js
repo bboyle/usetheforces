@@ -39,6 +39,9 @@ $(document).bind($F.EVENT_OPTIONAL, function(evt) {
 	$(evt.target).closest(':-xf-control').find('.xf-required').remove();
 });
 $(document).bind($F.EVENT_SUBMIT_ERROR, function(evt, invalidFields) {
+	// TODO must reuse/replace (not duplicate) status block!
+	// form.data('-tf-status', statusObject) ?
+	// fadeIn and focus/scrollTo (location.hash) ?
 	var errorList = '';
 	if (invalidFields) invalidFields.each(function() {
 		errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
