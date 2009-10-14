@@ -14,11 +14,16 @@
 	var EVENT_OPTIONAL = $F.EVENT_OPTIONAL = '-xf-optional';
 	var EVENT_RELEVANT = $F.EVENT_RELEVANT = '-xf-relevant';
 	var EVENT_IRRELEVANT = $F.EVENT_IRRELEVANT = '-xf-irrelevant';
+	var EVENT_SUBMIT_ERROR = $F.EVENT_SUBMIT_ERROR = '-xf-submit-error';
 	$F.SUBMIT_TOLERANCE = 10000;
+	var SUBMIT_TIMESTAMP = '-tf-submitted';
 
 
 // selectors
 $.extend($.expr[':'], {
+	'-tf-blank': function(e) {
+		return $.trim($(e).val()).length == 0;
+	},
 	'-tf-irrelevant': function(e) {
 		return ($(e).data('-tf-FLAGS') & 1) != 0;
 	},
@@ -27,6 +32,10 @@ $.extend($.expr[':'], {
 	},
 	'-tf-required': function(e) {
 		return ($(e).data('-tf-FLAGS') & 4) != 0;
+	},
+	'-tf-valid': function(e) {
+		// valid unless required and blank
+		return !$(e).is(':-tf-required:-tf-blank');
 	}
 });
 
@@ -70,11 +79,11 @@ $.fn.forces_removeAttr = function(name) {
 
 // recalculate all fields
 $.fn.forces_recalculate = function() {
-	var e, f = 0, d = $(document);
+	var e, f = 0;
 	
 	var _flagEvent = function(e, flag, set, event) {
 		e.forces__flags(flag, set);
-		d.trigger(event, [e]);
+		e.trigger(event);
 	};
 	
 	
@@ -125,22 +134,31 @@ $(document).bind('submit', function(evt) {
 	var form = $(evt.target);
 
 	// is this form being managed by forces?
+	if (true) {
 		
 		// is this submit event too soon after the last one?
-		if (form.data('-tf-submit') && evt.timeStamp - form.data('-tf-submit') < $F.SUBMIT_TOLERANCE) {
+		if (form.data(SUBMIT_TIMESTAMP) && evt.timeStamp - form.data(SUBMIT_TIMESTAMP) < $F.SUBMIT_TOLERANCE) {
 			// cancel the submit event
 			evt.stopImmediatePropagation();
 			return false;
 		}
 
 		// prevent repeat submit events (store time of submit)
-		form.data('-tf-submit', evt.timeStamp);
+		form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 		
 		// validate all fields of unknown validity
+
 		// are there invalid fields?
+		var invalid = form.find(':text').filter(':not(:-tf-valid)');
+		if (invalid.length) {
 			// throw a submit error
+			form.trigger(EVENT_SUBMIT_ERROR, [invalid]);
 			// re-enable submit events (delete the stored submit time)
+			form.removeData(SUBMIT_TIMESTAMP);
 			// cancel this submit event
+			return false;
+		}
+	}
 
 	// submission is ok
 	return true;
