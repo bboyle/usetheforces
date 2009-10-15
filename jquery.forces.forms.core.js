@@ -9,33 +9,33 @@
 (function($){
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
-	// CONSTANTS
-	var EVENT_REQUIRED = $F.EVENT_REQUIRED = '-xf-required';
-	var EVENT_OPTIONAL = $F.EVENT_OPTIONAL = '-xf-optional';
-	var EVENT_RELEVANT = $F.EVENT_RELEVANT = '-xf-relevant';
-	var EVENT_IRRELEVANT = $F.EVENT_IRRELEVANT = '-xf-irrelevant';
-	var EVENT_SUBMIT_ERROR = $F.EVENT_SUBMIT_ERROR = '-xf-submit-error';
+	// CONSTANTS (public)
+	$F.EVENT_REQUIRED = '-xf-required';
+	$F.EVENT_OPTIONAL = '-xf-optional';
+	$F.EVENT_RELEVANT = '-xf-relevant';
+	$F.EVENT_IRRELEVANT = '-xf-irrelevant';
+	$F.EVENT_SUBMIT_ERROR = '-xf-submit-error';
 	$F.SUBMIT_TOLERANCE = 10000;
+	// constants (private)
 	var SUBMIT_TIMESTAMP = '-tf-submitted';
 
 
 // selectors
 $.extend($.expr[':'], {
-	'-tf-blank': function(e) {
+	'-xf-empty': function(e) {
 		return $.trim($(e).val()).length == 0;
 	},
-	'-tf-irrelevant': function(e) {
+	'-xf-irrelevant': function(e) {
 		return ($(e).data('-tf-FLAGS') & 1) != 0;
 	},
-	'-tf-relevant': function(e) {
+	'-xf-optional': function(e) {
+		return ($(e).data('-tf-FLAGS') & 4) == 0;
+	},
+	'-xf-relevant': function(e) {
 		return ($(e).data('-tf-FLAGS') & 1) == 0;
 	},
-	'-tf-required': function(e) {
+	'-xf-required': function(e) {
 		return ($(e).data('-tf-FLAGS') & 4) != 0;
-	},
-	'-tf-valid': function(e) {
-		// valid unless required and blank
-		return !$(e).is(':-tf-required:-tf-blank');
 	}
 });
 
@@ -45,7 +45,7 @@ $.fn.forces_attr = function(name, value) {
 	// read
 	if (typeof(value) == 'undefined') {
 		value = this.data('-tf-@'+name);
-		return  value ? value : (this.is(':-tf-'+name) ? name : null);
+		return  value ? value : (this.is(':-xf-'+name) ? name : null);
 	}
 	// write
 	switch (name) {
@@ -94,19 +94,18 @@ $.fn.forces_recalculate = function() {
 		// relevant
 		switch (f & 3) {
 			case 2: // -> irrelevant
-				_flagEvent(e, 1, true, EVENT_IRRELEVANT);
+				_flagEvent(e, 1, true, $F.EVENT_IRRELEVANT);
 			break;
 			case 1: // -> relevant
-				_flagEvent(e, 1, false, EVENT_RELEVANT);
+				_flagEvent(e, 1, false, $F.EVENT_RELEVANT);
 			break;
 		}
-
 		switch (f & 12) {
 			case 8: // -> required
-				_flagEvent(e, 4, true, EVENT_REQUIRED);
+				_flagEvent(e, 4, true, $F.EVENT_REQUIRED);
 			break;
 			case 4: // -> optional
-				_flagEvent(e, 4, false, EVENT_OPTIONAL);
+				_flagEvent(e, 4, false, $F.EVENT_OPTIONAL);
 			break;
 		}
 
@@ -130,8 +129,8 @@ $.fn.forces__flags = function(flag, add) {
 
 
 // form submission
-$(document).bind('submit', function(evt) {
-	var form = $(evt.target);
+$F.submitHandler = function(evt) {
+	var form = $(this);
 
 	// is this form being managed by forces?
 	if (true) {
@@ -149,10 +148,10 @@ $(document).bind('submit', function(evt) {
 		// validate all fields of unknown validity
 
 		// are there invalid fields?
-		var invalid = form.find(':text').filter(':not(:-tf-valid)');
+		var invalid = form.find(':text').filter(':-xf-required:-xf-empty');
 		if (invalid.length) {
 			// throw a submit error
-			form.trigger(EVENT_SUBMIT_ERROR, [invalid]);
+			form.trigger($F.EVENT_SUBMIT_ERROR);
 			// re-enable submit events (delete the stored submit time)
 			form.removeData(SUBMIT_TIMESTAMP);
 			// cancel this submit event
@@ -162,7 +161,14 @@ $(document).bind('submit', function(evt) {
 
 	// submission is ok
 	return true;
-});
+};
+$('form').live('submit', $F.submitHandler);
+
+
+/* TODO disable forces
+$.fn.forces_disable( = function) {
+	$('form').die('submit', $F.SubmitHandler);
+}*/
 
 
 
