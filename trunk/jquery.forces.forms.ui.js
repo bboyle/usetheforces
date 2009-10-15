@@ -10,6 +10,11 @@
 (function($){
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
+	// CONSTANTS (public)
+	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
+	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
+	// constants (private)
+	var DOM_STATUS = '-tfui-status';
 
 
 // selectors
@@ -18,7 +23,7 @@ $.extend($.expr[':'], {
 		return $(e).is('.tf-form');
 	},
 	'-xf-control': function(e) {
-		return $(e).is('.xf-input,.xf-select,.xf-group');
+		return $(e).is('.xf-input,.xf-select');
 	},
 	'-xf-group': function(e) {
 		return $(e).is('.xf-group');
@@ -29,25 +34,36 @@ $.extend($.expr[':'], {
 });
 
 
-// event: required/optional toggle
-$(document).bind($F.EVENT_REQUIRED, function(evt) {
-	$(evt.target).closest(':-xf-control')
+$(':-xf-control')
+.live($F.EVENT_REQUIRED, function() {
+	$(this)
 		.find('.xf-required').remove().end()
-		.find(':-xf-label').after('<abbr class="xf-required" title="required">*</abbr>');
+		.find(':-xf-label').after($F.HTML_REQUIRED);
+})
+.live($F.EVENT_OPTIONAL, function() {
+	$(this).find('.xf-required').remove();
 });
-$(document).bind($F.EVENT_OPTIONAL, function(evt) {
-	$(evt.target).closest(':-xf-control').find('.xf-required').remove();
-});
-$(document).bind($F.EVENT_SUBMIT_ERROR, function(evt, invalidFields) {
-	// TODO must reuse/replace (not duplicate) status block!
-	// form.data('-tf-status', statusObject) ?
-	// fadeIn and focus/scrollTo (location.hash) ?
+
+$(':-tf-form').live($F.EVENT_SUBMIT_ERROR, function() {
+	//  focus/scrollTo (location.hash) ?
+	var form = $(this);
+	var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
 	var errorList = '';
-	if (invalidFields) invalidFields.each(function() {
-		errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
-	});
-	$(evt.target).closest(':-tf-form').before('<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol>' + errorList + '</ol></div></div>');
+
+	form
+	.find(':text')
+		.filter(':-xf-required:-xf-empty').each(function() {
+			errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
+		})
+		.end()
+	.end()
+	.before(status.find('ol').html(errorList).end().fadeIn(300).focus());
+	location.hash = status.attr('id') || status.attr('id', $F.generateId()).attr('id');
 });
+
+
+// setup
+//$('abbr.xf-required').closest(':-xf-control').forces_attr('required', true);
 
 
 })(jQuery);

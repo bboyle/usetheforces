@@ -8,7 +8,7 @@ Tester.use('console', 'test', function(Y){
 
 	// form objects unit tests
 	Y.forces.test.FormUiUnitSuite.add(new Y.Test.Case({
-		name: "Form objects unit tests",
+		name: "Form UI objects unit tests",
 
 		//---------------------------------------------
 		// Setup and tear down
@@ -136,8 +136,6 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(1, $('#question2').find('abbr.xf-required').length, 'required marker should be shown');
 			$('#input1, #input2').forces_attr('required', false);
 			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
-			// event not triggered if field not known to be "required"
-			//Assert.areSame(0, $('#question2').find('abbr.xf-required').length, 'required marker should not be shown');
 		}
 	}));
 
@@ -172,12 +170,14 @@ Tester.use('console', 'test', function(Y){
 		test_alertStatusShownOnSubmitError: function() {
 			$('#form').trigger($.forces.EVENT_SUBMIT_ERROR);
 			var status = $('#form-container').prev('div');
-			Assert.areSame(true, status.is('div.tf-status'), 'div.tf-status not found');
 			Assert.areSame(true, status.children().is('div.tf-alert'), 'div.tf-status > div.tf-alert not found');
 			Assert.areSame(1, status.find('h1').length, 'h1 not found');
 			Assert.areSame('Unable to submit form', status.find('h1').text());
+			// second error should not create a new error box
+			$('#form').trigger($.forces.EVENT_SUBMIT_ERROR);
+			Assert.areSame(1, $('div.tf-status').length, 'submit error box duplicated')
 			// clean up
-			status.remove();
+			$('div.tf-alert').remove();
 		},
 
 
@@ -187,7 +187,7 @@ Tester.use('console', 'test', function(Y){
 			var status = $('div.tf-status');
 			Assert.areSame($('#input1').closest(':-xf-control').find(':-xf-label').text(), status.find('li').text(), 'control label not shown in alert');
 			// clean up
-			status.remove();
+			$('div.tf-alert').remove();
 		}
 	}));
 	
