@@ -21,6 +21,9 @@ h1, h2, legend, caption {
 	-moz-border-radius: 1.5em;
 	-webkit-border-radius: 1.5em;
 }
+.tf-form.xf-submit-error {
+	background: #c00;
+}
 
 
 .xf-group,

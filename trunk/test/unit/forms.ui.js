@@ -181,6 +181,15 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_classSetOnSubmitError: function() {
+			$('#form').trigger($.forces.EVENT_SUBMIT_ERROR);
+			Assert.areSame('xf-submit-error', $.forces.CSS_SUBMIT_ERROR);
+			Assert.areSame(true, $('#input1').closest(':-tf-form').hasClass($.forces.CSS_SUBMIT_ERROR));
+			// clean up
+			$('div.tf-alert').remove();
+		},
+
+
 		test_labelShownOnSubmitError: function() {
 			$('#input1').forces_attr('required', true);
 			$('#form').submit();

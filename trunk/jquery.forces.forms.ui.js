@@ -13,6 +13,7 @@
 	// CONSTANTS (public)
 	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
 	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
+	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
 	// constants (private)
 	var DOM_STATUS = '-tfui-status';
 
@@ -51,6 +52,7 @@ $(':-tf-form').live($F.EVENT_SUBMIT_ERROR, function() {
 	var errorList = '';
 
 	form
+	.addClass($F.CSS_SUBMIT_ERROR)
 	.find(':text')
 		.filter(':-xf-required:-xf-empty').each(function() {
 			errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
