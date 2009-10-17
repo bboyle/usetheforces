@@ -131,12 +131,26 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
 			Assert.areSame(0, $('#question2').find('abbr.xf-required').length, 'required marker should not be shown');
 		},
+
+
 		test_requiredFieldMarkerHidden: function() {
 			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
 			Assert.areSame(1, $('#question2').find('abbr.xf-required').length, 'required marker should be shown');
 			$('#input1, #input2').forces_attr('required', false);
 			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
-		}
+		},
+
+
+		test_onlyRelevantFieldsAreEnabled: function() {
+			var input = $('#input1');
+			Assert.areSame(false, input.get(0).hasAttribute('disabled'), 'input should not have @disabled by default');
+			input.forces_attr('relevant', false);
+			Assert.areSame(true, input.get(0).hasAttribute('disabled'), 'input missing @disabled when not relevant');
+			Assert.areSame(true, input.attr('disabled'), '"disabled" property should be "true" when irrelevant');
+			Assert.areSame('disabled', input.get(0).getAttribute('disabled'), '@disabled attribute should be "disabled" when irrelevant');
+			input.forces_attr('relevant', true);
+			Assert.areSame(false, input.get(0).hasAttribute('disabled'), 'input should not have @disabled when made relevant');
+		},
 	}));
 
 
@@ -168,13 +182,13 @@ Tester.use('console', 'test', function(Y){
 		//---------------------------------------------
 
 		test_alertStatusShownOnSubmitError: function() {
-			$('#form').trigger($.forces.EVENT_SUBMIT_ERROR);
+			$('#form').trigger($.forces.EVENT_XF_SUBMIT_ERROR);
 			var status = $('#form-container').prev('div');
 			Assert.areSame(true, status.children().is('div.tf-alert'), 'div.tf-status > div.tf-alert not found');
 			Assert.areSame(1, status.find('h1').length, 'h1 not found');
 			Assert.areSame('Unable to submit form', status.find('h1').text());
 			// second error should not create a new error box
-			$('#form').trigger($.forces.EVENT_SUBMIT_ERROR);
+			$('#form').trigger($.forces.EVENT_XF_SUBMIT_ERROR);
 			Assert.areSame(1, $('div.tf-status').length, 'submit error box duplicated')
 			// clean up
 			$('div.tf-alert').remove();
@@ -182,7 +196,7 @@ Tester.use('console', 'test', function(Y){
 
 
 		test_classSetOnSubmitError: function() {
-			$('#form').trigger($.forces.EVENT_SUBMIT_ERROR);
+			$('#form').trigger($.forces.EVENT_XF_SUBMIT_ERROR);
 			Assert.areSame('xf-submit-error', $.forces.CSS_SUBMIT_ERROR);
 			Assert.areSame(true, $('#input1').closest(':-tf-form').hasClass($.forces.CSS_SUBMIT_ERROR));
 			// clean up

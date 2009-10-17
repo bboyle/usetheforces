@@ -36,16 +36,29 @@ $.extend($.expr[':'], {
 
 
 $(':-xf-control')
-.live($F.EVENT_REQUIRED, function() {
+.live($F.EVENT_XF_REQUIRED, function() {
 	$(this)
 		.find('.xf-required').remove().end()
 		.find(':-xf-label').after($F.HTML_REQUIRED);
 })
-.live($F.EVENT_OPTIONAL, function() {
+.live($F.EVENT_XF_OPTIONAL, function() {
 	$(this).find('.xf-required').remove();
+})
+.live($F.EVENT_XF_ENABLED, function() {
+	$(this)
+		.find(':text').each(function() {
+			this.removeAttribute('disabled');
+		});
+})
+.live($F.EVENT_XF_DISABLED, function() {
+	$(this)
+		.find(':text').each(function() {
+			this.setAttribute('disabled', 'disabled');
+		});
 });
 
-$(':-tf-form').live($F.EVENT_SUBMIT_ERROR, function() {
+
+$(':-tf-form').live($F.EVENT_XF_SUBMIT_ERROR, function() {
 	//  focus/scrollTo (location.hash) ?
 	var form = $(this);
 	var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
