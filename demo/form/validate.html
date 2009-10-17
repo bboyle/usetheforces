@@ -125,6 +125,10 @@
 
 $('#my-amount,#my-discount').forces_attr('required', true);
 
+$('#my-amount').parent().click(function() {
+	$('#my-amount').forces_attr('relevant', !confirm('Disable "Amount" field?'));
+});
+
 var submitCount = 0;
 // bind to document; if attached as $('form').submit() it will execute before submit is suppressed
 $(document).bind('submit', function() {

@@ -32,29 +32,29 @@ Tester.use('console', 'test', function(Y){
 		//---------------------------------------------
 
 		test_relevantEventsFireCorrectly: function () {
-			$(document).bind($.forces.EVENT_RELEVANT, function(evt) {
-				$(evt.target).before('<span class="relevant">RELEVANT</span>');
+			$(document).bind($.forces.EVENT_XF_ENABLED, function(evt) {
+				$(evt.target).before('<span class="relevant">ENABLED</span>');
 			});
-			$(document).bind($.forces.EVENT_IRRELEVANT, function(evt) {
-				$(evt.target).before('<span class="relevant">IRRELEVANT</span>');
+			$(document).bind($.forces.EVENT_XF_DISABLED, function(evt) {
+				$(evt.target).before('<span class="relevant">DISABLED</span>');
 			});
 
 			Assert.areSame(0, $('#input1').prev('.relevant').length);
 			Assert.areSame(0, $('#input1').forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event fired when relevance did not change');
 			Assert.areSame(1, $('#input1').forces_attr('relevant', false).forces_attr('relevant', true).prev('.relevant').length, 'RELEVANT event not detected');
-			Assert.areSame('RELEVANT', $('#input1').prev('.relevant').text());
+			Assert.areSame('ENABLED', $('#input1').prev('.relevant').text());
 
 			Assert.areSame(0, $('#input2').prev('.relevant').length);
 			Assert.areSame(1, $('#input2').forces_attr('relevant', false).prev('.relevant').length);
-			Assert.areSame('IRRELEVANT', $('#input2').prev('.relevant').text());
+			Assert.areSame('DISABLED', $('#input2').prev('.relevant').text());
 		},
 
 
 		test_requiredEventsFireCorrectly: function () {
-			$(document).bind($.forces.EVENT_REQUIRED, function(evt) {
+			$(document).bind($.forces.EVENT_XF_REQUIRED, function(evt) {
 				$(evt.target).before('<span class="required">REQUIRED</span>');
 			});
-			$(document).bind($.forces.EVENT_OPTIONAL, function(evt) {
+			$(document).bind($.forces.EVENT_XF_OPTIONAL, function(evt) {
 				$(evt.target).before('<span class="required">OPTIONAL</span>');
 			});
 
@@ -69,15 +69,22 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
-		test_submitErrorEventFiresCorrectly: function () {
-			$(document).bind($.forces.EVENT_SUBMIT_ERROR, function(evt) {
-				$(evt.target).prepend('<span class="submit-error">SUBMIT ERROR</span>');
-			});
-			
-			Assert.areSame(0, $('.submit-error').length, 'SUBMIT ERROR should not be present before submit event');
+		test_submitEventsFireCorrectly: function() {
+			var done = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_DONE, function() { ++done; });
+			var error = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_ERROR, function() { ++error; });
+
+			Assert.areSame(0, done, '"DONE" should not fire before submission occurs');
+			Assert.areSame(0, error, '"ERROR" should not fire before submission occurs');
 			$('#input1').forces_attr('required', true);
 			$('#form').submit();
-			Assert.areSame('SUBMIT ERROR', $('#form').find('.submit-error').text(), 'SUBMIT ERROR should occur on submit with invalid control');
+			Assert.areSame(0, done, '"DONE" should not fire on submit failure');
+			Assert.areSame(1, error, '"ERROR" should fire on submit failure');
+			$('#input1').forces_attr('required', false);
+			$('#form').submit();
+			Assert.areSame(1, done, '"DONE" should fire on submit success');
+			Assert.areSame(1, error, '"ERROR" should not fire on submit failure');
 		},
 
 
@@ -102,7 +109,7 @@ Tester.use('console', 'test', function(Y){
 		test_submitErrorsDoNotSuppressSubmit: function () {
 			var submitted = 0;
 			$('#form').submit(function() { ++submitted; });
-			$('#form').bind($.forces.EVENT_SUBMIT_ERROR, function() { --submitted; });
+			$('#form').bind($.forces.EVENT_XF_SUBMIT_ERROR, function() { --submitted; });
 			
 			function wasSubmitted(wasSubmitted) {
 				$('#form').submit();

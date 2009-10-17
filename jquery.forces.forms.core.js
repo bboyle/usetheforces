@@ -10,11 +10,12 @@
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
 	// CONSTANTS (public)
-	$F.EVENT_REQUIRED = '-xf-required';
-	$F.EVENT_OPTIONAL = '-xf-optional';
-	$F.EVENT_RELEVANT = '-xf-relevant';
-	$F.EVENT_IRRELEVANT = '-xf-irrelevant';
-	$F.EVENT_SUBMIT_ERROR = '-xf-submit-error';
+	$F.EVENT_XF_REQUIRED = '-xf-required';
+	$F.EVENT_XF_OPTIONAL = '-xf-optional';
+	$F.EVENT_XF_ENABLED = '-xf-enabled';
+	$F.EVENT_XF_DISABLED = '-xf-disabled';
+	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
+	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
 	$F.SUBMIT_TOLERANCE = 10000;
 	// constants (private)
 	var SUBMIT_TIMESTAMP = '-tf-submitted';
@@ -94,18 +95,18 @@ $.fn.forces_recalculate = function() {
 		// relevant
 		switch (f & 3) {
 			case 2: // -> irrelevant
-				_flagEvent(e, 1, true, $F.EVENT_IRRELEVANT);
+				_flagEvent(e, 1, true, $F.EVENT_XF_DISABLED);
 			break;
 			case 1: // -> relevant
-				_flagEvent(e, 1, false, $F.EVENT_RELEVANT);
+				_flagEvent(e, 1, false, $F.EVENT_XF_ENABLED);
 			break;
 		}
 		switch (f & 12) {
 			case 8: // -> required
-				_flagEvent(e, 4, true, $F.EVENT_REQUIRED);
+				_flagEvent(e, 4, true, $F.EVENT_XF_REQUIRED);
 			break;
 			case 4: // -> optional
-				_flagEvent(e, 4, false, $F.EVENT_OPTIONAL);
+				_flagEvent(e, 4, false, $F.EVENT_XF_OPTIONAL);
 			break;
 		}
 
@@ -151,7 +152,7 @@ $F.submitHandler = function(evt) {
 		var invalid = form.find(':text').filter(':-xf-required:-xf-empty');
 		if (invalid.length) {
 			// throw a submit error
-			form.trigger($F.EVENT_SUBMIT_ERROR);
+			form.trigger($F.EVENT_XF_SUBMIT_ERROR);
 			// re-enable submit events (delete the stored submit time)
 			form.removeData(SUBMIT_TIMESTAMP);
 			// cancel this submit event
@@ -160,6 +161,7 @@ $F.submitHandler = function(evt) {
 	}
 
 	// submission is ok
+	form.trigger($F.EVENT_XF_SUBMIT_DONE);
 	return true;
 };
 $('form').live('submit', $F.submitHandler);
