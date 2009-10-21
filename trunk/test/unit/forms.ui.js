@@ -43,42 +43,59 @@ Tester.use('console', 'test', function(Y){
 			).appendTo('body');
 		},
 
+
 		tearDown: function() {
 			$('#form-container').remove();
 		},
+
 
 		//---------------------------------------------
 		// Tests
 		//---------------------------------------------
 
+
 		test_canFindControlForInput: function() {
 			Assert.areSame(document.getElementById('input01-container'), $('#input01').closest(':-xf-control').get(0));
 		},
+
+
 		test_canFindLabelForInput: function() {
 			Assert.areSame("Input", $('#input01').closest(':-xf-control').find(':-xf-label').text());
 		},
+
+
 		test_canFindRequiredMarkerForInput: function() {
 			$('#input01').forces_attr('required', true);
 			Assert.areSame(1, $('#label-input').find('.xf-required').length);
 			Assert.areSame("Input*", $('#label-input').text());
 		},
+
+
 		test_canFindControlForSelect: function() {
 			Assert.areSame(document.getElementById('select-container'), $('#selectA').closest(':-xf-control').get(0));
 			Assert.areSame(document.getElementById('select-container'), $('#selectB').closest(':-xf-control').get(0));
 			Assert.areSame(document.getElementById('select-container'), $('#selectC').closest(':-xf-control').get(0));
 		},
+
+
 		test_canFindLabelForSelect: function() {
 			Assert.areSame("Select", $('#selectB').closest(':-xf-control').find(':-xf-label').text());
 		},
+
+
 		test_canFindGroupControl: function() {
 			Assert.areSame(false, $('#name-given').is(':-xf-group'));
 			Assert.areSame(1, $('#name-given').parents(':-xf-group').length);
 			Assert.areSame(document.getElementById('group'), $('#name-given').closest(':-xf-group').get(0));
 		},
+
+
 		test_canFindGroupLabel: function() {
 			Assert.areSame("Given name(s)", $('#name-given').closest(':-xf-control').find(':-xf-label').eq(0).text());
 			Assert.areSame("Name", $('#name-given').closest(':-xf-group').find(':-xf-label').eq(0).text());
 		},
+
+
 		test_canFindForm: function() {
 			Assert.areSame(1, $('#input01').closest(':-tf-form').length, 'should find one form');
 			Assert.areSame('form-container', $('#input01').closest(':-tf-form').attr('id'), 'should find correct form');
@@ -151,6 +168,46 @@ Tester.use('console', 'test', function(Y){
 			input.forces_attr('relevant', true);
 			Assert.areSame(false, input.get(0).hasAttribute('disabled'), 'input should not have @disabled when made relevant');
 		},
+
+
+		// TODO quality control (is this test accurate? does it fail when it should?)
+		test_irrelevantFieldsAreHidden: function() {
+			var input = $('#input1');
+			var question = $('#question1');
+			Assert.areNotSame('none', question.css('display'), 'relevant input should not be hidden');
+
+			input.forces_attr('relevant', false);
+			this.wait(function() {
+				Assert.areSame('none', question.css('display'), 'irrelevant input should be hidden');
+			}, $.forces.MS_DISABLED+1);
+
+			input.forces_attr('relevant', true);
+			this.wait(function() {
+				Assert.areSame('block', question.css('display'), 'relevant input should not be hidden');
+			}, $.forces.MS_ENABLED+1);
+		},
+
+
+		// TODO quality control (is this test accurate? does it fail when it should?)
+		test_relevantAnimationsGlitchFree: function() {
+			var input = $('#input1');
+			var question = $('#question1');
+			Assert.areNotSame('none', question.css('display'), 'relevant input should not be hidden');
+
+			input.forces_attr('relevant', false).forces_attr('relevant', true);
+			this.wait(function() {
+				Assert.areSame('block', question.css('display'), 'false -> true causes glitch (animation not stopped?)');
+			}, $.forces.MS_ENABLED+1);
+
+			input.forces_attr('relevant', false);
+			this.wait(function() {
+				Assert.areSame('none', question.css('display'), 'irrelevant input should be hidden');
+			}, $.forces.MS_DISABLED+1);
+			input.forces_attr('relevant', true).forces_attr('relevant', false);
+			this.wait(function() {
+				Assert.areSame('none', question.css('display'), 'true -> false causes glitch (animation not stopped?)');
+			}, $.forces.MS_DISABLED+1);
+		}
 	}));
 
 

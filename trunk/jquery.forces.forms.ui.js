@@ -14,6 +14,8 @@
 	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
 	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
 	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
+	$F.MS_ENABLE = 300;
+	$F.MS_DISABLE = 0;
 	// constants (private)
 	var DOM_STATUS = '-tfui-status';
 
@@ -48,13 +50,19 @@ $(':-xf-control')
 	$(this)
 		.find(':text').each(function() {
 			this.removeAttribute('disabled');
-		});
+		})
+		.end()
+	.stop(true, true)
+	.slideDown($F.MS_ENABLE);
 })
 .live($F.EVENT_XF_DISABLED, function() {
 	$(this)
 		.find(':text').each(function() {
 			this.setAttribute('disabled', 'disabled');
-		});
+		})
+		.end()
+	.stop(true, true)
+	.hide($F.MS_DISABLE);
 });
 
 

@@ -126,7 +126,7 @@
 $('#my-amount,#my-discount').forces_attr('required', true);
 
 $('#my-amount').parent().click(function() {
-	$('#my-amount').forces_attr('relevant', !confirm('Disable "Amount" field?'));
+	$('#my-discount').forces_attr('relevant', confirm('Want a discount?'));
 });
 
 var submitCount = 0;
