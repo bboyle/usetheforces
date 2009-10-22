@@ -25,6 +25,10 @@ h1, h2, legend, caption {
 	background: #c00;
 }
 
+.tf-active {
+	background: #FF0 !important;
+}
+
 
 .xf-group,
 .xf-input,

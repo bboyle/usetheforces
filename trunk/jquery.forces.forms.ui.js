@@ -14,6 +14,7 @@
 	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
 	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
 	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
+	$F.CSS_ACTIVE = 'tf-active';
 	$F.MS_ENABLE = 300;
 	$F.MS_DISABLE = 0;
 	// constants (private)
@@ -63,6 +64,12 @@ $(':-xf-control')
 		.end()
 	.stop(true, true)
 	.hide($F.MS_DISABLE);
+})
+.live($F.EVENT_XF_FOCUS_IN, function() {
+	$(this).addClass($F.CSS_ACTIVE);
+})
+.live($F.EVENT_XF_FOCUS_OUT, function() {
+	$(this).removeClass($F.CSS_ACTIVE);
 });
 
 
