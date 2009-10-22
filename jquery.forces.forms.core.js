@@ -10,6 +10,8 @@
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
 	// CONSTANTS (public)
+	$F.EVENT_XF_FOCUS_IN = '-xf-focus-in';
+	$F.EVENT_XF_FOCUS_OUT = '-xf-focus-out';
 	$F.EVENT_XF_REQUIRED = '-xf-required';
 	$F.EVENT_XF_OPTIONAL = '-xf-optional';
 	$F.EVENT_XF_ENABLED = '-xf-enabled';
@@ -165,6 +167,12 @@ $F.submitHandler = function(evt) {
 	return true;
 };
 $('form').live('submit', $F.submitHandler);
+
+
+// support for "live" focus/blur events
+$(':input').bind('focus blur', function(evt) {
+	$(evt.target).trigger(evt.type == 'focus' ? $F.EVENT_XF_FOCUS_IN : $F.EVENT_XF_FOCUS_OUT);
+});
 
 
 /* TODO disable forces
