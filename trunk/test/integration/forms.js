@@ -20,7 +20,7 @@ Tester.use('console', 'test', function(Y){
 					'<li><input type="text" name="input1" id="input1" /></li>' +
 					'<li><input type="text" name="input2" id="input2" /></li>' +
 				'</ol></form>'
-			).appendTo('body');
+			).appendTo('body').forces_enable();
 		},
 
 		tearDown: function () {
@@ -90,18 +90,27 @@ Tester.use('console', 'test', function(Y){
 
 		test_submitEventSuppression: function () {
 			var submitted = 0;
+			var suppressed = 0;
 			$(document).submit(function() { ++submitted; });
+			$('#form').bind($.forces.EVENT_TF_SUBMIT_SUPPRESSED, function() { ++suppressed; });
 			
 			function wasSubmitted(wasSubmitted) {
 				$('#form').submit();
 				return submitted > wasSubmitted;
 			}
 			
+			Assert.areSame(0, suppressed);
+
 			Assert.areSame(true, wasSubmitted(submitted));
+			Assert.areSame(0, suppressed);
+
 			Assert.areSame(false, wasSubmitted(submitted), 'repeated submit not suppressed');
+			Assert.areSame(1, suppressed, 'suppressed event not observed');
+
 			Y.log('test_submitEventSuppression called timeout ' + $.forces.SUBMIT_TOLERANCE + 'ms, please wait ...', 'wait', 'TestRunner');
 			this.wait(function() {
 				Assert.areSame(true, wasSubmitted(submitted), 'submit after tolerance should proceed');
+				Assert.areSame(1, suppressed, 'extra suppressed event counted');
 			}, $.forces.SUBMIT_TOLERANCE + 100);
 		},
 
