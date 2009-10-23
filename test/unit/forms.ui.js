@@ -126,7 +126,7 @@ Tester.use('console', 'test', function(Y){
 						'</li>' +
 					'</ol></form>' +
 				'</div>'
-			).appendTo('body');
+			).appendTo('body').forces_enable();
 		},
 
 		tearDown: function() {
@@ -215,14 +215,10 @@ Tester.use('console', 'test', function(Y){
 
 			var classActive = $.forces.CSS_ACTIVE;
 			var question1 = $('#question1');
-			var inpu1 = $('#input1');
+			var input1 = $('#input1');
 
 			Assert.areSame(false, question1.hasClass(classActive));
 
-			// TODO tests failing, focus/blur handlers not bound on dynamically inserted form used for this test
-			// need to bind event handles in setUp() method
-			// need a forces setup function to bind events that cannot be live?
-			// events should be namespaced? can custom events be namespaced?
 			input1.focus();
 			Assert.areSame(true, question1.hasClass(classActive));
 

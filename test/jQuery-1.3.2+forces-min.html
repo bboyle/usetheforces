@@ -8,6 +8,16 @@
 
 	<!-- Pass and fail background colors not applied to Console categories, see: http://yuilibrary.com/projects/yui3/ticket/2528275 -->
 	<style type="text/css">
+	<!--
+		.yui-console-entry-wait {
+			background: #EEE;
+		}
+		.yui-console-entry-pass {
+			background: #EFE;
+		}
+		.yui-console-entry-fail {
+			background: #FEE;
+		}
 		.yui-console-entry-pass .yui-console-entry-cat {
 			background: green !important;
 			color: white !important;
@@ -16,6 +26,11 @@
 			background: red !important;
 			color: white !important;
 		}
+		.yui-console-entry-wait .yui-console-entry-cat {
+			background: #777 !important;
+			color: white !important;
+		}
+	-->
 	</style>
 
 	<!-- init tests -->
@@ -33,6 +48,7 @@
 
 	<!-- tests -->
 	<script type="text/javascript" src="unit/date.js"></script>
+	<script type="text/javascript" src="unit/xpath.js"></script>
 	<script type="text/javascript" src="unit/forms.js"></script>
 	<script type="text/javascript" src="unit/forms.ui.js"></script>
 	<script type="text/javascript" src="integration/forms.js"></script>
