@@ -244,11 +244,11 @@ Tester.use('console', 'test', function(Y){
 					'<input type="text" name="input1" id="input1" /></li>' +
 				'</ol></form>' +
 				'</div>'
-			).appendTo('body');
+			).appendTo('body').forces_enable();
 		},
 
 		tearDown: function() {
-			$('#form-container').remove();
+			$('#form-container, div.tf-status').remove();
 		},
 
 		//---------------------------------------------
@@ -264,8 +264,6 @@ Tester.use('console', 'test', function(Y){
 			// second error should not create a new error box
 			$('#form').trigger($.forces.EVENT_XF_SUBMIT_ERROR);
 			Assert.areSame(1, $('div.tf-status').length, 'submit error box duplicated')
-			// clean up
-			$('div.tf-alert').remove();
 		},
 
 
@@ -273,8 +271,6 @@ Tester.use('console', 'test', function(Y){
 			$('#form').trigger($.forces.EVENT_XF_SUBMIT_ERROR);
 			Assert.areSame('xf-submit-error', $.forces.CSS_SUBMIT_ERROR);
 			Assert.areSame(true, $('#input1').closest(':-tf-form').hasClass($.forces.CSS_SUBMIT_ERROR));
-			// clean up
-			$('div.tf-alert').remove();
 		},
 
 
@@ -283,8 +279,6 @@ Tester.use('console', 'test', function(Y){
 			$('#form').submit();
 			var status = $('div.tf-status');
 			Assert.areSame($('#input1').closest(':-xf-control').find(':-xf-label').text(), status.find('li').text(), 'control label not shown in alert');
-			// clean up
-			$('div.tf-alert').remove();
 		}
 	}));
 	

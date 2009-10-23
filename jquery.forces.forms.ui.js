@@ -105,32 +105,38 @@
 
 
 	// submission UI
-	$(':-tf-form').live($F.EVENT_XF_SUBMIT_ERROR, function() {
-		var form = $(this);
-		var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
-		var errorList = '';
-	
-		form
-			.addClass($F.CSS_SUBMIT_ERROR)
-			.find(':text')
-				.filter(':-xf-required:-xf-empty')
-					.each(function() {
-						errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
-					})
-				.end()
-			.end()
-			.before(
-				status
-					.find('ol')
-						.html(errorList)
+	$(':-tf-form')
+		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
+			var form = $(this);
+			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
+			var errorList = '';
+		
+			form
+				.addClass($F.CSS_SUBMIT_ERROR)
+				.find(':text')
+					.filter(':-xf-required:-xf-empty')
+						.each(function() {
+							errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
+						})
 					.end()
-					.fadeIn(300)
-					.shake()
-					.focus()
-			)
-		;
-		location.hash = status.attr('id') || status.attr('id', $F.generateId()).attr('id');
-	});
+				.end()
+				.before(
+					status
+						.find('ol')
+							.html(errorList)
+						.end()
+						.fadeIn(300)
+						.focus()
+				)
+			;
+			$('html,body').animate({scrollTop: status.offset().top-5}, 100);
+			location.hash = status.attr('id') || status.attr('id', $F.generateId()).attr('id');
+			status.shake({ interval: 250, distance: 8, shakes: 1 });
+		})
+		.live($F.EVENT_TF_SUBMIT_SUPPRESSED, function() {
+			$(this).find(':submit').shake({ interval: 75, distance: 4, shakes: 2 });
+		})
+	;
 	
 	
 

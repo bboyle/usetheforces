@@ -17,14 +17,19 @@
 
 
 	// CONSTANTS (public)
+	$F.EVENT_XF_DISABLED = '-xf-disabled';
+	$F.EVENT_XF_ENABLED = '-xf-enabled';
+
 	$F.EVENT_XF_FOCUS_IN = '-xf-focus-in';
 	$F.EVENT_XF_FOCUS_OUT = '-xf-focus-out';
-	$F.EVENT_XF_REQUIRED = '-xf-required';
+
 	$F.EVENT_XF_OPTIONAL = '-xf-optional';
-	$F.EVENT_XF_ENABLED = '-xf-enabled';
-	$F.EVENT_XF_DISABLED = '-xf-disabled';
-	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
+	$F.EVENT_XF_REQUIRED = '-xf-required';
+
 	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
+	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
+	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
+
 	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
@@ -155,7 +160,7 @@
 
 
 	// form submission
-	$F.submitHandler = function(evt) {
+	$F.formSubmitHandler = function(evt) {
 		var form = $(this);
 	
 		// is this form being managed by forces?
@@ -165,6 +170,7 @@
 			if (form.data(SUBMIT_TIMESTAMP) && evt.timeStamp - form.data(SUBMIT_TIMESTAMP) < $F.SUBMIT_TOLERANCE) {
 				// cancel the submit event
 				evt.stopImmediatePropagation();
+				form.trigger($F.EVENT_TF_SUBMIT_SUPPRESSED);
 				return false;
 			}
 	
@@ -194,13 +200,19 @@
 
 
 
+	$F.inputEventHandler = function(evt) {
+		$(evt.target).trigger(evt.type == 'focus' ? $F.EVENT_XF_FOCUS_IN : $F.EVENT_XF_FOCUS_OUT);
+	};
+
+
+
+
+
 	// TODO enable/disabled forces (partially implemented)
-	$('form').live('submit', $F.submitHandler);
 	$.fn.forces_enable = function() {
+		$('form').bind('submit', $F.formSubmitHandler);
 		// support for "live" focus/blur events
-		$(':input').bind('focus blur', function(evt) {
-			$(evt.target).trigger(evt.type == 'focus' ? $F.EVENT_XF_FOCUS_IN : $F.EVENT_XF_FOCUS_OUT);
-		});
+		$(':input').bind('focus blur', $F.inputEventHandler);
 	};
 	
 	

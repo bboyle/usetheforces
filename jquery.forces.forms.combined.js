@@ -154,30 +154,29 @@ $F.generateId = function() {
 	 * This animation is similar to head shake gesture for "no" in Western cultures.
 	 * This approach has been taken for some Mac OS X UIs.
 	 * 
-	 * @param interval (integer, optional) The number of ms between animations
-	 * @param distance (integer, optional) Pixel distance to shake the ui element left and right of its initial position
-	 * @param shakes   (integer, optional) The number of times to shake the ui element
+	 * @param cfg { interval: 250, distance: 8, shakes: 2 }
+	 * - interval (integer, optional) The number of ms between animations
+	 * - distance (integer, optional) Pixel distance to shake the ui element left and right of its initial position
+	 * - shakes   (integer, optional) The number of times to shake the ui element
 	 * @return this jQuery object, to facilitate chaining
 	 */
-	$.fn.shake = function(/* optional */ interval, /* optional */ distance, /* optional */ shakes ) {
-		// init defaults for optional arguments
-		var interval = interval || 250;
-		var distance = distance || 8;
-		var shakes = shakes || 1;
+	$.fn.shake = function(cfg) {
+		// default config for optional arguments
+		cfg = $.extend({ interval: 75, distance: 10, shakes: 2 }, cfg);
 		
 		// store original margin offsets
-		var leftMargin = parseInt($(this).css('marginLeft'));
-		var rightMargin = parseInt($(this).css('marginRight'));
+		var leftMargin = parseInt($(this).css('marginLeft')) || 0;
+		var rightMargin = parseInt($(this).css('marginRight')) || 0;
 		
-		for (var i = 0; i < shakes; i++) {
+		for (var i = 0; i < cfg.shakes; i++) {
 			$(this)
-				.animate({ marginLeft: leftMargin-distance, marginRight: rightMargin+distance }, interval)
-				.animate({ marginLeft: leftMargin+distance, marginRight: rightMargin-distance }, interval)
+				.animate({ marginLeft: leftMargin-cfg.distance, marginRight: rightMargin+cfg.distance }, cfg.interval)
+				.animate({ marginLeft: leftMargin+cfg.distance, marginRight: rightMargin-cfg.distance }, cfg.interval)
 			;
 		}
 		
 		// reset margins to original offsets
-		return $(this).animate({ marginLeft: leftMargin, marginRight: rightMargin }, interval);
+		return $(this).animate({ marginLeft: leftMargin, marginRight: rightMargin }, cfg.interval);
 	};
 
 
@@ -205,14 +204,19 @@ $F.generateId = function() {
 
 
 	// CONSTANTS (public)
+	$F.EVENT_XF_DISABLED = '-xf-disabled';
+	$F.EVENT_XF_ENABLED = '-xf-enabled';
+
 	$F.EVENT_XF_FOCUS_IN = '-xf-focus-in';
 	$F.EVENT_XF_FOCUS_OUT = '-xf-focus-out';
-	$F.EVENT_XF_REQUIRED = '-xf-required';
+
 	$F.EVENT_XF_OPTIONAL = '-xf-optional';
-	$F.EVENT_XF_ENABLED = '-xf-enabled';
-	$F.EVENT_XF_DISABLED = '-xf-disabled';
-	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
+	$F.EVENT_XF_REQUIRED = '-xf-required';
+
 	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
+	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
+	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
+
 	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
@@ -343,7 +347,7 @@ $F.generateId = function() {
 
 
 	// form submission
-	$F.submitHandler = function(evt) {
+	$F.formSubmitHandler = function(evt) {
 		var form = $(this);
 	
 		// is this form being managed by forces?
@@ -353,6 +357,7 @@ $F.generateId = function() {
 			if (form.data(SUBMIT_TIMESTAMP) && evt.timeStamp - form.data(SUBMIT_TIMESTAMP) < $F.SUBMIT_TOLERANCE) {
 				// cancel the submit event
 				evt.stopImmediatePropagation();
+				form.trigger($F.EVENT_TF_SUBMIT_SUPPRESSED);
 				return false;
 			}
 	
@@ -382,13 +387,19 @@ $F.generateId = function() {
 
 
 
+	$F.inputEventHandler = function(evt) {
+		$(evt.target).trigger(evt.type == 'focus' ? $F.EVENT_XF_FOCUS_IN : $F.EVENT_XF_FOCUS_OUT);
+	};
+
+
+
+
+
 	// TODO enable/disabled forces (partially implemented)
-	$('form').live('submit', $F.submitHandler);
 	$.fn.forces_enable = function() {
+		$('form').bind('submit', $F.formSubmitHandler);
 		// support for "live" focus/blur events
-		$(':input').bind('focus blur', function(evt) {
-			$(evt.target).trigger(evt.type == 'focus' ? $F.EVENT_XF_FOCUS_IN : $F.EVENT_XF_FOCUS_OUT);
-		});
+		$(':input').bind('focus blur', $F.inputEventHandler);
 	};
 	
 	
@@ -504,32 +515,38 @@ $F.generateId = function() {
 
 
 	// submission UI
-	$(':-tf-form').live($F.EVENT_XF_SUBMIT_ERROR, function() {
-		var form = $(this);
-		var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
-		var errorList = '';
-	
-		form
-			.addClass($F.CSS_SUBMIT_ERROR)
-			.find(':text')
-				.filter(':-xf-required:-xf-empty')
-					.each(function() {
-						errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
-					})
-				.end()
-			.end()
-			.before(
-				status
-					.find('ol')
-						.html(errorList)
+	$(':-tf-form')
+		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
+			var form = $(this);
+			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
+			var errorList = '';
+		
+			form
+				.addClass($F.CSS_SUBMIT_ERROR)
+				.find(':text')
+					.filter(':-xf-required:-xf-empty')
+						.each(function() {
+							errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
+						})
 					.end()
-					.fadeIn(300)
-					.shake()
-					.focus()
-			)
-		;
-		location.hash = status.attr('id') || status.attr('id', $F.generateId()).attr('id');
-	});
+				.end()
+				.before(
+					status
+						.find('ol')
+							.html(errorList)
+						.end()
+						.fadeIn(300)
+						.focus()
+				)
+			;
+			$('html,body').animate({scrollTop: status.offset().top-5}, 100);
+			location.hash = status.attr('id') || status.attr('id', $F.generateId()).attr('id');
+			status.shake({ interval: 250, distance: 8, shakes: 1 });
+		})
+		.live($F.EVENT_TF_SUBMIT_SUPPRESSED, function() {
+			$(this).find(':submit').shake({ interval: 75, distance: 4, shakes: 2 });
+		})
+	;
 	
 	
 
