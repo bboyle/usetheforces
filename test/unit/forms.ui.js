@@ -18,25 +18,31 @@ Tester.use('console', 'test', function(Y){
 			$(
 				'<div id="form-container" class="tf-form">'+
 				'<form id="form" action="#form" onsubmit="return false"><ol class="ftw-questions">' +
-					'<li class="xf-input" id="input01-container"><label for="input01" id="label-input"><span class="xf-label">Input</span></label>' +
-					'<input type="text" name="input01" id="input01" /></li>' +
+					'<li class="xf-input" id="input01-container">' +
+						'<label for="input01" id="label-input"><span class="xf-label">Input</span></label>' +
+						'<input type="text" name="input01" id="input01" /></li>' +
 					'<li class="xf-select" id="select-container"><fieldset><legend id="legend-select"><span><span class="xf-label">Select</span></legend>' +
-					'<ul class="xf-choices">' +
-					'<li><input type="checkbox" name="select" id="selectA" value="A" /><label for="selectA">A</label></li>' +
-					'<li><input type="checkbox" name="select" id="selectB" value="B" /><label for="selectB">B</label></li>' +
-					'<li><input type="checkbox" name="select" id="selectC" value="C" /><label for="selectC">C</label></li>' +
-					'</ul></li>' +
+						'<ul class="xf-choices">' +
+							'<li><input type="checkbox" name="select" id="selectA" value="A" /><label for="selectA">A</label></li>' +
+							'<li><input type="checkbox" name="select" id="selectB" value="B" /><label for="selectB">B</label></li>' +
+							'<li><input type="checkbox" name="select" id="selectC" value="C" /><label for="selectC">C</label></li>' +
+						'</ul></li>' +
+					'</fieldset></li>' +
 					'<li class="xf-group" id="group"><fieldset>' +
-					'<legend><span><span class="xf-label">Name</span></span></legend>' +
-					'<ol class="ftw-questions">' +
-					'<li class="xf-select"><label for="name-title"><span class="xf-label">Title</span></label>' +
-					'<select id="name-title"><option value=""></option><option>Mr</option><option>Mrs</option></select></li>' +
-					'<li class="xf-input"><label for="name-given"><span class="xf-label">Given name(s)</span></label>' +
-					'<input type="text" id="name-given" size="20" /></li>' +
-					'<li class="xf-input"><label for="name-family"><span class="xf-label">Family name</span></label>' +
-					'<input type="text" id="name-family" size="20" /></li>' +
-					'</ol>' +
-					'</fieldset>' +
+						'<legend><span><span class="xf-label">Name</span></span></legend>' +
+						'<ol class="ftw-questions">' +
+							'<li class="xf-select"><label for="name-title"><span class="xf-label">Title</span></label>' +
+							'<select id="name-title"><option value=""></option><option>Mr</option><option>Mrs</option></select></li>' +
+							'<li class="xf-input"><label for="name-given"><span class="xf-label">Given name(s)</span></label>' +
+							'<input type="text" id="name-given" size="20" /></li>' +
+							'<li class="xf-input"><label for="name-family"><span class="xf-label">Family name</span></label>' +
+							'<input type="text" id="name-family" size="20" /></li>' +
+						'</ol>' +
+						'</fieldset>' +
+					'</li>' +
+					'<li class="xf-textarea" id="textarea-container">' +
+						'<label for="textarea1"><span class="xf-label">Textarea</span></label>' +
+						'<textarea id="textarea1" name="textarea1"></textarea>' +
 					'</li>' +
 				'</ol></form>' +
 				'</div>'
@@ -83,6 +89,16 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_canFindControlForTextarea: function() {
+			Assert.areSame(document.getElementById('textarea-container'), $('#textarea1').closest(':-xf-control').get(0));
+		},
+
+
+		test_canFindLabelForTextarea: function() {
+			Assert.areSame("Textarea", $('#textarea1').closest(':-xf-control').find(':-xf-label').text());
+		},
+
+
 		test_canFindGroupControl: function() {
 			Assert.areSame(false, $('#name-given').is(':-xf-group'));
 			Assert.areSame(1, $('#name-given').parents(':-xf-group').length);
@@ -119,10 +135,13 @@ Tester.use('console', 'test', function(Y){
 							'<input type="text" name="input1" id="input1" /></li>' +
 						'<li class="xf-input" id="question2">' +
 							'<label for="input2">' +
-								'<span class="xf-label">Input</span>' +
+								'<span class="xf-label">Input 2</span>' +
 								'<abbr class="xf-required" title="required">*</abbr>' +
 							'</label>' +
 							'<input type="text" name="input2" id="input2" />' +
+						'</li>' +
+						'<li class="xf-textarea" id="question3"><label for="textarea1"><span class="xf-label">Textarea</span></label>' +
+							'<textarea id="textarea1" name="textarea1"></textarea>' +
 						'</li>' +
 					'</ol></form>' +
 				'</div>'
@@ -210,7 +229,7 @@ Tester.use('console', 'test', function(Y){
 		},
 		
 		
-		test_focusSetsActiveClass: function() {
+		test_focusSetsActiveClassForInput: function() {
 			Assert.areSame('tf-active', $.forces.CSS_ACTIVE);
 
 			var classActive = $.forces.CSS_ACTIVE;
@@ -224,7 +243,23 @@ Tester.use('console', 'test', function(Y){
 
 			input1.blur();
 			Assert.areSame(false, question1.hasClass(classActive));
+		},
+
+
+		test_focusSetsActiveClassForTextarea: function() {
+			var classActive = $.forces.CSS_ACTIVE;
+			var question = $('#question3');
+			var field = $('#textarea1');
+
+			Assert.areSame(false, question.hasClass(classActive));
+
+			field.focus();
+			Assert.areSame(true, question.hasClass(classActive));
+
+			field.blur();
+			Assert.areSame(false, question.hasClass(classActive));
 		}
+
 	}));
 
 
@@ -240,8 +275,14 @@ Tester.use('console', 'test', function(Y){
 			$(
 				'<div id="form-container" class="tf-form">'+
 				'<form id="form" action="javascript:" onsubmit="return false;"><ol class="ftw-questions">' +
-					'<li class="xf-input"><label for="input1"><span class="xf-label">Input</span></label>' +
-					'<input type="text" name="input1" id="input1" /></li>' +
+					'<li class="xf-input">' +
+						'<label for="input1"><span class="xf-label">Input</span></label>' +
+						'<input type="text" name="input1" id="input1" />' +
+					'</li>' +
+					'<li class="xf-input">' +
+						'<label for="email"><span class="xf-label">Email</span></label>' +
+						'<input type="text" name="email" id="email" />' +
+					'</li>' +
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
@@ -278,7 +319,36 @@ Tester.use('console', 'test', function(Y){
 			$('#input1').forces_attr('required', true);
 			$('#form').submit();
 			var status = $('div.tf-status');
-			Assert.areSame($('#input1').closest(':-xf-control').find(':-xf-label').text(), status.find('li').text(), 'control label not shown in alert');
+			var label = $('#input1').closest(':-xf-control').find(':-xf-label').text();
+			Assert.areSame(0, status.find('li').text().indexOf(label), 'control label not shown in alert');
+		},
+
+
+		test_linkShownOnSubmitError: function() {
+			$('#input1').forces_attr('required', true);
+			$('#form').submit();
+			var status = $('div.tf-status');
+			Assert.areSame('#input1', status.find('a').attr('href'), 'validation alert not linked to control');
+		},
+
+
+		test_requiredAlertMessageDisplayed: function() {
+			$('#input1').forces_attr('required', true);
+			$('#form').submit();
+			var status = $('div.tf-status');
+			Assert.areSame('Input: must be completed', status.find('li').text());
+		},
+
+
+		test_invalidEmailMessageDisplayed: function() {
+			$('#email').forces_attr('type', 'email').forces_attr('required', true);
+
+			$('#form').submit();
+			Assert.areSame('Email: must be completed', $('.tf-status').find('li').text());
+			
+			$('#email').val('foo');
+			$('#form').submit();
+			Assert.areSame('Email: must contain an email address', $('.tf-status').find('li').text());
 		}
 	}));
 	

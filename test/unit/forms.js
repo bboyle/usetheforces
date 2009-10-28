@@ -93,7 +93,7 @@ Tester.use('console', 'test', function(Y){
 
 		test_readRelevantAttribute: function () {
 			Assert.areSame('relevant', $('#input1').forces_attr('relevant'));
-			Assert.areSame(null, $('#input2').forces_attr('required'));
+			Assert.isNull($('#input2').forces_attr('required'));
 		},
 
 		test_canSetRelevantUsingForcesAttr: function () {
@@ -152,6 +152,38 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#input1').forces_attr('required', false).is(':-xf-optional'));
 			Assert.areSame(false, $('#input2').is(':-xf-required'));
 			Assert.areSame(true, $('#input2').is(':-xf-optional'));
+		}
+	}));
+
+
+	Y.forces.test.FormUnitSuite.add(new Y.Test.Case({
+		name: "Data type fields unit tests",
+
+		//---------------------------------------------
+		// Setup and tear down
+		//---------------------------------------------
+
+		setUp: function () {
+			$(
+				'<form id="form" action="#form"><ol>' +
+					'<li><input type="text" name="input1" id="input1" /></li>' +
+					'<li><input type="text" name="input2" id="input2" /></li>' +
+				'</ol></form>'
+			).appendTo('body');
+			$('#input2').forces_attr('type', 'email');
+		},
+
+		tearDown: function () {
+			$('#form').remove();
+		},
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+
+		test_readTypeAttribute: function () {
+			Assert.areSame('email', $('#input2').forces_attr('type'));
+			Assert.areSame('text', $('#input1').forces_attr('type'));
 		}
 	}));
 
