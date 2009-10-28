@@ -131,6 +131,36 @@ $F.generateId = function() {
 
 })(jQuery);
 } /* if jQuery *//**
+ * jquery.forces.dom.js
+ * @see http://usetheforces.googlecode.com/
+ * @license GNU GENERAL PUBLIC LICENSE Version 3 <http://www.gnu.org/licenses/gpl.html>
+ * @requires jQuery
+ */
+
+;if(typeof(jQuery)!="undefined") {
+(function($){
+
+	// jquery.forces
+	var $F = $.forces = $.forces || {};
+
+
+
+
+
+	$.fn.forces_id = function(id) {
+		var j = $(this);
+		if (!id || document.getElementById(id)) {
+			id = $F.generateId();
+		}
+		return j.attr('id') || j.attr('id', id).attr('id');
+	};
+
+
+
+	
+	
+})(jQuery);
+} /* if jQuery *//**
  * jquery.forces.fx.js
  * @see http://usetheforces.googlecode.com/
  * @license GNU GENERAL PUBLIC LICENSE Version 3 <http://www.gnu.org/licenses/gpl.html>
@@ -143,6 +173,37 @@ $F.generateId = function() {
 
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
+
+
+
+
+
+	$.fn.scrollTo = function(cfg) {
+		cfg = $.extend({ hash: false, focus: false, distance: 1 }, cfg);
+		var j = $(this).eq(0);
+
+		// location.hash
+		if (cfg.hash === true) {
+			location.hash = j.forces_id();
+		} else if (typeof cfg.hash === "object") {
+			location.hash = cfg.hash.forces_id();
+		}
+		
+		// focus
+		if (cfg.focus === true) {
+			j.focus();
+		} else if (typeof cfg.focus == "object") {
+			cfg.focus.focus();
+		}
+
+		// scroll
+		if (cfg.ancestor) {
+			j = j.closest(cfg.ancestor);
+		}
+		$('html,body').animate({ scrollTop: j.offset().top - cfg.distance }, 100);
+
+		return $(this);
+	},
 
 
 
@@ -161,22 +222,22 @@ $F.generateId = function() {
 	 * @return this jQuery object, to facilitate chaining
 	 */
 	$.fn.shake = function(cfg) {
-		// default config for optional arguments
 		cfg = $.extend({ interval: 75, distance: 10, shakes: 2 }, cfg);
+		var j = $(this);
 		
 		// store original margin offsets
-		var leftMargin = parseInt($(this).css('marginLeft')) || 0;
-		var rightMargin = parseInt($(this).css('marginRight')) || 0;
+		var leftMargin = parseInt(j.css('marginLeft')) || 0;
+		var rightMargin = parseInt(j.css('marginRight')) || 0;
 		
 		for (var i = 0; i < cfg.shakes; i++) {
-			$(this)
+			j
 				.animate({ marginLeft: leftMargin-cfg.distance, marginRight: rightMargin+cfg.distance }, cfg.interval)
 				.animate({ marginLeft: leftMargin+cfg.distance, marginRight: rightMargin-cfg.distance }, cfg.interval)
 			;
 		}
 		
 		// reset margins to original offsets
-		return $(this).animate({ marginLeft: leftMargin, marginRight: rightMargin }, cfg.interval);
+		return j.animate({ marginLeft: leftMargin, marginRight: rightMargin }, cfg.interval);
 	};
 
 
@@ -217,6 +278,8 @@ $F.generateId = function() {
 	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
 	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
 
+	$F.EXPR_HTML_CONTROLS = ':text, textarea';
+
 	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
@@ -249,41 +312,52 @@ $F.generateId = function() {
 
 
 
-	// pseudo attr() to support @required and @relevant
+	// pseudo attr() to support @required, @relevant and @type
 	$.fn.forces_attr = function(name, value) {
 		// read
 		if (typeof(value) == 'undefined') {
-			value = this.data('-tf-@'+name);
-			return  value ? value : (this.is(':-xf-'+name) ? name : null);
+			value = this.data('-tf-@' + name);
+			return value ? value : (this.is(':-xf-' + name) ? name : null);
 		}
 		// write
 		switch (name) {
+
 			case 'relevant': // irrelevant
 				this.forces__flags(2, value !== true && value != 'relevant');
-				break;
+			break;
+			
 			case 'required':
 				this.forces__flags(8, value === true || value == 'required');
+			break;
+			
+			case 'type':
 				break;
 			default:
 				// exit
 				return this;
 		}
-		return this.data('-tf-@'+name, value === true ? name : value).forces_recalculate();
+		return this.data('-tf-@' + name, value === true ? name : value).forces_recalculate();
 	};
 
 	$.fn.forces_removeAttr = function(name) {
 		switch (name) {
+
 			case 'relevant': // irrelevant
 				this.forces__flags(2, false);
-				break;
+			break;
+
 			case 'required':
 				this.forces__flags(8, false);
-				break;
+			break;
+
+			case 'type':
+			break;
+
 			default:
 				// exit
 				return this;
 		}
-		return this.removeData('-tf-@'+name).forces_recalculate();
+		return this.removeData('-tf-@' + name).forces_recalculate();
 	};
 	
 	
@@ -399,7 +473,7 @@ $F.generateId = function() {
 	$.fn.forces_enable = function() {
 		$('form').bind('submit', $F.formSubmitHandler);
 		// support for "live" focus/blur events
-		$(':input').bind('focus blur', $F.inputEventHandler);
+		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputEventHandler);
 	};
 	
 	
@@ -447,7 +521,7 @@ $F.generateId = function() {
 			return $(e).is('.tf-form');
 		},
 		'-xf-control': function(e) {
-			return $(e).is('.xf-input,.xf-select');
+			return $(e).is('.xf-input, .xf-select, .xf-textarea');
 		},
 		'-xf-group': function(e) {
 			return $(e).is('.xf-group');
@@ -480,7 +554,7 @@ $F.generateId = function() {
 		})
 		.live($F.EVENT_XF_ENABLED, function() {
 			$(this)
-				.find(':text')
+				.find($F.EXPR_HTML_CONTROLS)
 					.each(function() {
 						// DOM more robust than jquery here
 						this.removeAttribute('disabled');
@@ -492,7 +566,7 @@ $F.generateId = function() {
 		})
 		.live($F.EVENT_XF_DISABLED, function() {
 			$(this)
-				.find(':text')
+				.find($F.EXPR_HTML_CONTROLS)
 					.each(function() {
 						// DOM more robust than jquery here
 						this.setAttribute('disabled', 'disabled');
@@ -519,42 +593,42 @@ $F.generateId = function() {
 		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
 			var form = $(this);
 			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
-			var errorList = '';
-		
+			var errorList = $('<ol></ol>');
 			form
 				.addClass($F.CSS_SUBMIT_ERROR)
 				.find(':text')
 					.filter(':-xf-required:-xf-empty')
 						.each(function() {
-							errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
+							var widget = $(this);
+							var alert = 'must be completed';
+							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text() + ': ' + alert + '</a>').click(function() {  widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
+							errorList.append($('<li></li>').append(link));
 						})
 					.end()
 				.end()
 				.before(
 					status
 						.find('ol')
-							.html(errorList)
+							.replaceWith(errorList)
 						.end()
 						.fadeIn(300)
-						.focus()
 				)
 			;
-			$('html,body').animate({scrollTop: status.offset().top-5}, 100);
-			location.hash = status.attr('id') || status.attr('id', $F.generateId()).attr('id');
+			status.scrollTo({ hash: true, focus: true });
 			status.shake({ interval: 250, distance: 8, shakes: 1 });
 		})
 		.live($F.EVENT_TF_SUBMIT_SUPPRESSED, function() {
 			$(this).find(':submit').shake({ interval: 75, distance: 4, shakes: 2 });
 		})
 	;
-	
-	
 
 
+
+	
 
 	// auto enable
 	$('.usetheforces').forces_enable();
-	//$('abbr.xf-required').closest(':-xf-control').forces_attr('required', true);
+	$('.xf-required').closest(':-xf-control').find(':text').forces_attr('required', true);
 
 
 
