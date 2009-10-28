@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>forces validate test</title>
+	<link rel="stylesheet" href="../minty.css" type="text/css" />
+	<link rel="stylesheet" href="../../forces.forms.css" type="text/css" />
+	<!--[if lt IE 7]><script>document.createElement('abbr')</script><![endif]-->
+</head>
+
+<body id="usetheforces.googlecode.com">
+
+<h1>forces validate demo</h1>
+
+<div class="tf-form usetheforces">
+<form action="javascript:" method="get">
+	<ol class="ftw-questions">
+
+		<li class="xf-input">
+			<label for="email">
+				<span class="xf-label">Email</span>
+				<abbr class="xf-required" title="required">*</abbr>
+			</label>
+			<input type="text" id="email" name="email" size="40" />
+		</li>
+
+		<li class="xf-input">
+			<label for="email-confirm">
+				<span class="xf-label">Confirm email</span>
+				<abbr class="xf-required" title="required">*</abbr>
+			</label>
+			<input type="text" id="email-confirm" name="email-confirm" size="40" />
+		</li>
+
+		<li class="xf-input xsd-date">
+			<label for="date-start">
+				<span class="xf-label">Start date</span>
+				<abbr class="xf-required" title="required">*</abbr>
+			</label>
+			<input type="text" id="date-start" name="date-start" size="20" />
+		</li>
+
+		<li class="xf-input xsd-date">
+			<label for="date-start">
+				<span class="xf-label">Date of birth</span>
+			</label>
+			<input type="text" id="date-birth" name="date-birth" size="20" />
+		</li>
+		
+		<li class="xf-select1">
+			<fieldset id="my-answer">
+				<legend>
+					<span>
+						<span class="xf-label">Choose your own adventure</span>
+					</span>
+				</legend>
+				<ul class="xf-choices">
+					<li><label for="my-answer-sword"><input type="radio" name="myAnswer" id="my-answer-sword" value="sword" />Grab the sword</label></li>
+					<li><label for="my-answer-gate"><input type="radio" name="myAnswer" id="my-answer-gate" value="gate" />Open the gate</label></li>
+					<li><label for="my-answer-sword-gate"><input type="radio" name="myAnswer" id="my-answer-sword-gate" value="sword-gate" />Grab the sword and open the gate</label></li>
+					<li><label for="my-answer-null"><input type="radio" name="myAnswer" id="my-answer-null" value="" checked="checked" />I can't decide</label></li>
+				</ul>
+			</fieldset>
+		</li>
+		<li class="xf-select">
+			<label for="sword-swings">
+				<span class="xf-label">How many times do you want to swing the sword?</span>
+				<abbr class="xf-required" title="required">*</abbr>
+			</label>
+			<select id="sword-swings">
+				<option value="">- please select -</option>
+				<option value="1">1 master stroke</option>
+				<option value="2">2 broad swings</option>
+				<option value="3">3 swift slashes</option>
+				<option value="5">5 quick jabs</option>
+				<option value="7">7 unstoppable melee</option>
+			</select>
+		</li>
+		<li class="xf-select1">
+			<fieldset id="gate-open">
+				<legend>
+					<span>
+						<span class="xf-label">How do you open the gate?</span>
+						<abbr class="xf-required" title="required">*</abbr>
+					</span>
+				</legend>
+				<ul class="xf-choices">
+					<li><label for="gate-open-key"><input type="radio" name="gate-open" id="gate-open-key" value="key" />Use a key</label></li>
+					<li><label for="gate-open-sword"><input type="radio" name="gate-open" id="gate-open-sword" value="sword" />Smash it with the sword</label></li>
+					<li><label for="gate-open-magic"><input type="radio" name="gate-open" id="gate-open-magic" value="magic" />Blast it open with magic</label></li>
+				</ul>
+			</fieldset>
+		</li>
+
+		<li class="tf-footer">
+			<ul class="tf-submit">
+				<li><strong><input type="submit" value="Test validation" /></strong></li>
+			</ul>
+		</li>
+  	</ol>
+</form>
+</div>
+
+<script type="text/javascript" src="../../jquery-1.3.2.js"></script>
+<script type="text/javascript" src="../../jquery.forces.date.js"></script>
+<script type="text/javascript" src="../../jquery.forces.xpath.js"></script>
+<script type="text/javascript" src="../../jquery.forces.dom.js"></script>
+<script type="text/javascript" src="../../jquery.forces.forms.core.js"></script>
+<script type="text/javascript" src="../../jquery.forces.fx.js"></script>
+<script type="text/javascript" src="../../jquery.forces.forms.ui.js"></script>
+<script type="text/javascript">
+<!-- //
+
+// -->
+</script>
+
+</body>
+</html>

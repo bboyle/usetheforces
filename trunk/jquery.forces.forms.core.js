@@ -30,6 +30,8 @@
 	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
 	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
 
+	$F.EXPR_HTML_CONTROLS = ':text, textarea';
+
 	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
@@ -62,41 +64,52 @@
 
 
 
-	// pseudo attr() to support @required and @relevant
+	// pseudo attr() to support @required, @relevant and @type
 	$.fn.forces_attr = function(name, value) {
 		// read
 		if (typeof(value) == 'undefined') {
-			value = this.data('-tf-@'+name);
-			return  value ? value : (this.is(':-xf-'+name) ? name : null);
+			value = this.data('-tf-@' + name);
+			return value ? value : (this.is(':-xf-' + name) ? name : null);
 		}
 		// write
 		switch (name) {
+
 			case 'relevant': // irrelevant
 				this.forces__flags(2, value !== true && value != 'relevant');
-				break;
+			break;
+			
 			case 'required':
 				this.forces__flags(8, value === true || value == 'required');
+			break;
+			
+			case 'type':
 				break;
 			default:
 				// exit
 				return this;
 		}
-		return this.data('-tf-@'+name, value === true ? name : value).forces_recalculate();
+		return this.data('-tf-@' + name, value === true ? name : value).forces_recalculate();
 	};
 
 	$.fn.forces_removeAttr = function(name) {
 		switch (name) {
+
 			case 'relevant': // irrelevant
 				this.forces__flags(2, false);
-				break;
+			break;
+
 			case 'required':
 				this.forces__flags(8, false);
-				break;
+			break;
+
+			case 'type':
+			break;
+
 			default:
 				// exit
 				return this;
 		}
-		return this.removeData('-tf-@'+name).forces_recalculate();
+		return this.removeData('-tf-@' + name).forces_recalculate();
 	};
 	
 	
@@ -212,7 +225,7 @@
 	$.fn.forces_enable = function() {
 		$('form').bind('submit', $F.formSubmitHandler);
 		// support for "live" focus/blur events
-		$(':input').bind('focus blur', $F.inputEventHandler);
+		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputEventHandler);
 	};
 	
 	

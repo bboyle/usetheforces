@@ -37,7 +37,7 @@
 			return $(e).is('.tf-form');
 		},
 		'-xf-control': function(e) {
-			return $(e).is('.xf-input,.xf-select');
+			return $(e).is('.xf-input, .xf-select, .xf-textarea');
 		},
 		'-xf-group': function(e) {
 			return $(e).is('.xf-group');
@@ -70,7 +70,7 @@
 		})
 		.live($F.EVENT_XF_ENABLED, function() {
 			$(this)
-				.find(':text')
+				.find($F.EXPR_HTML_CONTROLS)
 					.each(function() {
 						// DOM more robust than jquery here
 						this.removeAttribute('disabled');
@@ -82,7 +82,7 @@
 		})
 		.live($F.EVENT_XF_DISABLED, function() {
 			$(this)
-				.find(':text')
+				.find($F.EXPR_HTML_CONTROLS)
 					.each(function() {
 						// DOM more robust than jquery here
 						this.setAttribute('disabled', 'disabled');
@@ -109,42 +109,42 @@
 		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
 			var form = $(this);
 			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
-			var errorList = '';
-		
+			var errorList = $('<ol></ol>');
 			form
 				.addClass($F.CSS_SUBMIT_ERROR)
 				.find(':text')
 					.filter(':-xf-required:-xf-empty')
 						.each(function() {
-							errorList += '<li>' + $(this).closest(':-xf-control').find(':-xf-label').text() + '</li>';
+							var widget = $(this);
+							var alert = 'must be completed';
+							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text() + ': ' + alert + '</a>').click(function() {  widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
+							errorList.append($('<li></li>').append(link));
 						})
 					.end()
 				.end()
 				.before(
 					status
 						.find('ol')
-							.html(errorList)
+							.replaceWith(errorList)
 						.end()
 						.fadeIn(300)
-						.focus()
 				)
 			;
-			$('html,body').animate({scrollTop: status.offset().top-5}, 100);
-			location.hash = status.attr('id') || status.attr('id', $F.generateId()).attr('id');
+			status.scrollTo({ hash: true, focus: true });
 			status.shake({ interval: 250, distance: 8, shakes: 1 });
 		})
 		.live($F.EVENT_TF_SUBMIT_SUPPRESSED, function() {
 			$(this).find(':submit').shake({ interval: 75, distance: 4, shakes: 2 });
 		})
 	;
-	
-	
 
 
+
+	
 
 	// auto enable
 	$('.usetheforces').forces_enable();
-	//$('abbr.xf-required').closest(':-xf-control').forces_attr('required', true);
+	$('.xf-required').closest(':-xf-control').find(':text').forces_attr('required', true);
 
 
 
