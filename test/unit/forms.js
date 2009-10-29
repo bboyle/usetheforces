@@ -183,7 +183,8 @@ Tester.use('console', 'test', function(Y){
 
 		test_readTypeAttribute: function () {
 			Assert.areSame('email', $('#input2').forces_attr('type'));
-			Assert.areSame('text', $('#input1').forces_attr('type'));
+			Assert.areSame('email', $('#input1').forces_attr('type', 'email').forces_attr('type'));
+			Assert.areNotSame('email', $('#input1').forces_removeAttr('type').forces_attr('type'));
 		}
 	}));
 
