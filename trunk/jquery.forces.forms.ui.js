@@ -116,7 +116,7 @@
 					.filter(':-xf-required:-xf-empty')
 						.each(function() {
 							var widget = $(this);
-							var alert = 'must be completed';
+							var alert = widget.data('-tf-INVALID') || 'must be completed';
 							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text() + ': ' + alert + '</a>').click(function() {  widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
 							errorList.append($('<li></li>').append(link));
 						})

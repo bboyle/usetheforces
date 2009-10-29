@@ -26,6 +26,9 @@
 	$F.EVENT_XF_OPTIONAL = '-xf-optional';
 	$F.EVENT_XF_REQUIRED = '-xf-required';
 
+	$F.EVENT_XF_VALID = '-xf-valid';
+	$F.EVENT_XF_INVALID = '-xf-invalid';
+
 	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
 	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
 	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
@@ -36,6 +39,12 @@
 
 	// constants (private)
 	var SUBMIT_TIMESTAMP = '-tf-submitted';
+	var BIT_IRRELEVANT		= 1;
+	var BIT_FLAG_IRRELEVANT	= 2;
+	var BIT_REQUIRED		= 4;
+	var BIT_FLAG_REQUIRED	= 8;
+	var BIT_VALID			= 16;
+	var BIT_INVALID			= 32;
 
 
 
@@ -46,18 +55,24 @@
 		'-xf-empty': function(e) {
 			return $.trim($(e).val()).length == 0;
 		},
+		'-xf-invalid': function(e) {
+			return ($(e).data('-tf-FLAGS') & BIT_INVALID) == BIT_INVALID;
+		},
 		'-xf-irrelevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & 1) != 0;
+			return ($(e).data('-tf-FLAGS') & BIT_IRRELEVANT) == BIT_IRRELEVANT;
 		},
 		'-xf-optional': function(e) {
-			return ($(e).data('-tf-FLAGS') & 4) == 0;
+			return ($(e).data('-tf-FLAGS') & BIT_REQUIRED) == 0;
 		},
 		'-xf-relevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & 1) == 0;
+			return ($(e).data('-tf-FLAGS') & BIT_IRRELEVANT) == 0;
 		},
 		'-xf-required': function(e) {
-			return ($(e).data('-tf-FLAGS') & 4) != 0;
-		}
+			return ($(e).data('-tf-FLAGS') & BIT_REQUIRED) == BIT_REQUIRED;
+		},
+		'-xf-valid': function(e) {
+			return ($(e).data('-tf-FLAGS') & BIT_VALID) == BIT_VALID;
+		},
 	});
 	
 	
@@ -75,15 +90,16 @@
 		switch (name) {
 
 			case 'relevant': // irrelevant
-				this.forces__flags(2, value !== true && value != 'relevant');
+				this.forces__flags(BIT_FLAG_IRRELEVANT, value !== true && value != 'relevant');
 			break;
 			
 			case 'required':
-				this.forces__flags(8, value === true || value == 'required');
+				this.forces__flags(BIT_FLAG_REQUIRED, value === true || value == 'required');
 			break;
 			
 			case 'type':
-				break;
+			break;
+
 			default:
 				// exit
 				return this;
@@ -95,11 +111,11 @@
 		switch (name) {
 
 			case 'relevant': // irrelevant
-				this.forces__flags(2, false);
+				this.forces__flags(BIT_FLAG_IRRELEVANT, false);
 			break;
 
 			case 'required':
-				this.forces__flags(8, false);
+				this.forces__flags(BIT_FLAG_REQUIRED, false);
 			break;
 
 			case 'type':
@@ -118,32 +134,34 @@
 
 	// recalculate all fields
 	$.fn.forces_recalculate = function() {
-		var e, f = 0;
+		var e, f;
 		
 		var _flagEvent = function(e, flag, set, event) {
-			e.forces__flags(flag, set);
-			e.trigger(event);
+			e
+				.forces__flags(flag, set)
+				.trigger(event)
+			;
 		};
 		
 		return this.each(function() {
 			e = $(this);
-			f = e.data('-tf-FLAGS');
+			f = e.data('-tf-FLAGS') || 0;
 	
 			// relevant
-			switch (f & 3) {
-				case 2: // -> irrelevant
-					_flagEvent(e, 1, true, $F.EVENT_XF_DISABLED);
+			switch (f & (BIT_FLAG_IRRELEVANT + BIT_IRRELEVANT)) {
+				case BIT_FLAG_IRRELEVANT: // -> irrelevant
+					_flagEvent(e, BIT_IRRELEVANT, true, $F.EVENT_XF_DISABLED);
 				break;
-				case 1: // -> relevant
-					_flagEvent(e, 1, false, $F.EVENT_XF_ENABLED);
+				case BIT_IRRELEVANT: // -> relevant
+					_flagEvent(e, BIT_IRRELEVANT, false, $F.EVENT_XF_ENABLED);
 				break;
 			}
-			switch (f & 12) {
-				case 8: // -> required
-					_flagEvent(e, 4, true, $F.EVENT_XF_REQUIRED);
+			switch (f & (BIT_FLAG_REQUIRED + BIT_REQUIRED)) {
+				case BIT_FLAG_REQUIRED: // -> required
+					_flagEvent(e, BIT_REQUIRED, true, $F.EVENT_XF_REQUIRED);
 				break;
-				case 4: // -> optional
-					_flagEvent(e, 4, false, $F.EVENT_XF_OPTIONAL);
+				case BIT_REQUIRED: // -> optional
+					_flagEvent(e, BIT_REQUIRED, false, $F.EVENT_XF_OPTIONAL);
 				break;
 			}
 	
@@ -151,6 +169,34 @@
 	};
 	
 	
+
+
+
+	// validate
+	$.fn.forces_validate = function() {
+		return $(this).each(function() {
+			var e = $(this);
+			switch (e.forces_attr('type')) {
+
+				case 'email':
+					e
+						.forces__flags(BIT_INVALID, true)
+						.data('-tf-INVALID', 'must contain an email address')
+						.trigger($F.EVENT_XF_INVALID)
+					;
+				break;
+
+				default:
+					// valid
+					e
+						.forces__flags(BIT_VALID, true)
+						.trigger($F.EVENT_XF_VALID)
+					;
+			}
+		});
+	};
+
+
 
 
 
@@ -191,9 +237,10 @@
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
 			// validate all fields of unknown validity
+			var controls = form.find($F.EXPR_HTML_CONTROLS).filter(':not(:-xf-valid, :-xf-invalid)').forces_validate();
 	
 			// are there invalid fields?
-			var invalid = form.find(':text').filter(':-xf-required:-xf-empty');
+			var invalid = controls.filter(':-xf-required:-xf-empty, :-xf-invalid');
 			if (invalid.length) {
 				// throw a submit error
 				form.trigger($F.EVENT_XF_SUBMIT_ERROR);
