@@ -28,13 +28,19 @@
 
 	$F.EVENT_XF_VALID = '-xf-valid';
 	$F.EVENT_XF_INVALID = '-xf-invalid';
+	
+	$F.EVENT_XF_VALUE_CHANGED = '-xf-value-changed';
 
 	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
 	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
 	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
 
 	$F.EXPR_HTML_CONTROLS = ':text, textarea';
-
+	
+	// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
+	// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
+	$F.REXP_EMAIL = /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/;
+	
 	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
@@ -174,26 +180,57 @@
 
 	// validate
 	$.fn.forces_validate = function() {
-		return $(this).each(function() {
+		return $(this).filter(':not(:-xf-empty)').each(function() {
 			var e = $(this);
 			switch (e.forces_attr('type')) {
 
 				case 'email':
-					e
-						.forces__flags(BIT_INVALID, true)
-						.data('-tf-INVALID', 'must contain an email address')
-						.trigger($F.EVENT_XF_INVALID)
-					;
+					if ($F.REXP_EMAIL.exec(e.val())) {
+						e
+							.forces__flags(BIT_INVALID, false)
+							.forces__flags(BIT_VALID, true)
+							.trigger($F.EVENT_XF_VALID)
+						;
+					} else {
+						// TODO fire event only if validity changed
+						// suffering from a type mismatch
+						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
+						e
+							.forces__flags(BIT_VALID, false)
+							.forces__flags(BIT_INVALID, true)
+							.trigger($F.EVENT_XF_INVALID)
+						;
+					}
+				break;
+
+				case 'date':
+					if ($F.dateParse(e.val())) {
+						e
+							.forces__flags(BIT_INVALID, false)
+							.forces__flags(BIT_VALID, true)
+							.trigger($F.EVENT_XF_VALID)
+						;
+					} else {
+						// TODO fire event only if validity changed
+						// suffering from a type mismatch
+						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
+						e
+							.forces__flags(BIT_VALID, false)
+							.forces__flags(BIT_INVALID, true)
+							.trigger($F.EVENT_XF_INVALID)
+						;
+					}
 				break;
 
 				default:
 					// valid
 					e
+						.forces__flags(BIT_INVALID, false)
 						.forces__flags(BIT_VALID, true)
 						.trigger($F.EVENT_XF_VALID)
 					;
 			}
-		});
+		}).end();
 	};
 
 
@@ -260,8 +297,32 @@
 
 
 
-	$F.inputEventHandler = function(evt) {
-		$(evt.target).trigger(evt.type == 'focus' ? $F.EVENT_XF_FOCUS_IN : $F.EVENT_XF_FOCUS_OUT);
+	$F.inputFocusHandler = function(evt) {
+		// TODO store value onfocus, check for change onblur, delete stored value
+		var control = $(evt.target);
+		switch (evt.type) {
+		
+			case 'focus':
+				control
+					.data('-tf-VALUE', control.val())
+					.trigger($F.EVENT_XF_FOCUS_IN)
+				;
+			break;
+			
+			case 'blur':
+				var oldValue = control.data('-tf-VALUE');
+				control
+					.removeData('-tf-VALUE')
+					.trigger($F.EVENT_XF_FOCUS_OUT)
+				;
+				if (control.val() !== oldValue) {
+					control
+						.forces_validate()
+						.trigger($F.EVENT_XF_VALUE_CHANGED)
+					;
+				}
+			break;
+		}
 	};
 
 
@@ -272,7 +333,7 @@
 	$.fn.forces_enable = function() {
 		$('form').bind('submit', $F.formSubmitHandler);
 		// support for "live" focus/blur events
-		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputEventHandler);
+		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
 	};
 	
 	

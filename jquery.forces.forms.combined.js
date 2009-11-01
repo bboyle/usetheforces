@@ -274,16 +274,31 @@ $F.generateId = function() {
 	$F.EVENT_XF_OPTIONAL = '-xf-optional';
 	$F.EVENT_XF_REQUIRED = '-xf-required';
 
+	$F.EVENT_XF_VALID = '-xf-valid';
+	$F.EVENT_XF_INVALID = '-xf-invalid';
+	
+	$F.EVENT_XF_VALUE_CHANGED = '-xf-value-changed';
+
 	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
 	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
 	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
 
 	$F.EXPR_HTML_CONTROLS = ':text, textarea';
-
+	
+	// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
+	// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
+	$F.REXP_EMAIL = /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/;
+	
 	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
 	var SUBMIT_TIMESTAMP = '-tf-submitted';
+	var BIT_IRRELEVANT		= 1;
+	var BIT_FLAG_IRRELEVANT	= 2;
+	var BIT_REQUIRED		= 4;
+	var BIT_FLAG_REQUIRED	= 8;
+	var BIT_VALID			= 16;
+	var BIT_INVALID			= 32;
 
 
 
@@ -294,18 +309,24 @@ $F.generateId = function() {
 		'-xf-empty': function(e) {
 			return $.trim($(e).val()).length == 0;
 		},
+		'-xf-invalid': function(e) {
+			return ($(e).data('-tf-FLAGS') & BIT_INVALID) == BIT_INVALID;
+		},
 		'-xf-irrelevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & 1) != 0;
+			return ($(e).data('-tf-FLAGS') & BIT_IRRELEVANT) == BIT_IRRELEVANT;
 		},
 		'-xf-optional': function(e) {
-			return ($(e).data('-tf-FLAGS') & 4) == 0;
+			return ($(e).data('-tf-FLAGS') & BIT_REQUIRED) == 0;
 		},
 		'-xf-relevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & 1) == 0;
+			return ($(e).data('-tf-FLAGS') & BIT_IRRELEVANT) == 0;
 		},
 		'-xf-required': function(e) {
-			return ($(e).data('-tf-FLAGS') & 4) != 0;
-		}
+			return ($(e).data('-tf-FLAGS') & BIT_REQUIRED) == BIT_REQUIRED;
+		},
+		'-xf-valid': function(e) {
+			return ($(e).data('-tf-FLAGS') & BIT_VALID) == BIT_VALID;
+		},
 	});
 	
 	
@@ -323,15 +344,16 @@ $F.generateId = function() {
 		switch (name) {
 
 			case 'relevant': // irrelevant
-				this.forces__flags(2, value !== true && value != 'relevant');
+				this.forces__flags(BIT_FLAG_IRRELEVANT, value !== true && value != 'relevant');
 			break;
 			
 			case 'required':
-				this.forces__flags(8, value === true || value == 'required');
+				this.forces__flags(BIT_FLAG_REQUIRED, value === true || value == 'required');
 			break;
 			
 			case 'type':
-				break;
+			break;
+
 			default:
 				// exit
 				return this;
@@ -343,11 +365,11 @@ $F.generateId = function() {
 		switch (name) {
 
 			case 'relevant': // irrelevant
-				this.forces__flags(2, false);
+				this.forces__flags(BIT_FLAG_IRRELEVANT, false);
 			break;
 
 			case 'required':
-				this.forces__flags(8, false);
+				this.forces__flags(BIT_FLAG_REQUIRED, false);
 			break;
 
 			case 'type':
@@ -366,32 +388,34 @@ $F.generateId = function() {
 
 	// recalculate all fields
 	$.fn.forces_recalculate = function() {
-		var e, f = 0;
+		var e, f;
 		
 		var _flagEvent = function(e, flag, set, event) {
-			e.forces__flags(flag, set);
-			e.trigger(event);
+			e
+				.forces__flags(flag, set)
+				.trigger(event)
+			;
 		};
 		
 		return this.each(function() {
 			e = $(this);
-			f = e.data('-tf-FLAGS');
+			f = e.data('-tf-FLAGS') || 0;
 	
 			// relevant
-			switch (f & 3) {
-				case 2: // -> irrelevant
-					_flagEvent(e, 1, true, $F.EVENT_XF_DISABLED);
+			switch (f & (BIT_FLAG_IRRELEVANT + BIT_IRRELEVANT)) {
+				case BIT_FLAG_IRRELEVANT: // -> irrelevant
+					_flagEvent(e, BIT_IRRELEVANT, true, $F.EVENT_XF_DISABLED);
 				break;
-				case 1: // -> relevant
-					_flagEvent(e, 1, false, $F.EVENT_XF_ENABLED);
+				case BIT_IRRELEVANT: // -> relevant
+					_flagEvent(e, BIT_IRRELEVANT, false, $F.EVENT_XF_ENABLED);
 				break;
 			}
-			switch (f & 12) {
-				case 8: // -> required
-					_flagEvent(e, 4, true, $F.EVENT_XF_REQUIRED);
+			switch (f & (BIT_FLAG_REQUIRED + BIT_REQUIRED)) {
+				case BIT_FLAG_REQUIRED: // -> required
+					_flagEvent(e, BIT_REQUIRED, true, $F.EVENT_XF_REQUIRED);
 				break;
-				case 4: // -> optional
-					_flagEvent(e, 4, false, $F.EVENT_XF_OPTIONAL);
+				case BIT_REQUIRED: // -> optional
+					_flagEvent(e, BIT_REQUIRED, false, $F.EVENT_XF_OPTIONAL);
 				break;
 			}
 	
@@ -399,6 +423,65 @@ $F.generateId = function() {
 	};
 	
 	
+
+
+
+	// validate
+	$.fn.forces_validate = function() {
+		return $(this).filter(':not(:-xf-empty)').each(function() {
+			var e = $(this);
+			switch (e.forces_attr('type')) {
+
+				case 'email':
+					if ($F.REXP_EMAIL.exec(e.val())) {
+						e
+							.forces__flags(BIT_INVALID, false)
+							.forces__flags(BIT_VALID, true)
+							.trigger($F.EVENT_XF_VALID)
+						;
+					} else {
+						// TODO fire event only if validity changed
+						// suffering from a type mismatch
+						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
+						e
+							.forces__flags(BIT_VALID, false)
+							.forces__flags(BIT_INVALID, true)
+							.trigger($F.EVENT_XF_INVALID)
+						;
+					}
+				break;
+
+				case 'date':
+					if ($F.dateParse(e.val())) {
+						e
+							.forces__flags(BIT_INVALID, false)
+							.forces__flags(BIT_VALID, true)
+							.trigger($F.EVENT_XF_VALID)
+						;
+					} else {
+						// TODO fire event only if validity changed
+						// suffering from a type mismatch
+						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
+						e
+							.forces__flags(BIT_VALID, false)
+							.forces__flags(BIT_INVALID, true)
+							.trigger($F.EVENT_XF_INVALID)
+						;
+					}
+				break;
+
+				default:
+					// valid
+					e
+						.forces__flags(BIT_INVALID, false)
+						.forces__flags(BIT_VALID, true)
+						.trigger($F.EVENT_XF_VALID)
+					;
+			}
+		}).end();
+	};
+
+
 
 
 
@@ -439,9 +522,10 @@ $F.generateId = function() {
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
 			// validate all fields of unknown validity
+			var controls = form.find($F.EXPR_HTML_CONTROLS).filter(':not(:-xf-valid, :-xf-invalid)').forces_validate();
 	
 			// are there invalid fields?
-			var invalid = form.find(':text').filter(':-xf-required:-xf-empty');
+			var invalid = controls.filter(':-xf-required:-xf-empty, :-xf-invalid');
 			if (invalid.length) {
 				// throw a submit error
 				form.trigger($F.EVENT_XF_SUBMIT_ERROR);
@@ -461,8 +545,32 @@ $F.generateId = function() {
 
 
 
-	$F.inputEventHandler = function(evt) {
-		$(evt.target).trigger(evt.type == 'focus' ? $F.EVENT_XF_FOCUS_IN : $F.EVENT_XF_FOCUS_OUT);
+	$F.inputFocusHandler = function(evt) {
+		// TODO store value onfocus, check for change onblur, delete stored value
+		var control = $(evt.target);
+		switch (evt.type) {
+		
+			case 'focus':
+				control
+					.data('-tf-VALUE', control.val())
+					.trigger($F.EVENT_XF_FOCUS_IN)
+				;
+			break;
+			
+			case 'blur':
+				var oldValue = control.data('-tf-VALUE');
+				control
+					.removeData('-tf-VALUE')
+					.trigger($F.EVENT_XF_FOCUS_OUT)
+				;
+				if (control.val() !== oldValue) {
+					control
+						.forces_validate()
+						.trigger($F.EVENT_XF_VALUE_CHANGED)
+					;
+				}
+			break;
+		}
 	};
 
 
@@ -473,7 +581,7 @@ $F.generateId = function() {
 	$.fn.forces_enable = function() {
 		$('form').bind('submit', $F.formSubmitHandler);
 		// support for "live" focus/blur events
-		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputEventHandler);
+		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
 	};
 	
 	
@@ -504,7 +612,11 @@ $F.generateId = function() {
 	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
 	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
 	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
+	$F.CSS_SUBMIT_DONE = 'xf-submit-done';
 	$F.CSS_ACTIVE = 'tf-active';
+	$F.CSS_VALID = 'xf-valid';
+	$F.CSS_INVALID = 'xf-invalid';
+	$F.CSS_MISSING = 'tf-missing';
 	$F.MS_ENABLE = 300;
 	$F.MS_DISABLE = 0;
 
@@ -537,6 +649,7 @@ $F.generateId = function() {
 
 	// controls UI
 	$(':-xf-control')
+
 		.live($F.EVENT_XF_REQUIRED, function() {
 			$(this)
 				.find('.xf-required')
@@ -546,12 +659,14 @@ $F.generateId = function() {
 					.after($F.HTML_REQUIRED)
 			;
 		})
+
 		.live($F.EVENT_XF_OPTIONAL, function() {
 			$(this)
 				.find('.xf-required')
 					.remove()
 			;
 		})
+
 		.live($F.EVENT_XF_ENABLED, function() {
 			$(this)
 				.find($F.EXPR_HTML_CONTROLS)
@@ -564,6 +679,7 @@ $F.generateId = function() {
 				.slideDown($F.MS_ENABLE)
 			;
 		})
+
 		.live($F.EVENT_XF_DISABLED, function() {
 			$(this)
 				.find($F.EXPR_HTML_CONTROLS)
@@ -576,11 +692,31 @@ $F.generateId = function() {
 				.hide($F.MS_DISABLE)
 			;
 		})
-		.live($F.EVENT_XF_FOCUS_IN, function() {
-			$(this).addClass($F.CSS_ACTIVE);
+
+		.live($F.EVENT_XF_VALID, function() {
+			$(this)
+				.removeClass($F.CSS_INVALID)
+				.addClass($F.CSS_VALID)
+			;
 		})
+
+		.live($F.EVENT_XF_INVALID, function() {
+			$(this)
+				.removeClass($F.CSS_VALID)
+				.addClass($F.CSS_INVALID)
+			;
+		})
+
+		.live($F.EVENT_XF_FOCUS_IN, function() {
+			$(this)
+				.addClass($F.CSS_ACTIVE)
+			;
+		})
+
 		.live($F.EVENT_XF_FOCUS_OUT, function() {
-			$(this).removeClass($F.CSS_ACTIVE);
+			$(this)
+				.removeClass($F.CSS_ACTIVE)
+			;
 		})
 	;
 	
@@ -590,18 +726,32 @@ $F.generateId = function() {
 
 	// submission UI
 	$(':-tf-form')
+
 		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
 			var form = $(this);
 			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
 			var errorList = $('<ol></ol>');
+			var alert;
+
 			form
 				.addClass($F.CSS_SUBMIT_ERROR)
 				.find(':text')
-					.filter(':-xf-required:-xf-empty')
+					.filter(':-xf-required:-xf-empty, :-xf-invalid')
 						.each(function() {
 							var widget = $(this);
-							var alert = 'must be completed';
-							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text() + ': ' + alert + '</a>').click(function() {  widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
+							if (widget.is(':-xf-empty')) {
+								alert = 'must be completed';
+							} else {
+								switch (widget.forces_attr('type')) {
+									case 'date':
+										alert = 'unrecognised date format';
+									break;
+									case 'email':
+										alert = 'must contain an email address';
+									break;
+								}
+							}
+							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text() + ': ' + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
 							errorList.append($('<li></li>').append(link));
 						})
 					.end()
@@ -614,11 +764,24 @@ $F.generateId = function() {
 						.fadeIn(300)
 				)
 			;
-			status.scrollTo({ hash: true, focus: true });
-			status.shake({ interval: 250, distance: 8, shakes: 1 });
+			status.forces_id('status-alert');
+			status
+				.scrollTo({ hash: true, focus: true })
+				.shake({ interval: 250, distance: 8, shakes: 1 })
+			;
 		})
+
 		.live($F.EVENT_TF_SUBMIT_SUPPRESSED, function() {
 			$(this).find(':submit').shake({ interval: 75, distance: 4, shakes: 2 });
+		})
+
+		.live($F.EVENT_XF_SUBMIT_DONE, function() {
+			var form = $(this);
+			if (form.data(DOM_STATUS)) form.data(DOM_STATUS).remove();
+			form
+				.removeClass($F.CSS_SUBMIT_ERROR)
+				.addClass($F.CSS_SUBMIT_DONE)
+			;
 		})
 	;
 

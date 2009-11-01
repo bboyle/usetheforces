@@ -283,6 +283,10 @@ Tester.use('console', 'test', function(Y){
 						'<label for="email"><span class="xf-label">Email</span></label>' +
 						'<input type="text" name="email" id="email" />' +
 					'</li>' +
+					'<li class="xf-input">' +
+						'<label for="date"><span class="xf-label">Date</span></label>' +
+						'<input type="text" name="date" id="date" />' +
+					'</li>' +
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
@@ -315,6 +319,19 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_classSetOnSubmitDone: function() {
+			$('#form').trigger($.forces.EVENT_XF_SUBMIT_DONE);
+			Assert.areSame('xf-submit-done', $.forces.CSS_SUBMIT_DONE);
+			Assert.areSame(true, $('#input1').closest(':-tf-form').hasClass($.forces.CSS_SUBMIT_DONE));
+
+			$('#form').trigger($.forces.EVENT_XF_SUBMIT_ERROR);
+			Assert.areSame(true, $('#input1').closest(':-tf-form').hasClass($.forces.CSS_SUBMIT_ERROR));
+
+			$('#form').trigger($.forces.EVENT_XF_SUBMIT_DONE);
+			Assert.areSame(true, $('#input1').closest(':-tf-form').hasClass($.forces.CSS_SUBMIT_DONE));
+		},
+
+
 		test_labelShownOnSubmitError: function() {
 			$('#input1').forces_attr('required', true);
 			$('#form').submit();
@@ -338,6 +355,26 @@ Tester.use('console', 'test', function(Y){
 			var status = $('div.tf-status');
 			Assert.areSame('Input: must be completed', status.find('li').text());
 		},
+		
+		
+		test_setsValidInvalidClassOnChange: function() {
+			$('#email').forces_attr('type', 'email');
+			
+			Assert.areSame(false, $('#email').closest(':-xf-control').hasClass($.forces.CSS_VALID), 'valid class found before validation');
+			Assert.areSame(false, $('#email').closest(':-xf-control').hasClass($.forces.CSS_INVALID), 'invalid class found before validation');
+			
+			$('#email').focus().val('foo@example.com').blur();
+			Assert.areSame(true, $('#email').closest(':-xf-control').hasClass($.forces.CSS_VALID), 'valid class not present');
+			Assert.areSame(false, $('#email').closest(':-xf-control').hasClass($.forces.CSS_INVALID), 'invalid class present when valid');
+
+			$('#email').focus().val('foo').blur();
+			Assert.areSame(false, $('#email').closest(':-xf-control').hasClass($.forces.CSS_VALID), 'valid class present when invalid');
+			Assert.areSame(true, $('#email').closest(':-xf-control').hasClass($.forces.CSS_INVALID), 'invalid class not present');
+
+			$('#email').focus().val('foo@example.com').blur();
+			Assert.areSame(true, $('#email').closest(':-xf-control').hasClass($.forces.CSS_VALID), 'valid class not present');
+			Assert.areSame(false, $('#email').closest(':-xf-control').hasClass($.forces.CSS_INVALID), 'invalid class still present');
+		},
 
 
 		test_invalidEmailMessageDisplayed: function() {
@@ -349,6 +386,26 @@ Tester.use('console', 'test', function(Y){
 			$('#email').val('foo');
 			$('#form').submit();
 			Assert.areSame('Email: must contain an email address', $('.tf-status').find('li').text());
+
+			$('#email').val('foo@example.com');
+			$('#form').submit();
+			Assert.areSame(0, $('.tf-status').find('li').length);
+		},
+	
+
+		test_invalidDateMessageDisplayed: function() {
+			$('#date').forces_attr('type', 'date').forces_attr('required', true);
+
+			$('#form').submit();
+			Assert.areSame('Date: must be completed', $('.tf-status').find('li').text());
+			
+			$('#date').val('foo');
+			$('#form').submit();
+			Assert.areSame('Date: unrecognised date format', $('.tf-status').find('li').text());
+
+			$('#date').val('1/11/2009');
+			$('#form').submit();
+			Assert.areSame(0, $('.tf-status').find('li').length);
 		}
 	}));
 	
