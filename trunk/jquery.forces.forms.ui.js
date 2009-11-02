@@ -19,6 +19,7 @@
 	// CONSTANTS (public)
 	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
 	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
+	$F.HTML_CALENDAR = '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody><tr></tr><tr></tr><tr></tr><tr></tr><tr></tr></tbody></table>';
 	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
 	$F.CSS_SUBMIT_DONE = 'xf-submit-done';
 	$F.CSS_ACTIVE = 'tf-active';
@@ -52,6 +53,32 @@
 	});
 	
 	
+
+
+
+	// calendar (date picker)
+	$.fn.forces_calendar = function() {
+		var calendar = $($F.HTML_CALENDAR);
+		
+		// TODO if 4 weeks in month, remove row
+		// TODO if 6 weeks in month, append row
+		// TODO get starting day of month
+		var monthBegins = 1;
+		
+		
+		var day = $F.WEEKDAYS();
+		for (var i = 0; i < day.length; i++) {
+			calendar.find('thead tr').append('<th scope="col" title="' + day[i] + '">' + day[i].substr(0, 1) + '</th>');
+			var row = 0;
+			calendar.find('tbody tr').each(function() {
+				$(this).append('<td>' + (monthBegins + i + row) + '</td>');
+				row += 7;
+			})
+		}
+		return $(this).after(calendar.fadeIn('slow'));
+	};
+
+
 
 
 
