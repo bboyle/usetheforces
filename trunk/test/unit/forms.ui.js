@@ -263,6 +263,47 @@ Tester.use('console', 'test', function(Y){
 	}));
 
 
+	// form datepicker UI unit tests
+	Y.forces.test.FormUiUnitSuite.add(new Y.Test.Case({
+		name: "Form datepicker UI unit tests",
+
+		//---------------------------------------------
+		// Setup and tear down
+		//---------------------------------------------
+
+		setUp: function() {
+			$(
+				'<div id="form-container" class="tf-form">'+
+				'<form id="form" action="javascript:" onsubmit="return false;"><ol class="ftw-questions">' +
+					'<li class="xf-input">' +
+						'<label for="date1"><span class="xf-label">Date</span></label>' +
+						'<input type="text" name="date1" id="date1" />' +
+					'</li>' +
+				'</ol></form>' +
+				'</div>'
+			).appendTo('body').forces_enable();
+			christmas1977 = new Date(1977, 11, 25); // 25 May 1977
+		},
+
+		tearDown: function() {
+			$('#form-container, div.tf-status').remove();
+			delete christmas1977;
+		},
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+	
+
+		test_displaysCalendar: function() {
+			var calendar = $.forces.uiHtmlCalendar({ date: christmas1977 });
+			Assert.areSame('December 1977', calendar.find('caption').text());
+			Assert.areSame('SMTWTFS', calendar.find('thead').text());
+			Assert.areSame('123', calendar.find('tbody tr').eq(0).text());
+		}
+	}));
+	
+	
 	// form validation UI unit tests
 	Y.forces.test.FormUiUnitSuite.add(new Y.Test.Case({
 		name: "Form validation UI unit tests",
@@ -408,8 +449,8 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(0, $('.tf-status').find('li').length);
 		}
 	}));
-	
-	
+
+
 	//add the test suite
 	Y.Test.Runner.add(Y.forces.test.FormUiUnitSuite);
 

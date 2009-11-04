@@ -8,22 +8,32 @@
 ;if(typeof(jQuery)!="undefined") {
 (function($){
 
+
 	// jquery.forces
 	var $F = $.forces = $.forces || {};
 
 
-	// constants
+
+
+
+	// constants (private)
 	var MONTHS = 'January February March April May June July August September October November December'.split(/ /);
 	var WEEKDAYS = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(/ /);
 	var TODAY = new Date();
 
 
-	// private functions
+
+
+
+	// private: _pad a string
 	var _pad = function(s, l, c) {
 		s = String(s);
 		while (s.length < l) s = String(c) + s;
 		return s;
 	};
+
+
+
 
 
 	// format a date
@@ -39,6 +49,9 @@
 			.replace(/%B/, MONTHS[date.getMonth()])
 			.replace(/%A/, WEEKDAYS[date.getDay()]);
 	};
+
+
+
 
 
 	// parse a date
@@ -83,16 +96,25 @@
 	};
 
 
+
+
+
 	// calculate a date
 	$F.dateCalc = function(date, delta) {
 		return new Date(date.getFullYear()+(delta.year||0), date.getMonth()+(delta.month||0), date.getDate()+(delta.date||0));
 	};
 
 
+
+
+
 	// check date equality
 	$F.dateEquals = function(date, y, m, d) {
 		return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
 	};
+	
+	
+
 
 
 	$F.DATE_TODAY = function() {
@@ -100,10 +122,16 @@
 	};
 
 
+
+
+
 	$F.WEEKDAYS = function() {
 		return WEEKDAYS.slice();
 	};
 
 
+
+
+
 })(jQuery);
-} /* if jQuery */
+}
