@@ -282,24 +282,32 @@ Tester.use('console', 'test', function(Y){
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
-			christmas1977 = new Date(1977, 11, 25); // 25 May 1977
+			christmas1976 = new Date(1976, 11, 25);
 		},
 
 		tearDown: function() {
 			$('#form-container, div.tf-status').remove();
-			delete christmas1977;
+			delete christmas1976;
 		},
 
 		//---------------------------------------------
 		// Tests
 		//---------------------------------------------
 	
+		/*
+			S M T W T F S
+			(Nov) 1 2 3 4
+			5 6 7 8 9 0 1
+			2 3 4 5 6 7 8
+			9 0 1 2 3 4 5
+			6 7 8 9 0 1 1 (Jan 1977)
+		*/
 
 		test_displaysCalendar: function() {
-			var calendar = $.forces.uiHtmlCalendar({ date: christmas1977 });
-			Assert.areSame('December 1977', calendar.find('caption').text());
+			var calendar = $.forces.uiHtmlCalendar({ date: christmas1976 });
+			Assert.areSame('December 1976', calendar.find('caption').text());
 			Assert.areSame('SMTWTFS', calendar.find('thead').text());
-			Assert.areSame('123', calendar.find('tbody tr').eq(0).text());
+			Assert.areSame('1234', calendar.find('tbody tr').eq(0).text());
 		}
 	}));
 	

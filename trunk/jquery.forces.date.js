@@ -101,7 +101,12 @@
 
 	// calculate a date
 	$F.dateCalc = function(date, delta) {
-		return new Date(date.getFullYear()+(delta.year||0), date.getMonth()+(delta.month||0), date.getDate()+(delta.date||0));
+		delta = $.extend({ year: 0, month: 0, date: 0 }, delta);
+		return new Date(
+				date.getFullYear() + delta.year,
+				date.getMonth() + delta.month,
+				date.getDate() + delta.date
+		);
 	};
 
 
