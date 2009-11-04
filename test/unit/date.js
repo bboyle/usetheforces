@@ -247,6 +247,49 @@ Tester.use('console', 'test', function(Y){
 	}));
 
 
+	// forces.DATE_TODAY unit tests
+	Y.forces.test.DateUnitSuite.add(new Y.Test.Case({
+
+		name: "forces.DATE_TODAY unit tests",
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+
+		test_isToday: function () {
+			DateAssert.datesAreEqual(new Date(), $.forces.DATE_TODAY());
+		}
+	}));
+
+
+	// forces.WEEKDAYS unit tests
+	Y.forces.test.DateUnitSuite.add(new Y.Test.Case({
+
+		name: "forces.WEEKDAYS unit tests",
+
+		//---------------------------------------------
+		// Setup and tear down
+		//---------------------------------------------
+
+		setUp: function () {
+			releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1977
+		},
+
+		tearDown: function () {
+			delete releaseStarWarsIV;
+		},
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+
+		test_areWeekdaysCorrect: function () {
+			Assert.areSame("Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday", $.forces.WEEKDAYS().join(', '));
+			Assert.areSame("Wednesday", $.forces.WEEKDAYS()[releaseStarWarsIV.getDay()]);
+		}
+	}));
+
+
 	//add the test suite
 	Y.Test.Runner.add(Y.forces.test.DateUnitSuite);
 

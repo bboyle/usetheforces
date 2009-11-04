@@ -57,8 +57,11 @@
 
 
 	// calendar (date picker)
-	$.fn.forces_calendar = function() {
+	$F.uiHtmlCalendar = function(config) {
+		config = $.extend({ date: $F.DATE_TODAY() }, config);
 		var calendar = $($F.HTML_CALENDAR);
+		
+		calendar.find('caption').text($F.dateFormat(config.date, '%B %Y'));
 		
 		// TODO if 4 weeks in month, remove row
 		// TODO if 6 weeks in month, append row
@@ -75,7 +78,7 @@
 				row += 7;
 			})
 		}
-		return $(this).after(calendar.fadeIn('slow'));
+		return calendar;
 	};
 
 
