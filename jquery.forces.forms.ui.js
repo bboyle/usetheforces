@@ -19,7 +19,7 @@
 	// CONSTANTS (public)
 	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
 	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
-	$F.HTML_CALENDAR = '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody><tr></tr><tr></tr><tr></tr><tr></tr><tr></tr></tbody></table>';
+	$F.HTML_CALENDAR = '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>';
 	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
 	$F.CSS_SUBMIT_DONE = 'xf-submit-done';
 	$F.CSS_ACTIVE = 'tf-active';
@@ -63,21 +63,38 @@
 		
 		calendar.find('caption').text($F.dateFormat(config.date, '%B %Y'));
 		
-		// TODO if 4 weeks in month, remove row
-		// TODO if 6 weeks in month, append row
-		// TODO get starting day of month
-		var monthBegins = 1;
-		
+		var first = config.date;
+		first.setDate(1);
+		first = first.getDay();
+		var last = $F.dateEndOfMonth(config.date);
+		var days = '<tr>' + (first > 0 ? '<td colspan="' + first + '"></td>' : '') + '<td>1</td>';
+		// TODO consider i += 7 (create row by row)
+		for (var i = 2; i < last.getDate(); i++) {
+			if ((first + i) % 7 == 1) {
+				days += '</tr><tr>';
+			}
+			days += '<td>' + i + '</td>';
+		}
+		switch (last.getDay()) {
+			case 6:
+				days += '<td>' + last.getDate() + '</td>';
+			break;
+			case 5:
+				days += '<td>' + last.getDate() + '</td><td></td>';
+			break;
+			case 0:
+				days += '</tr><tr>';
+			default:
+				days += '<td>' + last.getDate() + '</td><td colspan="' + (6 - last.getDay()) + '"></td>';
+		}
+		calendar.find('tbody').html(days + '</tr>');
 		
 		var day = $F.WEEKDAYS();
-		for (var i = 0; i < day.length; i++) {
+		for (var i = 0; i < 7; i++) {
 			calendar.find('thead tr').append('<th scope="col" title="' + day[i] + '">' + day[i].substr(0, 1) + '</th>');
-			var row = 0;
-			calendar.find('tbody tr').each(function() {
-				$(this).append('<td>' + (monthBegins + i + row) + '</td>');
-				row += 7;
-			})
 		}
+
+console.log(calendar.html());
 		return calendar;
 	};
 

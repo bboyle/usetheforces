@@ -100,6 +100,7 @@
 
 
 	// calculate a date
+	// TODO negative values cause errors, as in new Date(-y, -m, -d)
 	$F.dateCalc = function(date, delta) {
 		delta = $.extend({ year: 0, month: 0, date: 0 }, delta);
 		return new Date(
@@ -119,6 +120,20 @@
 	};
 	
 	
+
+
+
+	// return last day in month
+	$F.dateEndOfMonth = function(date) {
+		date.setDate(31);
+		if (date.getDate() != 31) {
+			date.setDate(31 - date.getDate());
+			date = this.dateCalc(date, { month: -1 });
+		}
+		return date;
+	};
+
+
 
 
 

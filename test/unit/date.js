@@ -232,17 +232,21 @@ Tester.use('console', 'test', function(Y){
 	}));
 
 
-	// forces.DATE_TODAY unit tests
+	// forces.lastDateInMonth unit tests
 	Y.forces.test.DateUnitSuite.add(new Y.Test.Case({
 
-		name: "forces.DATE_TODAY unit tests",
+		name: "forces.dateEndOfMonth unit tests",
 
 		//---------------------------------------------
 		// Tests
 		//---------------------------------------------
 
-		test_isToday: function () {
-			DateAssert.datesAreEqual(new Date(), $.forces.DATE_TODAY());
+		test_shouldFindLastDayInMonth: function () {
+			DateAssert.datesAreEqual(new Date(2009, 10, 30), $.forces.dateEndOfMonth(new Date(2009, 10, 1)));
+			DateAssert.datesAreEqual(new Date(2009, 0, 31), $.forces.dateEndOfMonth(new Date(2009, 0, 1)));
+			DateAssert.datesAreEqual(new Date(2009, 1, 28), $.forces.dateEndOfMonth(new Date(2009, 1, 1)));
+			// leap year
+			DateAssert.datesAreEqual(new Date(2008, 1, 29), $.forces.dateEndOfMonth(new Date(2008, 1, 1)));
 		}
 	}));
 

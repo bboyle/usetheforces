@@ -282,32 +282,108 @@ Tester.use('console', 'test', function(Y){
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
+
+			/*	5 week month
+				S M T W T F S
+				(Nov) 1 2 3 4
+				5 6 7 8 9 0 1
+				2 3 4 5 6 7 8
+				9 0 1 2 3 4 5
+				6 7 8 9 0 1 1 (Jan 1977)
+			*/
 			christmas1976 = new Date(1976, 11, 25);
+
+			/*	6 weeks, starts on Sunday
+				S M T W T F S
+				(Feb)       1
+				2 3 4 5 6 7 8 
+				9 0 1 2 3 4 5 
+				6 7 8 9 0 1 2 
+				3 4 5 6 7 8 9 
+				0 1 (April)
+			*/
+			patricks2008 = new Date(2008, 2, 17);
+
+			/* 	4 week month
+				S M T W T F S
+				1 2 3 4 5 6 7
+				8 9 0 1 2 3 4
+				5 6 7 8 9 0 1 
+				2 3 4 5 6 7 8
+			*/
+			valentines2009 = new Date(2009, 1, 14);
+			
+			/* 6 weeks, ends on a Sunday
+				S M T W T F S
+				(2009)    1 2
+				3 4 5 6 7 8 9
+				0 1 2 3 4 5 6
+				7 8 9 0 1 2 3
+				4 5 6 7 8 9 0
+				1 (Feb)
+			*/
+			australia2010 = new Date(2010, 0, 25);
 		},
 
 		tearDown: function() {
 			$('#form-container, div.tf-status').remove();
 			delete christmas1976;
+			delete patricks2008;
+			delete valentines2009;
+			delete australia2010;
 		},
 
 		//---------------------------------------------
 		// Tests
 		//---------------------------------------------
 	
-		/*
-			S M T W T F S
-			(Nov) 1 2 3 4
-			5 6 7 8 9 0 1
-			2 3 4 5 6 7 8
-			9 0 1 2 3 4 5
-			6 7 8 9 0 1 1 (Jan 1977)
-		*/
 
 		test_displaysCalendar: function() {
 			var calendar = $.forces.uiHtmlCalendar({ date: christmas1976 });
+			
 			Assert.areSame('December 1976', calendar.find('caption').text());
 			Assert.areSame('SMTWTFS', calendar.find('thead').text());
+			Assert.areSame(5, calendar.find('tbody tr').length);
 			Assert.areSame('1234', calendar.find('tbody tr').eq(0).text());
+			Assert.areSame('567891011', calendar.find('tbody tr').eq(1).text());
+			Assert.areSame('12131415161718', calendar.find('tbody tr').eq(2).text());
+			Assert.areSame('19202122232425', calendar.find('tbody tr').eq(3).text());
+			Assert.areSame('262728293031', calendar.find('tbody tr').eq(4).text());
+			Assert.areSame(false, calendar.find('tbody td:last').get(0).hasAttribute('colspan'));
+			
+			calendar = $.forces.uiHtmlCalendar({ date: valentines2009 });
+			Assert.areSame('February 2009', calendar.find('caption').text());
+			Assert.areSame('SMTWTFS', calendar.find('thead').text());
+			Assert.areSame(4, calendar.find('tbody tr').length);
+			Assert.areSame('1234567', calendar.find('tbody tr').eq(0).text());
+			Assert.areSame('891011121314', calendar.find('tbody tr').eq(1).text());
+			Assert.areSame('15161718192021', calendar.find('tbody tr').eq(2).text());
+			Assert.areSame('22232425262728', calendar.find('tbody tr').eq(3).text());
+			Assert.areSame(false, calendar.find('tbody td:last').get(0).hasAttribute('colspan'));
+
+			calendar = $.forces.uiHtmlCalendar({ date: patricks2008 });
+			Assert.areSame('March 2008', calendar.find('caption').text());
+			Assert.areSame('SMTWTFS', calendar.find('thead').text());
+			Assert.areSame(6, calendar.find('tbody tr').length);
+			Assert.areSame('1', calendar.find('tbody tr').eq(0).text());
+			Assert.areSame('2345678', calendar.find('tbody tr').eq(1).text());
+			Assert.areSame('9101112131415', calendar.find('tbody tr').eq(2).text());
+			Assert.areSame('16171819202122', calendar.find('tbody tr').eq(3).text());
+			Assert.areSame('23242526272829', calendar.find('tbody tr').eq(4).text());
+			Assert.areSame('3031', calendar.find('tbody tr').eq(5).text());
+			Assert.areSame('5', calendar.find('tbody td:last').attr('colspan'));
+
+			calendar = $.forces.uiHtmlCalendar({ date: australia2010 });
+			Assert.areSame('January 2010', calendar.find('caption').text());
+			Assert.areSame('SMTWTFS', calendar.find('thead').text());
+			Assert.areSame(6, calendar.find('tbody tr').length);
+			Assert.areSame('12', calendar.find('tbody tr').eq(0).text());
+			Assert.areSame('3456789', calendar.find('tbody tr').eq(1).text());
+			Assert.areSame('10111213141516', calendar.find('tbody tr').eq(2).text());
+			Assert.areSame('17181920212223', calendar.find('tbody tr').eq(3).text());
+			Assert.areSame('24252627282930', calendar.find('tbody tr').eq(4).text());
+			Assert.areSame('31', calendar.find('tbody tr').eq(5).text());
+			Assert.areSame('6', calendar.find('tbody td:last').attr('colspan'));
 		}
 	}));
 	
