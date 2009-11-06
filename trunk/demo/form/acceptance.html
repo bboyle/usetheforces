@@ -64,7 +64,7 @@
 				</ul>
 			</fieldset>
 		</li>
-		<li class="xf-select">
+		<li class="xf-select1">
 			<label for="sword-swings">
 				<span class="xf-label">How many times do you want to swing the sword?</span>
 				<abbr class="xf-required" title="required">*</abbr>
@@ -119,6 +119,12 @@
 		$(this).forces_calendar();
 	});
 
+	$('#my-answer').click(function() {
+		var checked = $('#my-answer').find(':checked').val() || '';
+		$('#sword-swings').forces_attr('relevant', checked.match(/sword/) != null);
+		$('#gate-open').forces_attr('relevant', checked.match(/gate/) != null);
+	}).triggerHandler('click');
+	
 // -->
 </script>
 

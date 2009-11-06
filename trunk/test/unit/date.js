@@ -247,6 +247,13 @@ Tester.use('console', 'test', function(Y){
 			DateAssert.datesAreEqual(new Date(2009, 1, 28), $.forces.dateEndOfMonth(new Date(2009, 1, 1)));
 			// leap year
 			DateAssert.datesAreEqual(new Date(2008, 1, 29), $.forces.dateEndOfMonth(new Date(2008, 1, 1)));
+		},
+
+
+		test_shouldNotAlterDateArgument: function () {
+			var releaseStarWarsIV = new Date(1977, 4, 25); // 25 May 1977
+			DateAssert.datesAreEqual(new Date(1977, 4, 31), $.forces.dateEndOfMonth(releaseStarWarsIV));
+			DateAssert.datesAreEqual(new Date(1977, 4, 25), releaseStarWarsIV, 'supplied date was altered');
 		}
 	}));
 

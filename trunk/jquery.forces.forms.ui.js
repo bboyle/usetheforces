@@ -42,7 +42,7 @@
 			return $(e).is('.tf-form');
 		},
 		'-xf-control': function(e) {
-			return $(e).is('.xf-input, .xf-select, .xf-textarea');
+			return $(e).is('.xf-input,.xf-select,.xf-select1,.xf-textarea');
 		},
 		'-xf-group': function(e) {
 			return $(e).is('.xf-group');
@@ -59,15 +59,15 @@
 	// calendar (date picker)
 	$F.uiHtmlCalendar = function(config) {
 		config = $.extend({ date: $F.DATE_TODAY() }, config);
-		var calendar = $($F.HTML_CALENDAR);
+		var calendar = $($F.HTML_CALENDAR).data('-tf-date-seed', new Date(config.date.getTime()));
 		
 		calendar.find('caption').text($F.dateFormat(config.date, '%B %Y'));
 		
-		var first = config.date;
+		var first = new Date(config.date.getTime());
 		first.setDate(1);
 		first = first.getDay();
-		var last = $F.dateEndOfMonth(config.date);
 		var days = '<tr>' + (first > 0 ? '<td colspan="' + first + '"></td>' : '') + '<td>1</td>';
+		var last = $F.dateEndOfMonth(config.date);
 		// TODO consider i += 7 (create row by row)
 		for (var i = 2; i < last.getDate(); i++) {
 			if ((first + i) % 7 == 1) {
@@ -94,7 +94,6 @@
 			calendar.find('thead tr').append('<th scope="col" title="' + day[i] + '">' + day[i].substr(0, 1) + '</th>');
 		}
 
-console.log(calendar.html());
 		return calendar;
 	};
 
@@ -206,7 +205,7 @@ console.log(calendar.html());
 									break;
 								}
 							}
-							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text() + ': ' + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
+							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
 							errorList.append($('<li></li>').append(link));
 						})
 					.end()
@@ -246,7 +245,7 @@ console.log(calendar.html());
 
 	// auto enable
 	$('.usetheforces').forces_enable();
-	$('.xf-required').closest(':-xf-control').find(':text').forces_attr('required', true);
+	$('.xf-required').closest(':-xf-control').find($F.EXPR_HTML_CONTROLS).forces_attr('required', true);
 
 
 

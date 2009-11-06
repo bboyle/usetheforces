@@ -35,7 +35,7 @@
 	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
 	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
 
-	$F.EXPR_HTML_CONTROLS = ':text, textarea';
+	$F.EXPR_HTML_CONTROLS = ':text,select,textarea';
 	
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
 	// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
