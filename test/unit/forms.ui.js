@@ -189,7 +189,6 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
-		// TODO quality control (is this test accurate? does it fail when it should?)
 		test_irrelevantFieldsAreHidden: function() {
 			var input = $('#input1');
 			var question = $('#question1');
@@ -207,7 +206,6 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
-		// TODO quality control (is this test accurate? does it fail when it should?)
 		test_relevantAnimationsGlitchFree: function() {
 			var input = $('#input1');
 			var question = $('#question1');
@@ -215,7 +213,7 @@ Tester.use('console', 'test', function(Y){
 
 			input.forces_attr('relevant', false).forces_attr('relevant', true);
 			this.wait(function() {
-				Assert.areSame('block', question.css('display'), 'false -> true causes glitch (animation not stopped?)');
+				Assert.areSame('block', question.css('display'), 'false to true causes glitch (animation not stopped?)');
 			}, $.forces.MS_ENABLED+1);
 
 			input.forces_attr('relevant', false);
@@ -224,7 +222,7 @@ Tester.use('console', 'test', function(Y){
 			}, $.forces.MS_DISABLED+1);
 			input.forces_attr('relevant', true).forces_attr('relevant', false);
 			this.wait(function() {
-				Assert.areSame('none', question.css('display'), 'true -> false causes glitch (animation not stopped?)');
+				Assert.areSame('none', question.css('display'), 'true to false causes glitch (animation not stopped?)');
 			}, $.forces.MS_DISABLED+1);
 		},
 		
@@ -338,7 +336,7 @@ Tester.use('console', 'test', function(Y){
 		//---------------------------------------------
 	
 
-		test_displaysCalendar: function() {
+		test_shouldCreateCalendarTable: function() {
 			var calendar = $.forces.uiHtmlCalendar({ date: christmas1976 });
 			
 			Assert.areSame('December 1976', calendar.find('caption').text());
@@ -384,6 +382,13 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('24252627282930', calendar.find('tbody tr').eq(4).text());
 			Assert.areSame('31', calendar.find('tbody tr').eq(5).text());
 			Assert.areSame('6', calendar.find('tbody td:last').attr('colspan'));
+		},
+		
+		
+		test_shouldHaveSeedDate: function() {
+			var calendar = $.forces.uiHtmlCalendar({ date: christmas1976 });
+			Y.DateAssert.datesAreEqual(christmas1976, calendar.data('-tf-date-seed'), 'seed date does not match');
+			Assert.areNotSame(christmas1976, calendar.data('-tf-date-seed'), 'seed date references supplied date');
 		}
 	}));
 	
@@ -401,11 +406,11 @@ Tester.use('console', 'test', function(Y){
 				'<div id="form-container" class="tf-form">'+
 				'<form id="form" action="javascript:" onsubmit="return false;"><ol class="ftw-questions">' +
 					'<li class="xf-input">' +
-						'<label for="input1"><span class="xf-label">Input</span></label>' +
+						'<label for="input1"><span class="xf-label">Input?</span></label>' +
 						'<input type="text" name="input1" id="input1" />' +
 					'</li>' +
 					'<li class="xf-input">' +
-						'<label for="email"><span class="xf-label">Email</span></label>' +
+						'<label for="email"><span class="xf-label">Email:</span></label>' +
 						'<input type="text" name="email" id="email" />' +
 					'</li>' +
 					'<li class="xf-input">' +
@@ -461,7 +466,7 @@ Tester.use('console', 'test', function(Y){
 			$('#input1').forces_attr('required', true);
 			$('#form').submit();
 			var status = $('div.tf-status');
-			var label = $('#input1').closest(':-xf-control').find(':-xf-label').text();
+			var label = $('#input1').closest(':-xf-control').find(':-xf-label').text().replace(/[:?]*$/, ': ');
 			Assert.areSame(0, status.find('li').text().indexOf(label), 'control label not shown in alert');
 		},
 

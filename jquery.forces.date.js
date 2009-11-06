@@ -125,7 +125,7 @@
 
 	// return last day in month
 	$F.dateEndOfMonth = function(date) {
-		date.setDate(31);
+		date = new Date(date.getFullYear(), date.getMonth(), 31);
 		if (date.getDate() != 31) {
 			date.setDate(31 - date.getDate());
 			date = this.dateCalc(date, { month: -1 });
