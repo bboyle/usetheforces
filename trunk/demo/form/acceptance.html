@@ -116,7 +116,7 @@
 	$('#email').forces_attr('type', 'email');
 	$('#date-start,#date-birth').forces_attr('type', 'date');
 	$('#date-start').click(function() {
-		$(this).forces_calendar();
+		$(this).after($.forces.uiHtmlCalendar());
 	});
 
 	$('#my-answer').click(function() {

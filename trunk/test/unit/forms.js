@@ -152,6 +152,16 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#input1').forces_attr('required', false).is(':-xf-optional'));
 			Assert.areSame(false, $('#input2').is(':-xf-required'));
 			Assert.areSame(true, $('#input2').is(':-xf-optional'));
+		},
+
+		test_validitySelectorsReturnCorrectBoolean: function () {
+			Assert.areSame(false, $('#input1').is(':-xf-valid'), 'input matched valid');
+			Assert.areSame(false, $('#input1').is(':-xf-invalid'), 'input matched invalid');
+			Assert.areSame(true, $('#input1').is(':-tf-not-validated'), 'input matched \'not validated\'');
+			$('#input1').forces_validate();
+			Assert.areSame(true, $('#input1').is(':-xf-valid'), 'valid input did not match valid');
+			Assert.areSame(false, $('#input1').is(':-xf-invalid'), 'valid input matched vinalid');
+			Assert.areSame(false, $('#input1').is(':-tf-not-validated'), 'valid input matched \'not validated\'');
 		}
 	}));
 

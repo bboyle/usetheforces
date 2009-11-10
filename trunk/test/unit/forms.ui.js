@@ -409,6 +409,10 @@ Tester.use('console', 'test', function(Y){
 						'<label for="input1"><span class="xf-label">Input?</span></label>' +
 						'<input type="text" name="input1" id="input1" />' +
 					'</li>' +
+					'<li class="xf-textarea">' +
+						'<label for="textarea1"><span class="xf-label">Textarea</span></label>' +
+						'<textarea name="textarea1" id="textarea1" rows="3" cols="40"></textarea>' +
+					'</li>' +
 					'<li class="xf-input">' +
 						'<label for="email"><span class="xf-label">Email:</span></label>' +
 						'<input type="text" name="email" id="email" />' +
@@ -480,10 +484,34 @@ Tester.use('console', 'test', function(Y){
 
 
 		test_requiredAlertMessageDisplayed: function() {
-			$('#input1').forces_attr('required', true);
+			$('#input1,#textarea1').forces_attr('required', true);
 			$('#form').submit();
 			var status = $('div.tf-status');
-			Assert.areSame('Input: must be completed', status.find('li').text());
+			Assert.areSame('Input: must be completed', status.find('li').eq(0).text());
+			Assert.areSame('Textarea: must be completed', status.find('li').eq(1).text());
+		},
+		
+		
+		test_shouldSetMissingClass: function() {
+			Assert.areSame('tf-missing', $.forces.CSS_MISSING);
+
+			$('#input1,#textarea1').forces_attr('required', true);
+			$('#form').submit();
+			Assert.areSame(true, $('#input1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#input1 does not have MISSING class (1)');
+			Assert.areSame(true, $('#textarea1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#textarea1 does not have MISSING class (1)');
+
+			$('#input1,#textarea1').forces_attr('required', false);
+			Assert.areSame(false, $('#input1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#input1 has MISSING class but is not required');
+			Assert.areSame(false, $('#textarea1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#textarea1 has MISSING class but is not required');
+
+			$('#input1,#textarea1').forces_attr('required', true);
+			$('#form').submit();
+			Assert.areSame(true, $('#input1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#input1 does not have MISSING class (2)');
+			Assert.areSame(true, $('#textarea1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#textarea1 does not have MISSING class (2)');
+
+			$('#input1').focus().val('test').val();
+			$('#form').submit();
+			Assert.areSame(false, $('#input1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#input1 has MISSING class but value not missing');
 		},
 		
 		
@@ -511,11 +539,13 @@ Tester.use('console', 'test', function(Y){
 			$('#email').forces_attr('type', 'email').forces_attr('required', true);
 
 			$('#form').submit();
-			Assert.areSame('Email: must be completed', $('.tf-status').find('li').text());
+			Assert.areSame('Email: must be completed', $('.tf-status').find('li').text(), 'required status alert not shown');
+			Assert.areSame('must be completed', $('#email').closest(':-xf-control').find('.xf-alert').text(), 'required inline alert not shown');
 			
 			$('#email').val('foo');
 			$('#form').submit();
-			Assert.areSame('Email: must contain an email address', $('.tf-status').find('li').text());
+			Assert.areSame('Email: must contain an email address', $('.tf-status').find('li').text(), 'invalid status alert not shown');
+			Assert.areSame('must contain an email address', $('#email').closest(':-xf-control').find('.xf-alert').text(), 'invalid inline alert not shown');
 
 			$('#email').val('foo@example.com');
 			$('#form').submit();
@@ -536,7 +566,18 @@ Tester.use('console', 'test', function(Y){
 			$('#date').val('1/11/2009');
 			$('#form').submit();
 			Assert.areSame(0, $('.tf-status').find('li').length);
-		}
+		},
+		
+		test_shouldListSubmitErrorsInSourceOrder: function() {
+			$('#input1,#date').forces_attr('required', true);
+			$('#email').forces_attr('type', 'email').val('foo');
+			
+			$('#form').submit();
+			var status = $('div.tf-status');
+			Assert.areSame('Input: must be completed', status.find('li').eq(0).text());
+			Assert.areSame('Email: must contain an email address', status.find('li').eq(1).text());
+			Assert.areSame('Date: must be completed', status.find('li').eq(2).text());
+		},
 	}));
 
 

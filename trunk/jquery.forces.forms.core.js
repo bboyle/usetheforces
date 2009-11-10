@@ -58,6 +58,9 @@
 
 	// selectors
 	$.extend($.expr[':'], {
+		'-tf-not-validated': function(e) {
+			return ($(e).data('-tf-FLAGS') & (BIT_VALID + BIT_INVALID)) == 0;
+		},
 		'-xf-empty': function(e) {
 			return $.trim($(e).val()).length == 0;
 		},
@@ -180,57 +183,39 @@
 
 	// validate
 	$.fn.forces_validate = function() {
-		return $(this).filter(':not(:-xf-empty)').each(function() {
+		return $(this).each(function() {
 			var e = $(this);
-			switch (e.forces_attr('type')) {
+			var valid = true;
+			var value = e.val();
 
-				case 'email':
-					if ($F.REXP_EMAIL.exec(e.val())) {
-						e
-							.forces__flags(BIT_INVALID, false)
-							.forces__flags(BIT_VALID, true)
-							.trigger($F.EVENT_XF_VALID)
-						;
-					} else {
-						// TODO fire event only if validity changed
-						// suffering from a type mismatch
-						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
-						e
-							.forces__flags(BIT_VALID, false)
-							.forces__flags(BIT_INVALID, true)
-							.trigger($F.EVENT_XF_INVALID)
-						;
-					}
-				break;
+			// TODO should blank values trigger "valid" events, or just remove the invalid flag?
+			if (value) {
+				switch (e.forces_attr('type')) {
 
-				case 'date':
-					if ($F.dateParse(e.val())) {
-						e
-							.forces__flags(BIT_INVALID, false)
-							.forces__flags(BIT_VALID, true)
-							.trigger($F.EVENT_XF_VALID)
-						;
-					} else {
-						// TODO fire event only if validity changed
-						// suffering from a type mismatch
-						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
-						e
-							.forces__flags(BIT_VALID, false)
-							.forces__flags(BIT_INVALID, true)
-							.trigger($F.EVENT_XF_INVALID)
-						;
-					}
-				break;
+					case 'email':
+						valid = $F.REXP_EMAIL.exec(value);
+					break;
 
-				default:
-					// valid
-					e
-						.forces__flags(BIT_INVALID, false)
-						.forces__flags(BIT_VALID, true)
-						.trigger($F.EVENT_XF_VALID)
-					;
+					case 'date':
+						valid = $F.dateParse(value);
+					break;
+				}
 			}
-		}).end();
+
+			if (valid) {
+				e
+					.forces__flags(BIT_INVALID, false)
+					.forces__flags(BIT_VALID, true)
+					.trigger($F.EVENT_XF_VALID)
+				;
+			} else {
+				e
+					.forces__flags(BIT_VALID, false)
+					.forces__flags(BIT_INVALID, true)
+					.trigger($F.EVENT_XF_INVALID)
+				;
+			}
+		});
 	};
 
 
@@ -273,8 +258,9 @@
 			// prevent repeat submit events (store time of submit)
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
-			// validate all fields of unknown validity
-			var controls = form.find($F.EXPR_HTML_CONTROLS).filter(':not(:-xf-valid, :-xf-invalid)').forces_validate();
+			var controls = form.find($F.EXPR_HTML_CONTROLS);
+			// TODO skip already validated fields?
+			controls.forces_validate();
 	
 			// are there invalid fields?
 			var invalid = controls.filter(':-xf-required:-xf-empty, :-xf-invalid');
@@ -330,12 +316,20 @@
 
 
 	// TODO enable/disabled forces (partially implemented)
-	$.fn.forces_enable = function() {
-		$('form').bind('submit', $F.formSubmitHandler);
-		// support for "live" focus/blur events
-		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
+	$.fn.forces_enable = function(enable) {
+		$F.toggleFormHandlers(enable, $(this));
 	};
-	
+	// TODO use namespaced events
+	$F.toggleFormHandlers = function(enable, form) {
+		form = form || $('form');
+		if (enable || enable === undefined) {
+			form.bind('submit', $F.formSubmitHandler);
+			$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
+		} else {
+			form.unbind('submit');
+			$($F.EXPR_HTML_CONTROLS).unbind('focus blur');
+		}
+	};
 	
 
 

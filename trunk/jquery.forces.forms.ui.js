@@ -20,6 +20,7 @@
 	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
 	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
 	$F.HTML_CALENDAR = '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>';
+	$F.MSG_INVALID_EMAIL = 'must contain an email address';
 	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
 	$F.CSS_SUBMIT_DONE = 'xf-submit-done';
 	$F.CSS_ACTIVE = 'tf-active';
@@ -116,6 +117,7 @@
 
 		.live($F.EVENT_XF_OPTIONAL, function() {
 			$(this)
+				.removeClass($F.CSS_MISSING)
 				.find('.xf-required')
 					.remove()
 			;
@@ -151,6 +153,9 @@
 			$(this)
 				.removeClass($F.CSS_INVALID)
 				.addClass($F.CSS_VALID)
+				.find('.xf-label')
+					.parent()
+						.append('<em class="xf-alert">' + $F.MSG_INVALID_EMAIL + '</em>')
 			;
 		})
 
@@ -182,34 +187,37 @@
 	$(':-tf-form')
 
 		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
-			var form = $(this);
+
+		var form = $(this);
+			var controls = form.find($F.EXPR_HTML_CONTROLS);
+
 			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
 			var errorList = $('<ol></ol>');
 			var alert;
-
+			
+			controls
+				.filter(':-xf-required:-xf-empty, :-xf-invalid')
+					.each(function() {
+						var widget = $(this);
+						if (widget.is(':-xf-empty')) {
+							alert = 'must be completed';
+						} else {
+							switch (widget.forces_attr('type')) {
+								case 'date':
+									alert = 'unrecognised date format';
+								break;
+								case 'email':
+									alert = $F.MSG_INVALID_EMAIL;
+								break;
+							}
+						}
+						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
+						errorList.append($('<li></li>').append(link));
+					})
+			;
+			
 			form
 				.addClass($F.CSS_SUBMIT_ERROR)
-				.find(':text')
-					.filter(':-xf-required:-xf-empty, :-xf-invalid')
-						.each(function() {
-							var widget = $(this);
-							if (widget.is(':-xf-empty')) {
-								alert = 'must be completed';
-							} else {
-								switch (widget.forces_attr('type')) {
-									case 'date':
-										alert = 'unrecognised date format';
-									break;
-									case 'email':
-										alert = 'must contain an email address';
-									break;
-								}
-							}
-							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
-							errorList.append($('<li></li>').append(link));
-						})
-					.end()
-				.end()
 				.before(
 					status
 						.find('ol')
@@ -222,6 +230,17 @@
 			status
 				.scrollTo({ hash: true, focus: true })
 				.shake({ interval: 250, distance: 8, shakes: 1 })
+			;
+
+			controls
+				.filter(':-xf-required:not(:-xf-empty)')
+					.closest(':-xf-control')
+						.removeClass($F.CSS_MISSING)
+			;
+			controls
+				.filter(':-xf-required:-xf-empty')
+					.closest(':-xf-control')
+						.addClass($F.CSS_MISSING)
 			;
 		})
 
@@ -244,7 +263,7 @@
 	
 
 	// auto enable
-	$('.usetheforces').forces_enable();
+	$('.usetheforces').forces_enable(true);
 	$('.xf-required').closest(':-xf-control').find($F.EXPR_HTML_CONTROLS).forces_attr('required', true);
 
 
