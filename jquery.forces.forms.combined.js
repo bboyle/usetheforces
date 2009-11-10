@@ -359,6 +359,9 @@ $F.generateId = function() {
 
 	// selectors
 	$.extend($.expr[':'], {
+		'-tf-not-validated': function(e) {
+			return ($(e).data('-tf-FLAGS') & (BIT_VALID + BIT_INVALID)) == 0;
+		},
 		'-xf-empty': function(e) {
 			return $.trim($(e).val()).length == 0;
 		},
@@ -481,57 +484,39 @@ $F.generateId = function() {
 
 	// validate
 	$.fn.forces_validate = function() {
-		return $(this).filter(':not(:-xf-empty)').each(function() {
+		return $(this).each(function() {
 			var e = $(this);
-			switch (e.forces_attr('type')) {
+			var valid = true;
+			var value = e.val();
 
-				case 'email':
-					if ($F.REXP_EMAIL.exec(e.val())) {
-						e
-							.forces__flags(BIT_INVALID, false)
-							.forces__flags(BIT_VALID, true)
-							.trigger($F.EVENT_XF_VALID)
-						;
-					} else {
-						// TODO fire event only if validity changed
-						// suffering from a type mismatch
-						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
-						e
-							.forces__flags(BIT_VALID, false)
-							.forces__flags(BIT_INVALID, true)
-							.trigger($F.EVENT_XF_INVALID)
-						;
-					}
-				break;
+			// TODO should blank values trigger "valid" events, or just remove the invalid flag?
+			if (value) {
+				switch (e.forces_attr('type')) {
 
-				case 'date':
-					if ($F.dateParse(e.val())) {
-						e
-							.forces__flags(BIT_INVALID, false)
-							.forces__flags(BIT_VALID, true)
-							.trigger($F.EVENT_XF_VALID)
-						;
-					} else {
-						// TODO fire event only if validity changed
-						// suffering from a type mismatch
-						// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#suffering-from-a-type-mismatch
-						e
-							.forces__flags(BIT_VALID, false)
-							.forces__flags(BIT_INVALID, true)
-							.trigger($F.EVENT_XF_INVALID)
-						;
-					}
-				break;
+					case 'email':
+						valid = $F.REXP_EMAIL.exec(value);
+					break;
 
-				default:
-					// valid
-					e
-						.forces__flags(BIT_INVALID, false)
-						.forces__flags(BIT_VALID, true)
-						.trigger($F.EVENT_XF_VALID)
-					;
+					case 'date':
+						valid = $F.dateParse(value);
+					break;
+				}
 			}
-		}).end();
+
+			if (valid) {
+				e
+					.forces__flags(BIT_INVALID, false)
+					.forces__flags(BIT_VALID, true)
+					.trigger($F.EVENT_XF_VALID)
+				;
+			} else {
+				e
+					.forces__flags(BIT_VALID, false)
+					.forces__flags(BIT_INVALID, true)
+					.trigger($F.EVENT_XF_INVALID)
+				;
+			}
+		});
 	};
 
 
@@ -574,8 +559,9 @@ $F.generateId = function() {
 			// prevent repeat submit events (store time of submit)
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
-			// validate all fields of unknown validity
-			var controls = form.find($F.EXPR_HTML_CONTROLS).filter(':not(:-xf-valid, :-xf-invalid)').forces_validate();
+			var controls = form.find($F.EXPR_HTML_CONTROLS);
+			// TODO skip already validated fields?
+			controls.forces_validate();
 	
 			// are there invalid fields?
 			var invalid = controls.filter(':-xf-required:-xf-empty, :-xf-invalid');
@@ -631,12 +617,20 @@ $F.generateId = function() {
 
 
 	// TODO enable/disabled forces (partially implemented)
-	$.fn.forces_enable = function() {
-		$('form').bind('submit', $F.formSubmitHandler);
-		// support for "live" focus/blur events
-		$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
+	$.fn.forces_enable = function(enable) {
+		$F.toggleFormHandlers(enable, $(this));
 	};
-	
+	// TODO use namespaced events
+	$F.toggleFormHandlers = function(enable, form) {
+		form = form || $('form');
+		if (enable || enable === undefined) {
+			form.bind('submit', $F.formSubmitHandler);
+			$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
+		} else {
+			form.unbind('submit');
+			$($F.EXPR_HTML_CONTROLS).unbind('focus blur');
+		}
+	};
 	
 
 
@@ -761,6 +755,7 @@ $F.generateId = function() {
 
 		.live($F.EVENT_XF_OPTIONAL, function() {
 			$(this)
+				.removeClass($F.CSS_MISSING)
 				.find('.xf-required')
 					.remove()
 			;
@@ -827,34 +822,37 @@ $F.generateId = function() {
 	$(':-tf-form')
 
 		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
-			var form = $(this);
+
+		var form = $(this);
+			var controls = form.find($F.EXPR_HTML_CONTROLS);
+
 			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
 			var errorList = $('<ol></ol>');
 			var alert;
-
+			
+			controls
+				.filter(':-xf-required:-xf-empty, :-xf-invalid')
+					.each(function() {
+						var widget = $(this);
+						if (widget.is(':-xf-empty')) {
+							alert = 'must be completed';
+						} else {
+							switch (widget.forces_attr('type')) {
+								case 'date':
+									alert = 'unrecognised date format';
+								break;
+								case 'email':
+									alert = 'must contain an email address';
+								break;
+							}
+						}
+						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
+						errorList.append($('<li></li>').append(link));
+					})
+			;
+			
 			form
 				.addClass($F.CSS_SUBMIT_ERROR)
-				.find(':text')
-					.filter(':-xf-required:-xf-empty, :-xf-invalid')
-						.each(function() {
-							var widget = $(this);
-							if (widget.is(':-xf-empty')) {
-								alert = 'must be completed';
-							} else {
-								switch (widget.forces_attr('type')) {
-									case 'date':
-										alert = 'unrecognised date format';
-									break;
-									case 'email':
-										alert = 'must contain an email address';
-									break;
-								}
-							}
-							var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
-							errorList.append($('<li></li>').append(link));
-						})
-					.end()
-				.end()
 				.before(
 					status
 						.find('ol')
@@ -867,6 +865,17 @@ $F.generateId = function() {
 			status
 				.scrollTo({ hash: true, focus: true })
 				.shake({ interval: 250, distance: 8, shakes: 1 })
+			;
+
+			controls
+				.filter(':-xf-required:not(:-xf-empty)')
+					.closest(':-xf-control')
+						.removeClass($F.CSS_MISSING)
+			;
+			controls
+				.filter(':-xf-required:-xf-empty')
+					.closest(':-xf-control')
+						.addClass($F.CSS_MISSING)
 			;
 		})
 
@@ -889,7 +898,7 @@ $F.generateId = function() {
 	
 
 	// auto enable
-	$('.usetheforces').forces_enable();
+	$('.usetheforces').forces_enable(true);
 	$('.xf-required').closest(':-xf-control').find($F.EXPR_HTML_CONTROLS).forces_attr('required', true);
 
 

@@ -88,6 +88,29 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_submitEventsCanBeDisabled: function() {
+			var done = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_DONE, function() { ++done; });
+			var error = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_ERROR, function() { ++error; });
+			
+			$('#form').forces_enable(false);
+
+			Assert.areSame(0, done, 'disabled: "DONE" should not fire before submission occurs');
+			Assert.areSame(0, error, 'disabled: "ERROR" should not fire before submission occurs');
+
+			$('#input1').forces_attr('required', true);
+			$('#form').submit();
+			Assert.areSame(0, done, 'disabled: "DONE" should not fire on submit failure');
+			Assert.areSame(0, error, 'disabled: "ERROR" should fire on submit failure');
+
+			$('#input1').forces_attr('required', false);
+			$('#form').submit();
+			Assert.areSame(0, done, 'disabled: "DONE" should fire on submit success');
+			Assert.areSame(0, error, 'disabled: "ERROR" should not fire on submit failure');
+		},
+
+
 		test_submitEventSuppression: function () {
 			var submitted = 0;
 			var suppressed = 0;
