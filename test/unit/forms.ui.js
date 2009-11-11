@@ -439,9 +439,18 @@ Tester.use('console', 'test', function(Y){
 						'<input type="text" name="email" id="email" />' +
 					'</li>' +
 					'<li class="xf-input">' +
+						'<label for="number"><span class="xf-label">Number:</span></label>' +
+						'<input type="text" name="number" id="number" />' +
+					'</li>' +
+					'<li class="xf-input">' +
 						'<label for="date"><span class="xf-label">Date</span></label>' +
 						'<input type="text" name="date" id="date" />' +
 					'</li>' +
+					'<li class="xf-select1"><fieldset id="radio1">' +
+						'<legend><span class="xf-label">Radio buttons</span></legend><ul class="xf-choices">' +
+						'<li><label for="radio1-true"><input type="radio" name="radio1" id="radio1-true" value="true" />true</label></li>' +
+						'<li><label for="radio1-false"><input type="radio" name="radio1" id="radio1-false" value="false" />false</label></li>' +
+					'</ul></fieldset></li>' +
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
@@ -505,19 +514,26 @@ Tester.use('console', 'test', function(Y){
 
 
 		test_requiredAlertMessageDisplayed: function() {
-			$('#input1,#textarea1').forces_attr('required', true);
+			$('#input1,#textarea1,#radio1').forces_attr('required', true);
 
 			$('#form').submit();
 			var status = $('div.tf-status');
-			Assert.areSame(2, status.find('li').length, 'expected 2 alerts in status');
+			Assert.areSame(3, status.find('li').length, 'expected 3 alerts in status');
 			Assert.areSame('Input: must be completed', status.find('li').eq(0).text());
 			Assert.areSame('Textarea: must be completed', status.find('li').eq(1).text());
+			Assert.areSame('Radio buttons: must be completed', status.find('li').eq(2).text());
 			Assert.areSame(1, $('#input1').closest(':-xf-control').find('.xf-alert').length);
 			Assert.areSame('must be completed', $('#input1').closest(':-xf-control').find('.xf-alert').text());
+			Assert.areSame(1, $('#radio1').closest(':-xf-control').find('.xf-alert').length);
+			Assert.areSame('must be completed', $('#radio1').closest(':-xf-control').find('.xf-alert').text());
 
 			$('#form').submit();
 			Assert.areSame(1, $('#input1').closest(':-xf-control').find('.xf-alert').length);
 			Assert.areSame('must be completed', $('#input1').closest(':-xf-control').find('.xf-alert').text());
+			
+			$('#radio1-true').click();
+			$('#form').submit();
+			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length);
 		},
 		
 		
@@ -541,6 +557,8 @@ Tester.use('console', 'test', function(Y){
 			$('#input1').focus().val('test').val();
 			$('#form').submit();
 			Assert.areSame(false, $('#input1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#input1 has MISSING class but value not missing');
+
+			// TODO valid -> missing DOES NOT REMOVE "VALID" CLASS
 		},
 		
 		
@@ -564,6 +582,25 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_invalidNumberMessageDisplayed: function() {
+			$('#number').forces_attr('type', 'number').forces_attr('required', true);
+
+			$('#form').submit();
+			Assert.areSame('Number: must be completed', $('.tf-status').find('li').text(), 'required status alert not shown');
+			Assert.areSame('must be completed', $('#number').closest(':-xf-control').find('.xf-alert').text(), 'required inline alert not shown');
+			
+			$('#number').val('abc');
+			$('#form').submit();
+			Assert.areSame('Number: must contain only digits', $('.tf-status').find('li').text(), 'invalid status alert not shown');
+			Assert.areSame('must contain only digits', $('#number').closest(':-xf-control').find('.xf-alert').text(), 'invalid inline alert not shown');
+
+			$('#number').val('12345');
+			$('#form').submit();
+			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
+			Assert.areSame(0, $('#number').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
+		},
+
+
 		test_invalidEmailMessageDisplayed: function() {
 			$('#email').forces_attr('type', 'email').forces_attr('required', true);
 
@@ -581,7 +618,7 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
 			Assert.areSame(0, $('#email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
 		},
-	
+
 
 		test_invalidDateMessageDisplayed: function() {
 			$('#date').forces_attr('type', 'date').forces_attr('required', true);

@@ -19,6 +19,14 @@
 	<ol class="ftw-questions">
 
 		<li class="xf-input">
+			<label for="number">
+				<span class="xf-label">Number</span>
+				<abbr class="xf-required" title="required">*</abbr>
+			</label>
+			<input type="text" id="number" name="number" size="40" />
+		</li>
+
+		<li class="xf-input">
 			<label for="email">
 				<span class="xf-label">Email</span>
 				<abbr class="xf-required" title="required">*</abbr>
@@ -113,6 +121,7 @@
 <script type="text/javascript">
 <!-- //
 
+	$('#number').forces_attr('type', 'number');
 	$('#email').forces_attr('type', 'email');
 	$('#date-start,#date-birth').forces_attr('type', 'date');
 	$('#date-start').click(function() {
@@ -120,7 +129,7 @@
 	});
 
 	$('#my-answer').click(function() {
-		var checked = $('#my-answer').find(':checked').val() || '';
+		var checked = $('#my-answer :checked').val() || '';
 		$('#sword-swings').forces_attr('relevant', checked.match(/sword/) != null);
 		$('#gate-open').forces_attr('relevant', checked.match(/gate/) != null);
 	}).triggerHandler('click');
