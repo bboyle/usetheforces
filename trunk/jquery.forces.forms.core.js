@@ -30,12 +30,14 @@
 		EVENT_XF_SUBMIT_ERROR: '-xf-submit-error',
 		EVENT_TF_SUBMIT_SUPPRESSED: '-tf-submit-suppressed',
 
-		EXPR_HTML_CONTROLS: ':text,select,textarea',
+		EXPR_HTML_CONTROLS: ':text,select,textarea,.xf-select1 fieldset',
 		
 		// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
 		// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
 		REXP_EMAIL: /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/,
 		
+		REXP_NUMBER: /^[0-9]+$/,
+
 		SUBMIT_TOLERANCE: 10000
 	});
 
@@ -45,13 +47,15 @@
 
 	// constants (private)
 	var SUBMIT_TIMESTAMP = '-tf-submitted';
+/*
+	// bit flags
 	var BIT_IRRELEVANT		= 1;
 	var BIT_FLAG_IRRELEVANT	= 2;
 	var BIT_REQUIRED		= 4;
 	var BIT_FLAG_REQUIRED	= 8;
 	var BIT_VALID			= 16;
 	var BIT_INVALID			= 32;
-
+*/
 
 
 
@@ -59,28 +63,32 @@
 	// selectors
 	$.extend($.expr[':'], {
 		'-tf-not-validated': function(e) {
-			return ($(e).data('-tf-FLAGS') & (BIT_VALID + BIT_INVALID)) == 0;
+			return ($(e).data('-tf-FLAGS') & 48) == 0;
 		},
 		'-xf-empty': function(e) {
-			return $.trim($(e).val()).length == 0;
+			e = $(e);
+			if (e.find(':radio,:checkbox').length) {
+				return e.find(':checked').length == 0;
+			}
+			return $.trim(e.val()).length == 0;
 		},
 		'-xf-invalid': function(e) {
-			return ($(e).data('-tf-FLAGS') & BIT_INVALID) == BIT_INVALID;
+			return ($(e).data('-tf-FLAGS') & 32) == 32;
 		},
 		'-xf-irrelevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & BIT_IRRELEVANT) == BIT_IRRELEVANT;
+			return ($(e).data('-tf-FLAGS') & 1) == 1;
 		},
 		'-xf-optional': function(e) {
-			return ($(e).data('-tf-FLAGS') & BIT_REQUIRED) == 0;
+			return ($(e).data('-tf-FLAGS') & 4) == 0;
 		},
 		'-xf-relevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & BIT_IRRELEVANT) == 0;
+			return ($(e).data('-tf-FLAGS') & 1) == 0;
 		},
 		'-xf-required': function(e) {
-			return ($(e).data('-tf-FLAGS') & BIT_REQUIRED) == BIT_REQUIRED;
+			return ($(e).data('-tf-FLAGS') & 4) == 4;
 		},
 		'-xf-valid': function(e) {
-			return ($(e).data('-tf-FLAGS') & BIT_VALID) == BIT_VALID;
+			return ($(e).data('-tf-FLAGS') & 16) == 16;
 		},
 	});
 	
@@ -99,11 +107,11 @@
 		switch (name) {
 
 			case 'relevant': // irrelevant
-				this.forces__flags(BIT_FLAG_IRRELEVANT, value !== true && value != 'relevant');
+				this.forces__flags(2, value !== true && value != 'relevant');
 			break;
 			
 			case 'required':
-				this.forces__flags(BIT_FLAG_REQUIRED, value === true || value == 'required');
+				this.forces__flags(8, value === true || value == 'required');
 			break;
 			
 			case 'type':
@@ -120,11 +128,11 @@
 		switch (name) {
 
 			case 'relevant': // irrelevant
-				this.forces__flags(BIT_FLAG_IRRELEVANT, false);
+				this.forces__flags(2, false);
 			break;
 
 			case 'required':
-				this.forces__flags(BIT_FLAG_REQUIRED, false);
+				this.forces__flags(8, false);
 			break;
 
 			case 'type':
@@ -157,20 +165,20 @@
 			f = e.data('-tf-FLAGS') || 0;
 	
 			// relevant
-			switch (f & (BIT_FLAG_IRRELEVANT + BIT_IRRELEVANT)) {
-				case BIT_FLAG_IRRELEVANT: // -> irrelevant
-					_flagEvent(e, BIT_IRRELEVANT, true, $F.EVENT_XF_DISABLED);
+			switch (f & 3) {
+				case 2: // -> irrelevant
+					_flagEvent(e, 1, true, $F.EVENT_XF_DISABLED);
 				break;
-				case BIT_IRRELEVANT: // -> relevant
-					_flagEvent(e, BIT_IRRELEVANT, false, $F.EVENT_XF_ENABLED);
+				case 1: // -> relevant
+					_flagEvent(e, 1, false, $F.EVENT_XF_ENABLED);
 				break;
 			}
-			switch (f & (BIT_FLAG_REQUIRED + BIT_REQUIRED)) {
-				case BIT_FLAG_REQUIRED: // -> required
-					_flagEvent(e, BIT_REQUIRED, true, $F.EVENT_XF_REQUIRED);
+			switch (f & 12) {
+				case 8: // -> required
+					_flagEvent(e, 4, true, $F.EVENT_XF_REQUIRED);
 				break;
-				case BIT_REQUIRED: // -> optional
-					_flagEvent(e, BIT_REQUIRED, false, $F.EVENT_XF_OPTIONAL);
+				case 4: // -> optional
+					_flagEvent(e, 4, false, $F.EVENT_XF_OPTIONAL);
 				break;
 			}
 	
@@ -198,25 +206,30 @@
 					case 'date':
 						valid = $F.dateParse(value);
 					break;
+
+					case 'number':
+						valid = $F.REXP_NUMBER.exec(value);
+					break;
 				}
+
 				if (valid) {
 					e
-						.forces__flags(BIT_INVALID, false)
-						.forces__flags(BIT_VALID, true)
+						.forces__flags(32, false)
+						.forces__flags(16, true)
 						.trigger($F.EVENT_XF_VALID)
 					;
 				} else {
 					e
-						.forces__flags(BIT_VALID, false)
-						.forces__flags(BIT_INVALID, true)
+						.forces__flags(16, false)
+						.forces__flags(32, true)
 						.trigger($F.EVENT_XF_INVALID)
 					;
 				}
 
 			} else {
 				e
-						.forces__flags(BIT_VALID, false)
-						.forces__flags(BIT_INVALID, false)
+						.forces__flags(16, false)
+						.forces__flags(32, false)
 				;
 			}
 		});
@@ -288,8 +301,8 @@
 
 
 	$F.inputFocusHandler = function(evt) {
-		// TODO store value onfocus, check for change onblur, delete stored value
 		var control = $(evt.target);
+
 		switch (evt.type) {
 		
 			case 'focus':

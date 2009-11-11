@@ -16,14 +16,19 @@
 		HTML_ALERT_INLINE: '<em class="xf-alert"></em>',
 		HTML_STATUS: '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>',
 		HTML_CALENDAR: '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>',
+
+		MSG_INVALID_DATE: 'unrecognised date format',
 		MSG_INVALID_EMAIL: 'must contain an email address',
+		MSG_INVALID_NUMBER: 'must contain only digits',
 		MSG_MISSING: 'must be completed',
+
 		CSS_SUBMIT_ERROR: 'xf-submit-error',
 		CSS_SUBMIT_DONE: 'xf-submit-done',
 		CSS_ACTIVE: 'tf-active',
 		CSS_VALID: 'xf-valid',
 		CSS_INVALID: 'xf-invalid',
 		CSS_MISSING: 'tf-missing',
+
 		MS_ENABLE: 300,
 		MS_DISABLE: 0
 	});
@@ -179,10 +184,32 @@
 		})
 
 		.live($F.EVENT_XF_INVALID, function() {
-			$(this)
+			var control = $(this);
+
+			var message = control.find(':text').forces_attr('type');
+			
+			switch (message) {
+
+				case 'email':
+					message = $F.MSG_INVALID_EMAIL;
+				break;
+
+				case 'date':
+					message = $F.MSG_INVALID_DATE;
+				break;
+
+				case 'number':
+					message = $F.MSG_INVALID_NUMBER;
+				break;
+
+				default:
+					message = 'invalid';
+			}
+		
+			control
 				.removeClass($F.CSS_VALID)
 				.addClass($F.CSS_INVALID)
-				.forces_alert($F.MSG_INVALID_EMAIL)
+				.forces_alert(message)
 			;
 		})
 
@@ -224,14 +251,17 @@
 						} else {
 							switch (widget.forces_attr('type')) {
 								case 'date':
-									alert = 'unrecognised date format';
+									alert = $F.MSG_INVALID_DATE;
 								break;
 								case 'email':
 									alert = $F.MSG_INVALID_EMAIL;
 								break;
+								case 'number':
+									alert = $F.MSG_INVALID_NUMBER;
+								break;
 							}
 						}
-						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>').click(function() { widget.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true }); return false });
+						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>');
 						errorList.append($('<li></li>').append(link));
 					})
 			;
@@ -286,6 +316,22 @@
 
 
 	
+
+	// click links in status alerts
+	$('.tf-alert a').live('click', function() {
+		var id = $(this).attr('href');
+
+		if (id.indexOf('#') < 0) {
+			return true;
+		}
+		
+		$(id.substring(id.indexOf('#')))
+			.scrollTo({ ancestor: ':-xf-control', hash: true, focus: true })
+		;
+
+		return false;
+	});
+
 
 	// auto enable
 	$('.usetheforces').forces_enable(true);

@@ -118,9 +118,19 @@ Tester.use('console', 'test', function(Y){
 					'<li><input type="text" name="input1" id="input1" /></li>' +
 					'<li><input type="text" name="input2" id="input2" value="foo" /></li>' +
 					'<li><input type="text" name="input3" id="input3" value="foo" /></li>' +
+					'<li><fieldset id="radio1">' +
+						'<input type="radio" name="radio1" id="radio1-A" value="A"/>' +
+						'<input type="radio" name="radio1" id="radio1-B" value="B"/>' +
+						'<input type="radio" name="radio1" id="radio1-C" value="C"/>' +
+					'</fieldset></li>' +
+					'<li><fieldset id="radio2">' +
+						'<input type="radio" name="radio2" id="radio2-A" value="A"/>' +
+						'<input type="radio" name="radio2" id="radio2-B" value="B" checked="checked" />' +
+						'<input type="radio" name="radio2" id="radio2-C" value="C"/>' +
+					'</fieldset></li>' +
 				'</ol></form>'
 			).appendTo('body');
-			$('#input1').forces_attr('required', true);
+			$('#input1,#radio1').forces_attr('required', true);
 			$('#input3').forces_attr('relevant', false);
 		},
 
@@ -132,11 +142,21 @@ Tester.use('console', 'test', function(Y){
 		// Tests
 		//---------------------------------------------
 
-		test_emptySelector: function () {
+		test_emptySelectorWithInput: function () {
 			Assert.areSame(true, $('#input1').is(':-xf-empty'));
 			Assert.areSame(false, $('#input2').is(':-xf-empty'));
 			Assert.areSame(true, $('#input2').val(' ').is(':-xf-empty'));
 			Assert.areSame(false, $('#input2').val('foo').is(':-xf-empty'));
+		},
+
+		test_emptySelectorWithRadio: function () {
+			Assert.areSame(true, $('#radio1').is(':-xf-empty'), 'radio1 reported as not empty');
+			Assert.areSame(false, $('#radio2').is(':-xf-empty'), 'radio2 reported as empty');
+			$('#radio2-B').get(0).removeAttribute('checked');
+			Assert.areSame(0, $('#radio2 :checked').length, 'radio2 should not have :checked elements');
+			Assert.areSame(true, $('#radio2').is(':-xf-empty'), 'radio2 should now be empty');
+			$('#radio2-C').click();
+			Assert.areSame(false, $('#radio2').is(':-xf-empty'), 'radio2 should not be empty');
 		},
 
 		test_relevantSelectorReturnsCorrectBoolean: function () {
