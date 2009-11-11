@@ -20,7 +20,8 @@ Tester.use('console', 'test', function(Y){
 				'<form id="form" action="#form" onsubmit="return false"><ol class="ftw-questions">' +
 					'<li class="xf-input" id="input01-container">' +
 						'<label for="input01" id="label-input"><span class="xf-label">Input</span></label>' +
-						'<input type="text" name="input01" id="input01" /></li>' +
+						'<input type="text" name="input01" id="input01" />' +
+					'</li>' +
 					'<li class="xf-select" id="select-container"><fieldset><legend id="legend-select"><span><span class="xf-label">Select</span></legend>' +
 						'<ul class="xf-choices">' +
 							'<li><input type="checkbox" name="select" id="selectA" value="A" /><label for="selectA">A</label></li>' +
@@ -109,6 +110,26 @@ Tester.use('console', 'test', function(Y){
 		test_canFindGroupLabel: function() {
 			Assert.areSame("Given name(s)", $('#name-given').closest(':-xf-control').find(':-xf-label').eq(0).text());
 			Assert.areSame("Name", $('#name-given').closest(':-xf-group').find(':-xf-label').eq(0).text());
+		},
+
+
+		test_canSetAlertForControls: function() {
+			Assert.areSame(0, $('#input01-container, #select-container').find('.xf-alert').length);
+
+			$('#input01-container, #select-container').forces_alert('test alert');
+			Assert.areSame(1, $('#input01-container').find('.xf-alert').length, 'expected alert on input');
+			Assert.areSame(1, $('#select-container').find('.xf-alert').length, 'expected alert on select');
+			Assert.areSame('test alert', $('#input01-container').find('.xf-alert').text(), 'expected "test alert" on input');
+			Assert.areSame('test alert', $('#select-container').find('.xf-alert').text(), 'expected "test alert" on select');
+
+			$('#input01-container').forces_alert('foo');
+			Assert.areSame(1, $('#input01-container').find('.xf-alert').length, 'expected 1 alert');
+			Assert.areSame('foo', $('#input01-container').find('.xf-alert').text());
+			Assert.areSame(1, $('#select-container').find('.xf-alert').length);
+			Assert.areSame('test alert', $('#select-container').find('.xf-alert').text());
+
+			$('#input01-container').forces_alert();
+			Assert.areSame(0, $('#input01-container').find('.xf-alert').length, 'alert still present');
 		},
 
 
@@ -549,7 +570,8 @@ Tester.use('console', 'test', function(Y){
 
 			$('#email').val('foo@example.com');
 			$('#form').submit();
-			Assert.areSame(0, $('.tf-status').find('li').length);
+			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
+			Assert.areSame(0, $('#email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
 		},
 	
 

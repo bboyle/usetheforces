@@ -10,38 +10,38 @@
 
 
 	// jquery.forces
-	var $F = $.forces = $.forces || {};
+	var $F = $.forces = $.extend($.forces || {}, {
+		// CONSTANTS (public)
+		EVENT_XF_DISABLED: '-xf-disabled',
+		EVENT_XF_ENABLED: '-xf-enabled',
+
+		EVENT_XF_FOCUS_IN: '-xf-focus-in',
+		EVENT_XF_FOCUS_OUT: '-xf-focus-out',
+
+		EVENT_XF_OPTIONAL: '-xf-optional',
+		EVENT_XF_REQUIRED: '-xf-required',
+
+		EVENT_XF_VALID: '-xf-valid',
+		EVENT_XF_INVALID: '-xf-invalid',
+		
+		EVENT_XF_VALUE_CHANGED: '-xf-value-changed',
+
+		EVENT_XF_SUBMIT_DONE: '-xf-submit-done',
+		EVENT_XF_SUBMIT_ERROR: '-xf-submit-error',
+		EVENT_TF_SUBMIT_SUPPRESSED: '-tf-submit-suppressed',
+
+		EXPR_HTML_CONTROLS: ':text,select,textarea',
+		
+		// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
+		// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
+		REXP_EMAIL: /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/,
+		
+		SUBMIT_TOLERANCE: 10000
+	});
 
 
 
 
-
-	// CONSTANTS (public)
-	$F.EVENT_XF_DISABLED = '-xf-disabled';
-	$F.EVENT_XF_ENABLED = '-xf-enabled';
-
-	$F.EVENT_XF_FOCUS_IN = '-xf-focus-in';
-	$F.EVENT_XF_FOCUS_OUT = '-xf-focus-out';
-
-	$F.EVENT_XF_OPTIONAL = '-xf-optional';
-	$F.EVENT_XF_REQUIRED = '-xf-required';
-
-	$F.EVENT_XF_VALID = '-xf-valid';
-	$F.EVENT_XF_INVALID = '-xf-invalid';
-	
-	$F.EVENT_XF_VALUE_CHANGED = '-xf-value-changed';
-
-	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
-	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
-	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
-
-	$F.EXPR_HTML_CONTROLS = ':text,select,textarea';
-	
-	// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
-	// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
-	$F.REXP_EMAIL = /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/;
-	
-	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
 	var SUBMIT_TIMESTAMP = '-tf-submitted';
@@ -186,9 +186,8 @@
 		return $(this).each(function() {
 			var e = $(this);
 			var valid = true;
-			var value = e.val();
+			var value = $.trim(e.val());
 
-			// TODO should blank values trigger "valid" events, or just remove the invalid flag?
 			if (value) {
 				switch (e.forces_attr('type')) {
 
@@ -200,19 +199,24 @@
 						valid = $F.dateParse(value);
 					break;
 				}
-			}
+				if (valid) {
+					e
+						.forces__flags(BIT_INVALID, false)
+						.forces__flags(BIT_VALID, true)
+						.trigger($F.EVENT_XF_VALID)
+					;
+				} else {
+					e
+						.forces__flags(BIT_VALID, false)
+						.forces__flags(BIT_INVALID, true)
+						.trigger($F.EVENT_XF_INVALID)
+					;
+				}
 
-			if (valid) {
-				e
-					.forces__flags(BIT_INVALID, false)
-					.forces__flags(BIT_VALID, true)
-					.trigger($F.EVENT_XF_VALID)
-				;
 			} else {
 				e
-					.forces__flags(BIT_VALID, false)
-					.forces__flags(BIT_INVALID, true)
-					.trigger($F.EVENT_XF_INVALID)
+						.forces__flags(BIT_VALID, false)
+						.forces__flags(BIT_INVALID, false)
 				;
 			}
 		});

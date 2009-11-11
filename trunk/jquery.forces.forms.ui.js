@@ -10,25 +10,27 @@
 
 
 	// jquery.forces
-	var $F = $.forces = $.forces || {};
+	var $F = $.forces = $.extend($.forces || {}, {
+		// CONSTANTS (public)
+		HTML_REQUIRED: '<abbr class="xf-required" title="required">*</abbr>',
+		HTML_ALERT_INLINE: '<em class="xf-alert"></em>',
+		HTML_STATUS: '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>',
+		HTML_CALENDAR: '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>',
+		MSG_INVALID_EMAIL: 'must contain an email address',
+		MSG_MISSING: 'must be completed',
+		CSS_SUBMIT_ERROR: 'xf-submit-error',
+		CSS_SUBMIT_DONE: 'xf-submit-done',
+		CSS_ACTIVE: 'tf-active',
+		CSS_VALID: 'xf-valid',
+		CSS_INVALID: 'xf-invalid',
+		CSS_MISSING: 'tf-missing',
+		MS_ENABLE: 300,
+		MS_DISABLE: 0
+	});
 
 
 
 
-
-	// CONSTANTS (public)
-	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
-	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
-	$F.HTML_CALENDAR = '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>';
-	$F.MSG_INVALID_EMAIL = 'must contain an email address';
-	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
-	$F.CSS_SUBMIT_DONE = 'xf-submit-done';
-	$F.CSS_ACTIVE = 'tf-active';
-	$F.CSS_VALID = 'xf-valid';
-	$F.CSS_INVALID = 'xf-invalid';
-	$F.CSS_MISSING = 'tf-missing';
-	$F.MS_ENABLE = 300;
-	$F.MS_DISABLE = 0;
 
 	// constants (private)
 	var DOM_STATUS = '-tfui-status';
@@ -54,6 +56,25 @@
 	});
 	
 	
+
+
+
+	// set an alert for a control
+	$.fn.forces_alert = function(message) {
+		var src = $(this);
+		
+		var controls = src.closest(':-xf-control');
+		controls.find('.xf-alert').remove();
+
+		if (message) {
+			message = $($F.HTML_ALERT_INLINE).text(message);
+			controls.find('.xf-label').parent().append(message);
+		}
+
+		return src;
+	};
+
+
 
 
 
@@ -151,11 +172,9 @@
 
 		.live($F.EVENT_XF_VALID, function() {
 			$(this)
+				.forces_alert()
 				.removeClass($F.CSS_INVALID)
 				.addClass($F.CSS_VALID)
-				.find('.xf-label')
-					.parent()
-						.append('<em class="xf-alert">' + $F.MSG_INVALID_EMAIL + '</em>')
 			;
 		})
 
@@ -163,6 +182,7 @@
 			$(this)
 				.removeClass($F.CSS_VALID)
 				.addClass($F.CSS_INVALID)
+				.forces_alert($F.MSG_INVALID_EMAIL)
 			;
 		})
 
@@ -200,7 +220,7 @@
 					.each(function() {
 						var widget = $(this);
 						if (widget.is(':-xf-empty')) {
-							alert = 'must be completed';
+							alert = $F.MSG_MISSING;
 						} else {
 							switch (widget.forces_attr('type')) {
 								case 'date':
@@ -241,6 +261,8 @@
 				.filter(':-xf-required:-xf-empty')
 					.closest(':-xf-control')
 						.addClass($F.CSS_MISSING)
+						.find('.xf-required')
+							.after('<em class="xf-alert">' + $F.MSG_MISSING + '</em>')
 			;
 		})
 
