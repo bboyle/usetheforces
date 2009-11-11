@@ -253,6 +253,10 @@
 			;
 
 			controls
+				.filter(':-xf-required:not(:-xf-empty,:-xf-invalid)')
+					.forces_alert()
+			;
+			controls
 				.filter(':-xf-required:not(:-xf-empty)')
 					.closest(':-xf-control')
 						.removeClass($F.CSS_MISSING)
@@ -261,8 +265,7 @@
 				.filter(':-xf-required:-xf-empty')
 					.closest(':-xf-control')
 						.addClass($F.CSS_MISSING)
-						.find('.xf-required')
-							.after('<em class="xf-alert">' + $F.MSG_MISSING + '</em>')
+						.forces_alert($F.MSG_MISSING)
 			;
 		})
 

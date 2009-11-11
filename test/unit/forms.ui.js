@@ -506,10 +506,18 @@ Tester.use('console', 'test', function(Y){
 
 		test_requiredAlertMessageDisplayed: function() {
 			$('#input1,#textarea1').forces_attr('required', true);
+
 			$('#form').submit();
 			var status = $('div.tf-status');
+			Assert.areSame(2, status.find('li').length, 'expected 2 alerts in status');
 			Assert.areSame('Input: must be completed', status.find('li').eq(0).text());
 			Assert.areSame('Textarea: must be completed', status.find('li').eq(1).text());
+			Assert.areSame(1, $('#input1').closest(':-xf-control').find('.xf-alert').length);
+			Assert.areSame('must be completed', $('#input1').closest(':-xf-control').find('.xf-alert').text());
+
+			$('#form').submit();
+			Assert.areSame(1, $('#input1').closest(':-xf-control').find('.xf-alert').length);
+			Assert.areSame('must be completed', $('#input1').closest(':-xf-control').find('.xf-alert').text());
 		},
 		
 		
