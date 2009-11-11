@@ -8,11 +8,11 @@ Catching errors quickly is important for recovery, but too much feedback can int
 = Details =
 
 These are the key events:
-* oninput: as a question is being answered (e.g. while typing in a box)
-* onblur: when the customer leaves a question
-* onchange: when an answer is changed (including providing an answer where previously there was none)
-* onsubmit: when form submission begins (client side)
-* response: server side response to the form submission.
+  * oninput: as a question is being answered (e.g. while typing in a box)
+  * onblur: when the customer leaves a question
+  * onchange: when an answer is changed (including providing an answer where previously there was none)
+  * onsubmit: when form submission begins (client side)
+  * response: server side response to the form submission.
 
 Required fields should only be validated for missing values on submit. Allow the customer to fill out the form at their own pace, and choosing their own sequence if desired. Prompt for any missing answers onsubmit. However, remove any alerts about missing values when a value is provided (onchange).
 
