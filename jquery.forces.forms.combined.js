@@ -311,38 +311,38 @@ $F.generateId = function() {
 
 
 	// jquery.forces
-	var $F = $.forces = $.forces || {};
+	var $F = $.forces = $.extend($.forces || {}, {
+		// CONSTANTS (public)
+		EVENT_XF_DISABLED: '-xf-disabled',
+		EVENT_XF_ENABLED: '-xf-enabled',
+
+		EVENT_XF_FOCUS_IN: '-xf-focus-in',
+		EVENT_XF_FOCUS_OUT: '-xf-focus-out',
+
+		EVENT_XF_OPTIONAL: '-xf-optional',
+		EVENT_XF_REQUIRED: '-xf-required',
+
+		EVENT_XF_VALID: '-xf-valid',
+		EVENT_XF_INVALID: '-xf-invalid',
+		
+		EVENT_XF_VALUE_CHANGED: '-xf-value-changed',
+
+		EVENT_XF_SUBMIT_DONE: '-xf-submit-done',
+		EVENT_XF_SUBMIT_ERROR: '-xf-submit-error',
+		EVENT_TF_SUBMIT_SUPPRESSED: '-tf-submit-suppressed',
+
+		EXPR_HTML_CONTROLS: ':text,select,textarea',
+		
+		// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
+		// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
+		REXP_EMAIL: /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/,
+		
+		SUBMIT_TOLERANCE: 10000
+	});
 
 
 
 
-
-	// CONSTANTS (public)
-	$F.EVENT_XF_DISABLED = '-xf-disabled';
-	$F.EVENT_XF_ENABLED = '-xf-enabled';
-
-	$F.EVENT_XF_FOCUS_IN = '-xf-focus-in';
-	$F.EVENT_XF_FOCUS_OUT = '-xf-focus-out';
-
-	$F.EVENT_XF_OPTIONAL = '-xf-optional';
-	$F.EVENT_XF_REQUIRED = '-xf-required';
-
-	$F.EVENT_XF_VALID = '-xf-valid';
-	$F.EVENT_XF_INVALID = '-xf-invalid';
-	
-	$F.EVENT_XF_VALUE_CHANGED = '-xf-value-changed';
-
-	$F.EVENT_XF_SUBMIT_DONE = '-xf-submit-done';
-	$F.EVENT_XF_SUBMIT_ERROR = '-xf-submit-error';
-	$F.EVENT_TF_SUBMIT_SUPPRESSED = '-tf-submit-suppressed';
-
-	$F.EXPR_HTML_CONTROLS = ':text,select,textarea';
-	
-	// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
-	// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
-	$F.REXP_EMAIL = /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/;
-	
-	$F.SUBMIT_TOLERANCE = 10000;
 
 	// constants (private)
 	var SUBMIT_TIMESTAMP = '-tf-submitted';
@@ -487,9 +487,8 @@ $F.generateId = function() {
 		return $(this).each(function() {
 			var e = $(this);
 			var valid = true;
-			var value = e.val();
+			var value = $.trim(e.val());
 
-			// TODO should blank values trigger "valid" events, or just remove the invalid flag?
 			if (value) {
 				switch (e.forces_attr('type')) {
 
@@ -501,19 +500,24 @@ $F.generateId = function() {
 						valid = $F.dateParse(value);
 					break;
 				}
-			}
+				if (valid) {
+					e
+						.forces__flags(BIT_INVALID, false)
+						.forces__flags(BIT_VALID, true)
+						.trigger($F.EVENT_XF_VALID)
+					;
+				} else {
+					e
+						.forces__flags(BIT_VALID, false)
+						.forces__flags(BIT_INVALID, true)
+						.trigger($F.EVENT_XF_INVALID)
+					;
+				}
 
-			if (valid) {
-				e
-					.forces__flags(BIT_INVALID, false)
-					.forces__flags(BIT_VALID, true)
-					.trigger($F.EVENT_XF_VALID)
-				;
 			} else {
 				e
-					.forces__flags(BIT_VALID, false)
-					.forces__flags(BIT_INVALID, true)
-					.trigger($F.EVENT_XF_INVALID)
+						.forces__flags(BIT_VALID, false)
+						.forces__flags(BIT_INVALID, false)
 				;
 			}
 		});
@@ -649,24 +653,27 @@ $F.generateId = function() {
 
 
 	// jquery.forces
-	var $F = $.forces = $.forces || {};
+	var $F = $.forces = $.extend($.forces || {}, {
+		// CONSTANTS (public)
+		HTML_REQUIRED: '<abbr class="xf-required" title="required">*</abbr>',
+		HTML_ALERT_INLINE: '<em class="xf-alert"></em>',
+		HTML_STATUS: '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>',
+		HTML_CALENDAR: '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>',
+		MSG_INVALID_EMAIL: 'must contain an email address',
+		MSG_MISSING: 'must be completed',
+		CSS_SUBMIT_ERROR: 'xf-submit-error',
+		CSS_SUBMIT_DONE: 'xf-submit-done',
+		CSS_ACTIVE: 'tf-active',
+		CSS_VALID: 'xf-valid',
+		CSS_INVALID: 'xf-invalid',
+		CSS_MISSING: 'tf-missing',
+		MS_ENABLE: 300,
+		MS_DISABLE: 0
+	});
 
 
 
 
-
-	// CONSTANTS (public)
-	$F.HTML_REQUIRED = '<abbr class="xf-required" title="required">*</abbr>';
-	$F.HTML_STATUS = '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>';
-	$F.HTML_CALENDAR = '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>';
-	$F.CSS_SUBMIT_ERROR = 'xf-submit-error';
-	$F.CSS_SUBMIT_DONE = 'xf-submit-done';
-	$F.CSS_ACTIVE = 'tf-active';
-	$F.CSS_VALID = 'xf-valid';
-	$F.CSS_INVALID = 'xf-invalid';
-	$F.CSS_MISSING = 'tf-missing';
-	$F.MS_ENABLE = 300;
-	$F.MS_DISABLE = 0;
 
 	// constants (private)
 	var DOM_STATUS = '-tfui-status';
@@ -692,6 +699,25 @@ $F.generateId = function() {
 	});
 	
 	
+
+
+
+	// set an alert for a control
+	$.fn.forces_alert = function(message) {
+		var src = $(this);
+		
+		var controls = src.closest(':-xf-control');
+		controls.find('.xf-alert').remove();
+
+		if (message) {
+			message = $($F.HTML_ALERT_INLINE).text(message);
+			controls.find('.xf-label').parent().append(message);
+		}
+
+		return src;
+	};
+
+
 
 
 
@@ -789,6 +815,7 @@ $F.generateId = function() {
 
 		.live($F.EVENT_XF_VALID, function() {
 			$(this)
+				.forces_alert()
 				.removeClass($F.CSS_INVALID)
 				.addClass($F.CSS_VALID)
 			;
@@ -798,6 +825,7 @@ $F.generateId = function() {
 			$(this)
 				.removeClass($F.CSS_VALID)
 				.addClass($F.CSS_INVALID)
+				.forces_alert($F.MSG_INVALID_EMAIL)
 			;
 		})
 
@@ -835,14 +863,14 @@ $F.generateId = function() {
 					.each(function() {
 						var widget = $(this);
 						if (widget.is(':-xf-empty')) {
-							alert = 'must be completed';
+							alert = $F.MSG_MISSING;
 						} else {
 							switch (widget.forces_attr('type')) {
 								case 'date':
 									alert = 'unrecognised date format';
 								break;
 								case 'email':
-									alert = 'must contain an email address';
+									alert = $F.MSG_INVALID_EMAIL;
 								break;
 							}
 						}
@@ -876,6 +904,8 @@ $F.generateId = function() {
 				.filter(':-xf-required:-xf-empty')
 					.closest(':-xf-control')
 						.addClass($F.CSS_MISSING)
+						.find('.xf-required')
+							.after('<em class="xf-alert">' + $F.MSG_MISSING + '</em>')
 			;
 		})
 
