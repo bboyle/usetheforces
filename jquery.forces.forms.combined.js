@@ -642,6 +642,7 @@ $F.generateId = function() {
 		form = form || $('form');
 		if (enable || enable === undefined) {
 			form.bind('submit', $F.formSubmitHandler);
+			// ':text,:radio,:checkbox,select,textarea'
 			$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
 		} else {
 			form.unbind('submit');
