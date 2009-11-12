@@ -164,6 +164,14 @@ Tester.use('console', 'test', function(Y){
 						'<li class="xf-textarea" id="question3"><label for="textarea1"><span class="xf-label">Textarea</span></label>' +
 							'<textarea id="textarea1" name="textarea1"></textarea>' +
 						'</li>' +
+						'<li class="xf-select1" id="question4"><fieldset id="radio1">' +
+							'<legend><span class="xf-label">Radio buttons</span></legend>' +
+							'<ul class="xf-choices>' +
+								'<li><label for="radio1-A"><input name="radio1" id="radio1-A" value="A" />A</label></li>' +
+								'<li><label for="radio1-B"><input name="radio1" id="radio1-B" value="B" />B</label></li>' +
+								'<li><label for="radio1-C"><input name="radio1" id="radio1-C" value="C" />C</label></li>' +
+							'</ul>' +
+						'</fiedlset></li>' +
 					'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
@@ -254,14 +262,30 @@ Tester.use('console', 'test', function(Y){
 			var classActive = $.forces.CSS_ACTIVE;
 			var question1 = $('#question1');
 			var input1 = $('#input1');
+			var question4 = $('#question4');
 
-			Assert.areSame(false, question1.hasClass(classActive));
+			Assert.areSame(false, question1.hasClass(classActive), 'input should not be active (default)');
 
 			input1.focus();
-			Assert.areSame(true, question1.hasClass(classActive));
+			Assert.areSame(true, question1.hasClass(classActive), 'input should be active onfocus');
 
 			input1.blur();
-			Assert.areSame(false, question1.hasClass(classActive));
+			Assert.areSame(false, question1.hasClass(classActive), 'input should not be active onblur');
+
+			// TODO fix this test
+			Assert.areSame(false, question4.hasClass(classActive), 'radio should not be active (default)');
+
+			$('#radio1-A').focus();
+			Assert.areSame(true, question4.hasClass(classActive), 'radio should be active onfocus');
+
+			$('#radio1-A').blur();
+			Assert.areSame(false, question4.hasClass(classActive), 'radio should not be active onblur');
+
+			$('#radio1-A').focus();
+			Assert.areSame(true, question4.hasClass(classActive), 'radio should be active onfocus (A)');
+
+			$('#radio1-B').focus();
+			Assert.areSame(true, question4.hasClass(classActive), 'radio should remain active onfocus (B)');
 		},
 
 
