@@ -167,9 +167,9 @@ Tester.use('console', 'test', function(Y){
 						'<li class="xf-select1" id="question4"><fieldset id="radio1">' +
 							'<legend><span class="xf-label">Radio buttons</span></legend>' +
 							'<ul class="xf-choices>' +
-								'<li><label for="radio1-A"><input name="radio1" id="radio1-A" value="A" />A</label></li>' +
-								'<li><label for="radio1-B"><input name="radio1" id="radio1-B" value="B" />B</label></li>' +
-								'<li><label for="radio1-C"><input name="radio1" id="radio1-C" value="C" />C</label></li>' +
+								'<li><label for="radio1-A"><input type="radio" name="radio1" id="radio1-A" value="A" />A</label></li>' +
+								'<li><label for="radio1-B"><input type="radio" name="radio1" id="radio1-B" value="B" />B</label></li>' +
+								'<li><label for="radio1-C"><input type="radio" name="radio1" id="radio1-C" value="C" />C</label></li>' +
 							'</ul>' +
 						'</fiedlset></li>' +
 					'</ol></form>' +
@@ -272,7 +272,6 @@ Tester.use('console', 'test', function(Y){
 			input1.blur();
 			Assert.areSame(false, question1.hasClass(classActive), 'input should not be active onblur');
 
-			// TODO fix this test
 			Assert.areSame(false, question4.hasClass(classActive), 'radio should not be active (default)');
 
 			$('#radio1-A').focus();
