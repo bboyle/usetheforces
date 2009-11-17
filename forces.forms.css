@@ -216,3 +216,6 @@ strong input {
 .tf-status .tf-fail {
 	background: #fee6e8 url(fail.png) 12px 12px no-repeat;
 }
+.tf-status li {
+	margin: .5em 0;
+}
