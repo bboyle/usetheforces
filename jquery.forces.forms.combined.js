@@ -503,6 +503,19 @@ $F.generateId = function() {
 					case 'email':
 						valid = $F.REXP_EMAIL.exec(value);
 					break;
+					
+					case 'confirm':
+						var previous = e.closest('form');
+						if (previous.length) {
+							previous = previous.find('input');
+							for (var i = 1; i < previous.length; i++) {
+								if (previous.eq(i).get(0) == this) {
+									valid = value == $.trim(previous.eq(i-1).val());
+									break;
+								}
+							}
+						}
+					break;
 
 					case 'date':
 						valid = $F.dateParse(value);
@@ -675,8 +688,10 @@ $F.generateId = function() {
 		HTML_STATUS: '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>',
 		HTML_CALENDAR: '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>',
 
+		MSG_INVALID: 'is invalid',
 		MSG_INVALID_DATE: 'unrecognised date format',
 		MSG_INVALID_EMAIL: 'must contain an email address',
+		MSG_INVALID_CONFIRM: 'must match ',
 		MSG_INVALID_NUMBER: 'must contain only digits',
 		MSG_MISSING: 'must be completed',
 
@@ -807,32 +822,6 @@ $F.generateId = function() {
 			;
 		})
 
-		.live($F.EVENT_XF_ENABLED, function() {
-			$(this)
-				.find($F.EXPR_HTML_CONTROLS)
-					.each(function() {
-						// DOM more robust than jquery here
-						this.removeAttribute('disabled');
-					})
-				.end()
-				.stop(true, true)
-				.slideDown($F.MS_ENABLE)
-			;
-		})
-
-		.live($F.EVENT_XF_DISABLED, function() {
-			$(this)
-				.find($F.EXPR_HTML_CONTROLS)
-					.each(function() {
-						// DOM more robust than jquery here
-						this.setAttribute('disabled', 'disabled');
-					})
-				.end()
-				.stop(true, true)
-				.hide($F.MS_DISABLE)
-			;
-		})
-
 		.live($F.EVENT_XF_VALID, function() {
 			$(this)
 				.forces_alert()
@@ -850,6 +839,10 @@ $F.generateId = function() {
 
 				case 'email':
 					message = $F.MSG_INVALID_EMAIL;
+				break;
+
+				case 'confirm':
+					message = $F.MSG_INVALID_CONFIRM + '"' + control.prev().find(':-xf-label').text().replace(/[?:]*$/, '') + '"';
 				break;
 
 				case 'date':
@@ -885,6 +878,35 @@ $F.generateId = function() {
 		})
 	;
 	
+
+	$(':-xf-control, :-xf-group')	
+		.live($F.EVENT_XF_ENABLED, function() {
+			$(this)
+				.find($F.EXPR_HTML_CONTROLS)
+					.each(function() {
+						// DOM more robust than jquery here
+						this.removeAttribute('disabled');
+					})
+				.end()
+				.stop(true, true)
+				.slideDown($F.MS_ENABLE)
+			;
+		})
+
+		.live($F.EVENT_XF_DISABLED, function() {
+			$(this)
+				.find($F.EXPR_HTML_CONTROLS)
+					.each(function() {
+						// DOM more robust than jquery here
+						this.setAttribute('disabled', 'disabled');
+					})
+				.end()
+				.stop(true, true)
+				.hide($F.MS_DISABLE)
+			;
+		})
+	;
+	
 	
 
 
@@ -915,6 +937,9 @@ $F.generateId = function() {
 								case 'email':
 									alert = $F.MSG_INVALID_EMAIL;
 								break;
+								case 'confirm':
+									alert = $F.MSG_INVALID_CONFIRM + '"' + widget.closest(':-xf-control').prev().find(':-xf-label').text().replace(/[?:]*$/, '') + '"';
+								break;
 								case 'number':
 									alert = $F.MSG_INVALID_NUMBER;
 								break;
@@ -922,6 +947,7 @@ $F.generateId = function() {
 						}
 						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>');
 						errorList.append($('<li></li>').append(link));
+						alert = $F.MSG_INVALID;
 					})
 			;
 			
