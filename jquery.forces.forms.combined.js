@@ -606,7 +606,9 @@ $F.generateId = function() {
 
 		switch (evt.type) {
 		
+			case 'click':
 			case 'focus':
+			case 'mousedown':
 				control
 					.data('-tf-VALUE', control.val())
 					.trigger($F.EVENT_XF_FOCUS_IN)
@@ -642,11 +644,10 @@ $F.generateId = function() {
 		form = form || $('form');
 		if (enable || enable === undefined) {
 			form.bind('submit', $F.formSubmitHandler);
-			// ':text,:radio,:checkbox,select,textarea'
-			$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
+			$('input,select,textarea', form).bind('focus blur click mousedown', $F.inputFocusHandler);
 		} else {
 			form.unbind('submit');
-			$($F.EXPR_HTML_CONTROLS).unbind('focus blur');
+			$('input,select,textarea', form).unbind('focus blur');
 		}
 	};
 	
@@ -871,14 +872,15 @@ $F.generateId = function() {
 		})
 
 		.live($F.EVENT_XF_FOCUS_IN, function() {
-			$(this)
-				.addClass($F.CSS_ACTIVE)
+			var control = $(this);
+			control
+				.closest('form')
+					.find('.' + $F.CSS_ACTIVE)
+						.not(control)
+							.removeClass($F.CSS_ACTIVE)
 			;
-		})
-
-		.live($F.EVENT_XF_FOCUS_OUT, function() {
-			$(this)
-				.removeClass($F.CSS_ACTIVE)
+			control
+				.addClass($F.CSS_ACTIVE)
 			;
 		})
 	;

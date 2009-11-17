@@ -305,7 +305,9 @@
 
 		switch (evt.type) {
 		
+			case 'click':
 			case 'focus':
+			case 'mousedown':
 				control
 					.data('-tf-VALUE', control.val())
 					.trigger($F.EVENT_XF_FOCUS_IN)
@@ -341,11 +343,10 @@
 		form = form || $('form');
 		if (enable || enable === undefined) {
 			form.bind('submit', $F.formSubmitHandler);
-			// ':text,:radio,:checkbox,select,textarea'
-			$($F.EXPR_HTML_CONTROLS).bind('focus blur', $F.inputFocusHandler);
+			$('input,select,textarea', form).bind('focus blur click mousedown', $F.inputFocusHandler);
 		} else {
 			form.unbind('submit');
-			$($F.EXPR_HTML_CONTROLS).unbind('focus blur');
+			$('input,select,textarea', form).unbind('focus blur');
 		}
 	};
 	
