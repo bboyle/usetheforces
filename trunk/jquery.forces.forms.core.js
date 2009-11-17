@@ -202,6 +202,19 @@
 					case 'email':
 						valid = $F.REXP_EMAIL.exec(value);
 					break;
+					
+					case 'confirm':
+						var previous = e.closest('form');
+						if (previous.length) {
+							previous = previous.find('input');
+							for (var i = 1; i < previous.length; i++) {
+								if (previous.eq(i).get(0) == this) {
+									valid = value == $.trim(previous.eq(i-1).val());
+									break;
+								}
+							}
+						}
+					break;
 
 					case 'date':
 						valid = $F.dateParse(value);
