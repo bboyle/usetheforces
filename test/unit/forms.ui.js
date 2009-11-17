@@ -504,6 +504,10 @@ Tester.use('console', 'test', function(Y){
 						'<input type="text" name="email" id="email" />' +
 					'</li>' +
 					'<li class="xf-input">' +
+						'<label for="email-confirm"><span class="xf-label">Confirm email:</span></label>' +
+						'<input type="text" name="confirmEmail" id="confirm-email" />' +
+					'</li>' +
+					'<li class="xf-input">' +
 						'<label for="number"><span class="xf-label">Number:</span></label>' +
 						'<input type="text" name="number" id="number" />' +
 					'</li>' +
@@ -623,7 +627,7 @@ Tester.use('console', 'test', function(Y){
 			$('#form').submit();
 			Assert.areSame(false, $('#input1').closest(':-xf-control').hasClass($.forces.CSS_MISSING), '#input1 has MISSING class but value not missing');
 
-			// TODO valid -> missing DOES NOT REMOVE "VALID" CLASS
+			// TODO valid -> "missing" DOES NOT REMOVE "VALID" CLASS
 		},
 		
 		
@@ -682,6 +686,36 @@ Tester.use('console', 'test', function(Y){
 			$('#form').submit();
 			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
 			Assert.areSame(0, $('#email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
+		},
+
+
+		test_invalidConfirmMessageDisplayed: function() {
+			$('#confirm-email').forces_attr('type', 'confirm').forces_attr('required', true);
+
+			$('#form').submit();
+			Assert.areSame('Confirm email: must be completed', $('.tf-status').find('li').text(), 'required status alert not shown');
+			Assert.areSame('must be completed', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'required inline alert not shown');
+			
+			$('#email').val('foo');
+			$('#form').submit();
+			Assert.areSame('Confirm email: must be completed', $('.tf-status').find('li').text(), 'invalid status alert not shown (confirm field is empty)');
+			Assert.areSame('must be completed', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'invalid inline alert not shown (confirm field is empty)');
+
+			$('#email').val('foo');
+			$('#confirm-email').val('bar')
+			$('#form').submit();
+			Assert.areSame('Confirm email: must match "Email"', $('.tf-status').find('li').text(), 'confirm must match status alert not shown');
+			Assert.areSame('must match "Email"', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm must match inline alert not shown');
+
+			$('#email').val('');
+			$('#form').submit();
+			Assert.areSame('Confirm email: must match "Email"', $('.tf-status').find('li').text(), 'confirm must match status alert not shown (email is blank)');
+			Assert.areSame('must match "Email"', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm must match inline alert not shown (email is blank)');
+
+			$('#email, #confirm-email').val('foo');
+			$('#form').submit();
+			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
+			Assert.areSame(0, $('#email-confirm').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
 		},
 
 
