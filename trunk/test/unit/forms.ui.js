@@ -172,6 +172,23 @@ Tester.use('console', 'test', function(Y){
 								'<li><label for="radio1-C"><input type="radio" name="radio1" id="radio1-C" value="C" />C</label></li>' +
 							'</ul>' +
 						'</fiedlset></li>' +
+						'<li class="xf-group" id="question5">' +
+							'<fieldset id="group1">' +
+								'<legend><span class="xf-label">Group</span></legend>' +
+								'<div class="ftw-instructions">' +
+									'<p>This is a test group.</p>' +
+								'</div>' +
+								'<ol class="ftw-questons">' +
+									'<li class="xf-input" id="group1question1">' +
+										'<label for="group1input1">' +
+											'<span class="xf-label">Grouped input 1</span>' +
+											'<abbr class="xf-required" title="required">*</abbr>' +
+										'</label>' +
+										'<input type="text" name="group1input1" id="group1input1" />' +
+									'</li>' +
+								'</ol>' +
+							'</fieldset>' +
+						'</li>' +
 					'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
@@ -232,6 +249,23 @@ Tester.use('console', 'test', function(Y){
 			this.wait(function() {
 				Assert.areSame('block', question.css('display'), 'relevant input should not be hidden');
 			}, $.forces.MS_ENABLED+1);
+		},
+
+
+		test_irrelevantGroupsAreHidden: function() {
+			Assert.areSame(true, $('#group1').is(':-xf-relevant'), 'group should be relevant by default');
+			Assert.areSame(false, $('#group1').is(':hidden'), 'group should not be hidden by default');
+			Assert.areSame(false, $('#group1 p').is(':hidden'), 'group content should not be hidden by default');
+
+			$('#group1').forces_attr('relevant', false);
+			Assert.areSame(false, $('#group1').is(':-xf-relevant'), 'irrelevant group should not be relevant');
+			Assert.areSame(true, $('#group1').is(':hidden'), 'irrelevant group should be hidden');
+			Assert.areSame(true, $('#group1 p').is(':hidden'), 'irrelevant group content should be hidden');
+
+			$('#group1').forces_attr('relevant', true);
+			Assert.areSame(true, $('#group1').is(':-xf-relevant'), 'relevant group should be relevant');
+			Assert.areSame(false, $('#group1').is(':hidden'), 'relevant group should not be hidden');
+			Assert.areSame(false, $('#group1 p').is(':hidden'), 'relevant group content should not be hidden');
 		},
 
 

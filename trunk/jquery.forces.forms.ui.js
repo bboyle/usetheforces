@@ -149,32 +149,6 @@
 			;
 		})
 
-		.live($F.EVENT_XF_ENABLED, function() {
-			$(this)
-				.find($F.EXPR_HTML_CONTROLS)
-					.each(function() {
-						// DOM more robust than jquery here
-						this.removeAttribute('disabled');
-					})
-				.end()
-				.stop(true, true)
-				.slideDown($F.MS_ENABLE)
-			;
-		})
-
-		.live($F.EVENT_XF_DISABLED, function() {
-			$(this)
-				.find($F.EXPR_HTML_CONTROLS)
-					.each(function() {
-						// DOM more robust than jquery here
-						this.setAttribute('disabled', 'disabled');
-					})
-				.end()
-				.stop(true, true)
-				.hide($F.MS_DISABLE)
-			;
-		})
-
 		.live($F.EVENT_XF_VALID, function() {
 			$(this)
 				.forces_alert()
@@ -223,6 +197,35 @@
 			;
 			control
 				.addClass($F.CSS_ACTIVE)
+			;
+		})
+	;
+	
+
+	$(':-xf-control, :-xf-group')	
+		.live($F.EVENT_XF_ENABLED, function() {
+			$(this)
+				.find($F.EXPR_HTML_CONTROLS)
+					.each(function() {
+						// DOM more robust than jquery here
+						this.removeAttribute('disabled');
+					})
+				.end()
+				.stop(true, true)
+				.slideDown($F.MS_ENABLE)
+			;
+		})
+
+		.live($F.EVENT_XF_DISABLED, function() {
+			$(this)
+				.find($F.EXPR_HTML_CONTROLS)
+					.each(function() {
+						// DOM more robust than jquery here
+						this.setAttribute('disabled', 'disabled');
+					})
+				.end()
+				.stop(true, true)
+				.hide($F.MS_DISABLE)
 			;
 		})
 	;

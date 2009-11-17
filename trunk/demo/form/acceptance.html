@@ -101,7 +101,68 @@
 				</ul>
 			</fieldset>
 		</li>
-
+		
+		<li class="select">
+			<ul class="xf-choices">
+				<li><label for="i-have-gold"><input type="checkbox" name="form.hasGold" id="i-have-gold" value="true" />I have gold</label></li>
+			</ul>
+		</li>
+		
+		<li class="xf-group">
+			<fieldset id="inventory">
+				<legend>
+					<span class="xf-label">Inventory</span>
+				</legend>
+				<div class="ftw-instructions">
+					<p>You may carry up to 3 items in your inventory.</p>
+				</div>
+				<ol class="ftw-questions ftw-slot-in">
+					<li class="xf-select">
+						<label for="inventory1">
+							<span class="xf-label">Item 1</span>
+						</label>
+						<select name="form.inventory1" id="inventory1">
+							<option value="">– select an item –</option>
+							<option>Broadsword</option>
+							<option>Flask of Fortune (Ale)</option>
+							<option>Longbow of Yew</option>
+							<option>Quiver of steel tipped arrows</option>
+							<option>Quiver of wooden feathered shafts</option>
+							<option>Shield with Bolga coat of arms</option>
+						</select>
+					</li>
+					<li class="xf-select">
+						<label for="inventory2">
+							<span class="xf-label">Item 2</span>
+						</label>
+						<select name="form.inventory2" id="inventory2">
+							<option value="">– select an item –</option>
+							<option>Broadsword</option>
+							<option>Flask of Fortune (Ale)</option>
+							<option>Longbow of Yew</option>
+							<option>Quiver of steel tipped arrows</option>
+							<option>Quiver of wooden feathered shafts</option>
+							<option>Shield with Bolga coat of arms</option>
+						</select>
+					</li>
+					<li class="xf-select">
+						<label for="inventory3">
+							<span class="xf-label">Item 3</span>
+						</label>
+						<select name="form.inventory3" id="inventory3">
+							<option value="">– select an item –</option>
+							<option>Broadsword</option>
+							<option>Flask of Fortune (Ale)</option>
+							<option>Longbow of Yew</option>
+							<option>Quiver of steel tipped arrows</option>
+							<option>Quiver of wooden feathered shafts</option>
+							<option>Shield with Bolga coat of arms</option>
+						</select>
+					</li>
+				</ol>
+			</fieldset>
+		</li>
+		
 		<li class="tf-footer">
 			<ul class="tf-submit">
 				<li><strong><input type="submit" value="Test validation" /></strong></li>
@@ -134,6 +195,11 @@
 		var checked = $('#my-answer :checked').val() || '';
 		$('#sword-swings').forces_attr('relevant', checked.match(/sword/) != null);
 		$('#gate-open').forces_attr('relevant', checked.match(/gate/) != null);
+	}).triggerHandler('click');
+	
+	var hasGold = $('#i-have-gold');
+	hasGold.click(function() {
+		$('#inventory').forces_attr('relevant', hasGold.is(':checked'));
 	}).triggerHandler('click');
 	
 // -->
