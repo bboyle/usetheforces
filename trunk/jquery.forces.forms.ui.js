@@ -214,14 +214,15 @@
 		})
 
 		.live($F.EVENT_XF_FOCUS_IN, function() {
-			$(this)
-				.addClass($F.CSS_ACTIVE)
+			var control = $(this);
+			control
+				.closest('form')
+					.find('.' + $F.CSS_ACTIVE)
+						.not(control)
+							.removeClass($F.CSS_ACTIVE)
 			;
-		})
-
-		.live($F.EVENT_XF_FOCUS_OUT, function() {
-			$(this)
-				.removeClass($F.CSS_ACTIVE)
+			control
+				.addClass($F.CSS_ACTIVE)
 			;
 		})
 	;

@@ -261,16 +261,21 @@ Tester.use('console', 'test', function(Y){
 
 			var classActive = $.forces.CSS_ACTIVE;
 			var question1 = $('#question1');
-			var input1 = $('#input1');
 			var question4 = $('#question4');
 
 			Assert.areSame(false, question1.hasClass(classActive), 'input should not be active (default)');
 
-			input1.focus();
+			$('#input1').focus();
 			Assert.areSame(true, question1.hasClass(classActive), 'input should be active onfocus');
 
-			input1.blur();
-			Assert.areSame(false, question1.hasClass(classActive), 'input should not be active onblur');
+			$('#input1').blur();
+			Assert.areSame(true, question1.hasClass(classActive), 'input should remain active onblur');
+
+			$('#input1').blur();
+			Assert.areSame(true, question1.hasClass(classActive), 'input should remain active onblur');
+
+			$('#input2').focus();
+			Assert.areSame(false, question1.hasClass(classActive), 'input1 should not remain active when input2 is active');
 
 			Assert.areSame(false, question4.hasClass(classActive), 'radio should not be active (default)');
 
@@ -278,13 +283,13 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, question4.hasClass(classActive), 'radio should be active onfocus');
 
 			$('#radio1-A').blur();
-			Assert.areSame(false, question4.hasClass(classActive), 'radio should not be active onblur');
-
-			$('#radio1-A').focus();
-			Assert.areSame(true, question4.hasClass(classActive), 'radio should be active onfocus (A)');
+			Assert.areSame(true, question4.hasClass(classActive), 'radio should remain active onblur');
 
 			$('#radio1-B').focus();
-			Assert.areSame(true, question4.hasClass(classActive), 'radio should remain active onfocus (B)');
+			Assert.areSame(true, question4.hasClass(classActive), 'radio should remain active as focus moves through items');
+			
+			$('#input1').focus();
+			Assert.areSame(false, question4.hasClass(classActive), 'radio should not remain active when another field is active');
 		},
 
 
@@ -299,6 +304,9 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, question.hasClass(classActive));
 
 			field.blur();
+			Assert.areSame(true, question.hasClass(classActive));
+			
+			$('#input1').focus();
 			Assert.areSame(false, question.hasClass(classActive));
 		}
 
