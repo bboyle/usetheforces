@@ -197,7 +197,7 @@
 			var control = $(this);
 			control
 				.closest('form')
-					.find('.' + $F.CSS_ACTIVE)
+					.find('.' + $F.CSS_ACTIVE + ':-xf-control')
 						.not(control)
 							.removeClass($F.CSS_ACTIVE)
 			;
@@ -232,6 +232,22 @@
 				.end()
 				.stop(true, true)
 				.hide($F.MS_DISABLE)
+			;
+		})
+	;
+	
+
+	$(':-xf-group')	
+		.live($F.EVENT_XF_FOCUS_IN, function() {
+			var group = $(this);
+			group
+				.closest('form')
+					.find('.' + $F.CSS_ACTIVE + ':-xf-group')
+						.not(group)
+							.removeClass($F.CSS_ACTIVE)
+			;
+			group
+				.addClass($F.CSS_ACTIVE)
 			;
 		})
 	;
