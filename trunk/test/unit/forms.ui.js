@@ -189,6 +189,23 @@ Tester.use('console', 'test', function(Y){
 								'</ol>' +
 							'</fieldset>' +
 						'</li>' +
+						'<li class="section" id="section1">' +
+							'<fieldset>' +
+								'<legend>Section</legend>' +
+								'<div class="ftw-instructions">' +
+									'<p>This is a test section.</p>' +
+								'</div>' +
+								'<ol class="ftw-questons">' +
+									'<li class="xf-input" id="section1question1">' +
+										'<label for="section1input1">' +
+											'<span class="xf-label">Section input 1</span>' +
+											'<abbr class="xf-required" title="required">*</abbr>' +
+										'</label>' +
+										'<input type="text" name="section1input1" id="section1input1" />' +
+									'</li>' +
+								'</ol>' +
+							'</fieldset>' +
+						'</li>' +
 					'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
@@ -266,6 +283,23 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#group1').is(':-xf-relevant'), 'relevant group should be relevant');
 			Assert.areSame(false, $('#group1').is(':hidden'), 'relevant group should not be hidden');
 			Assert.areSame(false, $('#group1 p').is(':hidden'), 'relevant group content should not be hidden');
+		},
+
+
+		test_irrelevantSectionsAreHidden: function() {
+			Assert.areSame(true, $('#section1').is(':-xf-relevant'), 'section should be relevant by default');
+			Assert.areSame(false, $('#section1').is(':hidden'), 'section should not be hidden by default');
+			Assert.areSame(false, $('#section1 p').is(':hidden'), 'section content should not be hidden by default');
+
+			$('#section1').forces_attr('relevant', false);
+			Assert.areSame(false, $('#section1').is(':-xf-relevant'), 'irrelevant section should not be relevant');
+			Assert.areSame(true, $('#section1').is(':hidden'), 'irrelevant section should be hidden');
+			Assert.areSame(true, $('#section1 p').is(':hidden'), 'irrelevant section content should be hidden');
+
+			$('#section1').forces_attr('relevant', true);
+			Assert.areSame(true, $('#section1').is(':-xf-relevant'), 'relevant section should be relevant');
+			Assert.areSame(false, $('#section1').is(':hidden'), 'relevant section should not be hidden');
+			Assert.areSame(false, $('#section1 p').is(':hidden'), 'relevant section content should not be hidden');
 		},
 
 
