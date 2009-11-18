@@ -186,6 +186,13 @@ Tester.use('console', 'test', function(Y){
 										'</label>' +
 										'<input type="text" name="group1input1" id="group1input1" />' +
 									'</li>' +
+									'<li class="xf-input" id="group1question2">' +
+										'<label for="group1input2">' +
+											'<span class="xf-label">Grouped input 2</span>' +
+											'<abbr class="xf-required" title="required">*</abbr>' +
+										'</label>' +
+										'<input type="text" name="group1input2" id="group1input2" />' +
+									'</li>' +
 								'</ol>' +
 							'</fieldset>' +
 						'</li>' +
@@ -376,6 +383,30 @@ Tester.use('console', 'test', function(Y){
 			
 			$('#input1').focus();
 			Assert.areSame(false, question.hasClass(classActive));
+		},
+
+
+		test_focusSetsActiveClassForGroup: function() {
+			var classActive = $.forces.CSS_ACTIVE;
+
+			Assert.areSame(false, $('#group1').hasClass(classActive));
+			Assert.areSame(false, $('#group1input1').hasClass(classActive));
+			Assert.areSame(false, $('#group1input2').hasClass(classActive));
+
+			$('#group1input1').focus();
+			Assert.areSame(true, $('#group1').hasClass(classActive));
+			Assert.areSame(true, $('#group1input1').hasClass(classActive));
+			Assert.areSame(false, $('#group1input2').hasClass(classActive));
+
+			$('#group1input2').focus();
+			Assert.areSame(true, $('#group1').hasClass(classActive));
+			Assert.areSame(false, $('#group1input1').hasClass(classActive));
+			Assert.areSame(true, $('#group1input2').hasClass(classActive));
+
+			$('#input1').focus();
+			Assert.areSame(false, $('#group1').hasClass(classActive));
+			Assert.areSame(false, $('#group1input1').hasClass(classActive));
+			Assert.areSame(false, $('#group1input2').hasClass(classActive));
 		}
 
 	}));
