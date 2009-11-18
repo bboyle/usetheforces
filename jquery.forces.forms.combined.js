@@ -879,7 +879,7 @@ $F.generateId = function() {
 	;
 	
 
-	$(':-xf-control, :-xf-group')	
+	$(':-xf-control, :-xf-group, .section')	
 		.live($F.EVENT_XF_ENABLED, function() {
 			$(this)
 				.find($F.EXPR_HTML_CONTROLS)

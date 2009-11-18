@@ -1,5 +1,10 @@
-/* (use)theforces */
-/* legend reset */
+/*!
+ * usetheforces
+ * @see http://usetheforces.googlecode.com/
+ * @license GNU GENERAL PUBLIC LICENSE Version 3 <http://www.gnu.org/licenses/gpl.html>
+ */
+
+ /* legend reset */
 fieldset {
 	border: none;
 	margin: 0;
@@ -61,18 +66,26 @@ legend span span {
 	padding: 0;
 	margin: 0;
 }
-/* slot-in horizontal layout */
-.ftw-slot-in {
-	padding-left: 12em;
+/* horizontal layout for slot-in and gathered answer types */
+.ftw-gathered li,
+.ftw-slot-in li {
+	padding-left: 13.5em;
 }
+.ftw-gathered .xf-label,
+.ftw-slot-in .xf-label {
+	position: absolute;
+	left: 1.5em;
+	width: 10.5em;
+}
+.tt-citizen .ftw-gathered .xf-label,
 .tt-citizen .ftw-slot-in .xf-label {
 	text-align: right;
 }
-.ftw-slot-in .xf-label {
-	position: absolute;
-	left: -12em;
-	width: 12em;
+.ftw-gathered .ftw-questions li,
+.ftw-slot-in .ftw-questions li {
+	padding-left: 1.5em;
 }
+.ftw-gathered .ftw-questions .xf-label,
 .ftw-slot-in .ftw-questions .xf-label {
 	position: static;
 	width: auto;
@@ -98,7 +111,8 @@ legend span span {
 /* groups */
 .xf-group .ftw-questions {
 	position: relative;
-	left: -1.5em;
+	margin: 0 -1.5em;
+	*left: -1.5em; /* IE 6, IE7 */
 }
 .xf-appearance-compact .xf-input,
 .xf-appearance-compact .xf-secret,
@@ -108,17 +122,24 @@ legend span span {
 	float: left;
 	padding-right: .5em;
 }
+.ftw-gathered .xf-group .ftw-questions,
 .ftw-slot-in .xf-group .ftw-questions {
 	margin-top: -.5em;
 	margin-bottom: -.5em;
 }
 /* markers */
-.ftw-questions .xf-required {
+.ftw-questions .xf-required,
+.ftw-gathered .ftw-questions .xf-required,
+.ftw-slot-in .ftw-questions .xf-required {
 	position: absolute;
 	top: .5em;
 	left: 0;
 	width: 1.5em;
 	text-align: center;
+}
+.ftw-gathered .xf-required,
+.ftw-slot-in .xf-required {
+	left: 12em;
 }
 /* alerts */
 .xf-submit-error .xf-alert {
@@ -219,3 +240,5 @@ strong input {
 .tf-status li {
 	margin: .5em 0;
 }
+
+/* end: forces.forms.css */
