@@ -490,8 +490,7 @@ Tester.use('console', 'test', function(Y){
 	
 
 		test_shouldCreateCalendarTable: function() {
-			var calendar = $.forces.uiHtmlCalendar({ date: christmas1976 });
-			
+			var calendar = $.forces.HTML_CALENDAR({ date: christmas1976 });
 			Assert.areSame('December 1976', calendar.find('caption').text());
 			Assert.areSame('SMTWTFS', calendar.find('thead').text());
 			Assert.areSame(5, calendar.find('tbody tr').length);
@@ -500,9 +499,9 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('12131415161718', calendar.find('tbody tr').eq(2).text());
 			Assert.areSame('19202122232425', calendar.find('tbody tr').eq(3).text());
 			Assert.areSame('262728293031', calendar.find('tbody tr').eq(4).text());
-			Assert.areSame(false, calendar.find('tbody td:last').get(0).hasAttribute('colspan'));
+			Assert.isNull(calendar.find('tbody td:last').html().match(/colspan/));
 			
-			calendar = $.forces.uiHtmlCalendar({ date: valentines2009 });
+			calendar = $.forces.HTML_CALENDAR({ date: valentines2009 });
 			Assert.areSame('February 2009', calendar.find('caption').text());
 			Assert.areSame('SMTWTFS', calendar.find('thead').text());
 			Assert.areSame(4, calendar.find('tbody tr').length);
@@ -510,9 +509,9 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('891011121314', calendar.find('tbody tr').eq(1).text());
 			Assert.areSame('15161718192021', calendar.find('tbody tr').eq(2).text());
 			Assert.areSame('22232425262728', calendar.find('tbody tr').eq(3).text());
-			Assert.areSame(false, calendar.find('tbody td:last').get(0).hasAttribute('colspan'));
+			Assert.isNull(calendar.find('tbody td:last').html().match(/colspan/));
 
-			calendar = $.forces.uiHtmlCalendar({ date: patricks2008 });
+			calendar = $.forces.HTML_CALENDAR({ date: patricks2008 });
 			Assert.areSame('March 2008', calendar.find('caption').text());
 			Assert.areSame('SMTWTFS', calendar.find('thead').text());
 			Assert.areSame(6, calendar.find('tbody tr').length);
@@ -522,9 +521,9 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('16171819202122', calendar.find('tbody tr').eq(3).text());
 			Assert.areSame('23242526272829', calendar.find('tbody tr').eq(4).text());
 			Assert.areSame('3031', calendar.find('tbody tr').eq(5).text());
-			Assert.areSame('5', calendar.find('tbody td:last').attr('colspan'));
+			Assert.areEqual(5, calendar.find('tbody td:last').attr('colspan'));
 
-			calendar = $.forces.uiHtmlCalendar({ date: australia2010 });
+			calendar = $.forces.HTML_CALENDAR({ date: australia2010 });
 			Assert.areSame('January 2010', calendar.find('caption').text());
 			Assert.areSame('SMTWTFS', calendar.find('thead').text());
 			Assert.areSame(6, calendar.find('tbody tr').length);
@@ -534,12 +533,12 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('17181920212223', calendar.find('tbody tr').eq(3).text());
 			Assert.areSame('24252627282930', calendar.find('tbody tr').eq(4).text());
 			Assert.areSame('31', calendar.find('tbody tr').eq(5).text());
-			Assert.areSame('6', calendar.find('tbody td:last').attr('colspan'));
+			Assert.areEqual(6, calendar.find('tbody td:last').attr('colspan'));
 		},
 		
 		
 		test_shouldHaveSeedDate: function() {
-			var calendar = $.forces.uiHtmlCalendar({ date: christmas1976 });
+			var calendar = $.forces.HTML_CALENDAR({ date: christmas1976 });
 			Y.DateAssert.datesAreEqual(christmas1976, calendar.data('-tf-date-seed'), 'seed date does not match');
 			Assert.areNotSame(christmas1976, calendar.data('-tf-date-seed'), 'seed date references supplied date');
 		}

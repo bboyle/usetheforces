@@ -241,8 +241,8 @@
 
 			} else {
 				e
-						.forces__flags(16, false)
-						.forces__flags(32, false)
+					.forces__flags(16, false)
+					.forces__flags(32, false)
 				;
 			}
 		});
@@ -271,7 +271,7 @@
 
 
 	// form submission
-	$F.formSubmitHandler = function(evt) {
+	var formSubmitHandler = function(evt) {
 		var form = $(this);
 	
 		// is this form being managed by forces?
@@ -313,7 +313,7 @@
 
 
 
-	$F.inputFocusHandler = function(evt) {
+	var inputFocusHandler = function(evt) {
 		var control = $(evt.target);
 
 		switch (evt.type) {
@@ -355,11 +355,11 @@
 	$F.toggleFormHandlers = function(enable, form) {
 		form = form || $('form');
 		if (enable || enable === undefined) {
-			form.bind('submit', $F.formSubmitHandler);
-			$('input,select,textarea', form).bind('focus blur click mousedown', $F.inputFocusHandler);
+			form.bind('submit', formSubmitHandler);
+			$('input,select,textarea', form).bind('focus blur click mousedown', inputFocusHandler);
 		} else {
-			form.unbind('submit');
-			$('input,select,textarea', form).unbind('focus blur');
+			form.unbind('submit', formSubmitHandler);
+			$('input,select,textarea', form).unbind('focus blur click mousedown', inputFocusHandler);
 		}
 	};
 	
