@@ -14,7 +14,7 @@ Tester.use('console', 'test', function(Y){
 		// Setup and tear down
 		//---------------------------------------------
 
-		setUp: function () {
+		setUp: function() {
 			$(
 				'<form id="form" action="javascript:"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
@@ -23,7 +23,7 @@ Tester.use('console', 'test', function(Y){
 			).appendTo('body').forces_enable();
 		},
 
-		tearDown: function () {
+		tearDown: function() {
 			$('#form').remove();
 		},
 
@@ -31,7 +31,7 @@ Tester.use('console', 'test', function(Y){
 		// Tests
 		//---------------------------------------------
 
-		test_relevantEventsFireCorrectly: function () {
+		test_relevantEventsFireCorrectly: function() {
 			$(document).bind($.forces.EVENT_XF_ENABLED, function(evt) {
 				$(evt.target).before('<span class="relevant">ENABLED</span>');
 			});
@@ -50,7 +50,7 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
-		test_requiredEventsFireCorrectly: function () {
+		test_requiredEventsFireCorrectly: function() {
 			$(document).bind($.forces.EVENT_XF_REQUIRED, function(evt) {
 				$(evt.target).before('<span class="required">REQUIRED</span>');
 			});
@@ -111,7 +111,7 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
-		test_submitEventSuppression: function () {
+		test_submitEventSuppression: function() {
 			var submitted = 0;
 			var suppressed = 0;
 			$(document).submit(function() { ++submitted; });
@@ -138,7 +138,7 @@ Tester.use('console', 'test', function(Y){
 		},
 
 		
-		test_submitErrorsDoNotSuppressSubmit: function () {
+		test_submitErrorsDoNotSuppressSubmit: function() {
 			var submitted = 0;
 			$('#form').submit(function() { ++submitted; });
 			$('#form').bind($.forces.EVENT_XF_SUBMIT_ERROR, function() { --submitted; });

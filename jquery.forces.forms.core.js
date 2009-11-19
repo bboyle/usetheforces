@@ -89,7 +89,7 @@
 		},
 		'-xf-valid': function(e) {
 			return ($(e).data('-tf-FLAGS') & 16) == 16;
-		},
+		}
 	});
 	
 	

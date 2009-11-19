@@ -111,6 +111,8 @@ legend span span {
 .xf-group .ftw-questions {
 	position: relative;
 	margin: 0 -1.5em;
+}
+.xf-group .xf-appearance-compact {
 	*left: -1.5em; /* IE 6, IE7 */
 }
 .xf-appearance-compact .xf-input,

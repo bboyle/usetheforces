@@ -22,7 +22,7 @@ Tester.use('console', 'test', function(Y){
 						'<label for="input01" id="label-input"><span class="xf-label">Input</span></label>' +
 						'<input type="text" name="input01" id="input01" />' +
 					'</li>' +
-					'<li class="xf-select" id="select-container"><fieldset><legend id="legend-select"><span><span class="xf-label">Select</span></legend>' +
+					'<li class="xf-select" id="select-container"><fieldset><legend id="legend-select"><span class="xf-label">Select</span></legend>' +
 						'<ul class="xf-choices">' +
 							'<li><input type="checkbox" name="select" id="selectA" value="A" /><label for="selectA">A</label></li>' +
 							'<li><input type="checkbox" name="select" id="selectB" value="B" /><label for="selectB">B</label></li>' +
@@ -30,7 +30,7 @@ Tester.use('console', 'test', function(Y){
 						'</ul></li>' +
 					'</fieldset></li>' +
 					'<li class="xf-group" id="group"><fieldset>' +
-						'<legend><span><span class="xf-label">Name</span></span></legend>' +
+						'<legend><span class="xf-label">Name</span></legend>' +
 						'<ol class="ftw-questions">' +
 							'<li class="xf-select"><label for="name-title"><span class="xf-label">Title</span></label>' +
 							'<select id="name-title"><option value=""></option><option>Mr</option><option>Mrs</option></select></li>' +
@@ -229,7 +229,7 @@ Tester.use('console', 'test', function(Y){
 		test_requiredFieldMarkerShown: function() {
 			$('#input1, #input2').forces_attr('required', true);
 			Assert.areSame(true, $('#question1').find('abbr.xf-required').length > 0, 'required marker should be shown');
-			Assert.areSame('*', $('#question1').find('abbr.xf-required').text(), 'required marker should contain *');
+			Assert.areSame('Input*', $('#question1').text(), 'required marker should contain *');
 			Assert.areSame('required', $('#question1').find('abbr.xf-required').attr('title'), 'required marker @title should be "required"');
 			Assert.areSame(true, $('#question2').find('abbr.xf-required').length > 0, 'required marker should be shown');
 			Assert.areSame(1, $('#question2').find('abbr.xf-required').length, 'only one required marker should be shown');
@@ -249,13 +249,11 @@ Tester.use('console', 'test', function(Y){
 
 		test_onlyRelevantFieldsAreEnabled: function() {
 			var input = $('#input1');
-			Assert.areSame(false, input.get(0).hasAttribute('disabled'), 'input should not have @disabled by default');
+			Assert.areSame(false, input.attr('disabled'), 'input should not have @disabled by default');
 			input.forces_attr('relevant', false);
-			Assert.areSame(true, input.get(0).hasAttribute('disabled'), 'input missing @disabled when not relevant');
 			Assert.areSame(true, input.attr('disabled'), '"disabled" property should be "true" when irrelevant');
-			Assert.areSame('disabled', input.get(0).getAttribute('disabled'), '@disabled attribute should be "disabled" when irrelevant');
 			input.forces_attr('relevant', true);
-			Assert.areSame(false, input.get(0).hasAttribute('disabled'), 'input should not have @disabled when made relevant');
+			Assert.areSame(false, input.attr('disabled'), 'input should not have @disabled when made relevant');
 		},
 
 
@@ -647,7 +645,7 @@ Tester.use('console', 'test', function(Y){
 			$('#input1').forces_attr('required', true);
 			$('#form').submit();
 			var status = $('div.tf-status');
-			Assert.areSame('#input1', status.find('a').attr('href'), 'validation alert not linked to control');
+			Assert.areSame('#input1', status.find('a').attr('href').match(/#input1$/).toString(), 'validation alert not linked to control');
 		},
 
 
@@ -812,7 +810,7 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('Input: must be completed', status.find('li').eq(0).text());
 			Assert.areSame('Email: must contain an email address', status.find('li').eq(1).text());
 			Assert.areSame('Date: must be completed', status.find('li').eq(2).text());
-		},
+		}
 	}));
 
 
