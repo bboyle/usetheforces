@@ -195,14 +195,16 @@
 
 		.live($F.EVENT_XF_FOCUS_IN, function() {
 			var control = $(this);
+			var group = control.closest(':-xf-group');
 			control
 				.closest('form')
-					.find('.' + $F.CSS_ACTIVE + ':-xf-control')
-						.not(control)
+					.find('.' + $F.CSS_ACTIVE)
+						.not(control, group)
 							.removeClass($F.CSS_ACTIVE)
 			;
 			control
-				.addClass($F.CSS_ACTIVE)
+				.add(group)
+					.addClass($F.CSS_ACTIVE)
 			;
 		})
 	;
@@ -235,23 +237,7 @@
 			;
 		})
 	;
-	
-
-	$(':-xf-group')	
-		.live($F.EVENT_XF_FOCUS_IN, function() {
-			var group = $(this);
-			group
-				.closest('form')
-					.find('.' + $F.CSS_ACTIVE + ':-xf-group')
-						.not(group)
-							.removeClass($F.CSS_ACTIVE)
-			;
-			group
-				.addClass($F.CSS_ACTIVE)
-			;
-		})
-	;
-	
+		
 	
 
 
