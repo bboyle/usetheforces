@@ -38,8 +38,7 @@ legend span span {
 	color: #F00;
 }
 .xf-label,
-.xf-hint,
-.xf-alert {
+.xf-hint {
 	display: block;
 }
 /* legend as label */
