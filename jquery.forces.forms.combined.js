@@ -542,8 +542,8 @@ $F.generateId = function() {
 
 			} else {
 				e
-						.forces__flags(16, false)
-						.forces__flags(32, false)
+					.forces__flags(16, false)
+					.forces__flags(32, false)
 				;
 			}
 		});
@@ -572,7 +572,7 @@ $F.generateId = function() {
 
 
 	// form submission
-	$F.formSubmitHandler = function(evt) {
+	var formSubmitHandler = function(evt) {
 		var form = $(this);
 	
 		// is this form being managed by forces?
@@ -614,7 +614,7 @@ $F.generateId = function() {
 
 
 
-	$F.inputFocusHandler = function(evt) {
+	var inputFocusHandler = function(evt) {
 		var control = $(evt.target);
 
 		switch (evt.type) {
@@ -656,11 +656,11 @@ $F.generateId = function() {
 	$F.toggleFormHandlers = function(enable, form) {
 		form = form || $('form');
 		if (enable || enable === undefined) {
-			form.bind('submit', $F.formSubmitHandler);
-			$('input,select,textarea', form).bind('focus blur click mousedown', $F.inputFocusHandler);
+			form.bind('submit', formSubmitHandler);
+			$('input,select,textarea', form).bind('focus blur click mousedown', inputFocusHandler);
 		} else {
-			form.unbind('submit');
-			$('input,select,textarea', form).unbind('focus blur');
+			form.unbind('submit', formSubmitHandler);
+			$('input,select,textarea', form).unbind('focus blur click mousedown', inputFocusHandler);
 		}
 	};
 	
@@ -683,11 +683,23 @@ $F.generateId = function() {
 	// jquery.forces
 	var $F = $.forces = $.extend($.forces || {}, {
 		// CONSTANTS (public)
-		HTML_REQUIRED: '<abbr class="xf-required" title="required">*</abbr>',
-		HTML_ALERT_INLINE: '<em class="xf-alert"></em>',
-		HTML_STATUS: '<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>',
-		HTML_CALENDAR: '<table class="tf-calendar"><caption>Calendar</caption><thead><tr></tr></thead><tbody></tbody></table>',
+		
+		// css class names
+		CSS_ACTIVE: 'tf-active',
+		CSS_ALERT: 'xf-alert',
+		CSS_INVALID: 'xf-invalid',
+		CSS_MISSING: 'tf-missing',
+		CSS_REQUIRED: 'xf-required',
+		CSS_SUBMIT_DONE: 'xf-submit-done',
+		CSS_SUBMIT_ERROR: 'xf-submit-error',
+		CSS_VALID: 'xf-valid',
 
+		// HTML markup
+		HTML_ALERT_INLINE: function(message) { return $('<em></em>').addClass(this.CSS_ALERT).text(message); },
+		HTML_REQUIRED: function() { return $(document.createElement('abbr')).addClass(this.CSS_REQUIRED).attr('title', 'required').text('*'); },
+		HTML_STATUS: function() { return $('<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>'); },
+
+		// messages
 		MSG_INVALID: 'is invalid',
 		MSG_INVALID_DATE: 'unrecognised date format',
 		MSG_INVALID_EMAIL: 'must contain an email address',
@@ -695,13 +707,7 @@ $F.generateId = function() {
 		MSG_INVALID_NUMBER: 'must contain only digits',
 		MSG_MISSING: 'must be completed',
 
-		CSS_SUBMIT_ERROR: 'xf-submit-error',
-		CSS_SUBMIT_DONE: 'xf-submit-done',
-		CSS_ACTIVE: 'tf-active',
-		CSS_VALID: 'xf-valid',
-		CSS_INVALID: 'xf-invalid',
-		CSS_MISSING: 'tf-missing',
-
+		// millisecond timers
 		MS_ENABLE: 300,
 		MS_DISABLE: 0
 	});
@@ -745,8 +751,7 @@ $F.generateId = function() {
 		controls.find('.xf-alert').remove();
 
 		if (message) {
-			message = $($F.HTML_ALERT_INLINE).text(message);
-			controls.append(message);
+			controls.append($F.HTML_ALERT_INLINE(message));
 		}
 
 		return src;
@@ -757,18 +762,18 @@ $F.generateId = function() {
 
 
 	// calendar (date picker)
-	$F.uiHtmlCalendar = function(config) {
+	$F.HTML_CALENDAR = function(config) {
 		config = $.extend({ date: $F.DATE_TODAY() }, config);
-		var calendar = $($F.HTML_CALENDAR).data('-tf-date-seed', new Date(config.date.getTime()));
-		
-		calendar.find('caption').text($F.dateFormat(config.date, '%B %Y'));
+
+		var calendar = $('<table class="tf-calendar"><caption>' + $F.dateFormat(config.date, '%B %Y') + '</caption><thead><tr></tr></thead><tbody></tbody></table>')
+			.data('-tf-date-seed', new Date(config.date.getTime()))
+		;
 		
 		var first = new Date(config.date.getTime());
 		first.setDate(1);
 		first = first.getDay();
 		var days = '<tr>' + (first > 0 ? '<td colspan="' + first + '"></td>' : '') + '<td>1</td>';
 		var last = $F.dateEndOfMonth(config.date);
-		// TODO consider i += 7 (create row by row)
 		for (var i = 2; i < last.getDate(); i++) {
 			if ((first + i) % 7 == 1) {
 				days += '</tr><tr>';
@@ -810,7 +815,7 @@ $F.generateId = function() {
 					.remove()
 				.end()
 				.find(':-xf-label')
-					.after($F.HTML_REQUIRED)
+					.after($F.HTML_REQUIRED())
 			;
 		})
 
@@ -921,7 +926,7 @@ $F.generateId = function() {
 		var form = $(this);
 			var controls = form.find($F.EXPR_HTML_CONTROLS);
 
-			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $($F.HTML_STATUS)).data(DOM_STATUS);
+			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $F.HTML_STATUS()).data(DOM_STATUS);
 			var errorList = $('<ol></ol>');
 			var alert;
 			
