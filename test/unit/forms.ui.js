@@ -389,24 +389,28 @@ Tester.use('console', 'test', function(Y){
 		test_focusSetsActiveClassForGroup: function() {
 			var classActive = $.forces.CSS_ACTIVE;
 
-			Assert.areSame(false, $('#group1').hasClass(classActive));
-			Assert.areSame(false, $('#group1input1').hasClass(classActive));
-			Assert.areSame(false, $('#group1input2').hasClass(classActive));
+			Assert.areSame(false, $('#question5').hasClass(classActive), 'group should not be active by default');
+			Assert.areSame(false, $('#group1question1').hasClass(classActive), 'group1input1 in group should not be active by default');
+			Assert.areSame(false, $('#group1question2').hasClass(classActive), 'group1input2 in group should not be active by default');
+			Assert.areSame(0, $('#form').find('.' + classActive).length, 'nothing should be active');
 
 			$('#group1input1').focus();
-			Assert.areSame(true, $('#group1').hasClass(classActive));
-			Assert.areSame(true, $('#group1input1').hasClass(classActive));
-			Assert.areSame(false, $('#group1input2').hasClass(classActive));
+			Assert.areSame(true, $('#question5').hasClass(classActive), 'group should be active when group1input1 is active');
+			Assert.areSame(true, $('#group1question1').hasClass(classActive), 'group1input1 should be active');
+			Assert.areSame(false, $('#group1question2').hasClass(classActive), 'group1input2 should not be active when group1input1 is');
+			Assert.areSame(2, $('#form').find('.' + classActive).length, 'group + input1 should be active');
 
 			$('#group1input2').focus();
-			Assert.areSame(true, $('#group1').hasClass(classActive));
-			Assert.areSame(false, $('#group1input1').hasClass(classActive));
-			Assert.areSame(true, $('#group1input2').hasClass(classActive));
+			Assert.areSame(true, $('#question5').hasClass(classActive), 'group should be active when group1input2 is active');
+			Assert.areSame(false, $('#group1question1').hasClass(classActive), 'group1input1 should not be active when group1input2 is');
+			Assert.areSame(true, $('#group1question2').hasClass(classActive), 'group1input2 should be active');
+			Assert.areSame(2, $('#form').find('.' + classActive).length, 'group + input2 should be active');
 
 			$('#input1').focus();
-			Assert.areSame(false, $('#group1').hasClass(classActive));
-			Assert.areSame(false, $('#group1input1').hasClass(classActive));
-			Assert.areSame(false, $('#group1input2').hasClass(classActive));
+			Assert.areSame(false, $('#question5').hasClass(classActive), 'group should not be active');
+			Assert.areSame(false, $('#group1question1').hasClass(classActive), 'group1input1 should not be active');
+			Assert.areSame(false, $('#group1question2').hasClass(classActive), 'group1input2 should not be active');
+			Assert.areSame(1, $('#form').find('.' + classActive).length, '1 input should be active');
 		}
 
 	}));
