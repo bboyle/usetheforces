@@ -75,7 +75,7 @@
 
 		if (message) {
 			message = $($F.HTML_ALERT_INLINE).text(message);
-			controls.find('.xf-label').parent().append(message);
+			controls.append(message);
 		}
 
 		return src;
