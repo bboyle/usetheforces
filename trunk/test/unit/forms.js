@@ -152,7 +152,7 @@ Tester.use('console', 'test', function(Y){
 		test_emptySelectorWithRadio: function () {
 			Assert.areSame(true, $('#radio1').is(':-xf-empty'), 'radio1 reported as not empty');
 			Assert.areSame(false, $('#radio2').is(':-xf-empty'), 'radio2 reported as empty');
-			$('#radio2-B').get(0).removeAttribute('checked');
+			$('#radio2-B').get(0).checked = false;
 			Assert.areSame(0, $('#radio2 :checked').length, 'radio2 should not have :checked elements');
 			Assert.areSame(true, $('#radio2').is(':-xf-empty'), 'radio2 should now be empty');
 			$('#radio2-C').click();
