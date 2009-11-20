@@ -703,7 +703,7 @@ $F.generateId = function() {
 		MSG_INVALID: 'is invalid',
 		MSG_INVALID_DATE: 'unrecognised date format',
 		MSG_INVALID_EMAIL: 'must contain an email address',
-		MSG_INVALID_CONFIRM: 'must match ',
+		MSG_INVALID_CONFIRM: 'doesn\'t match ',
 		MSG_INVALID_NUMBER: 'must contain only digits',
 		MSG_MISSING: 'must be completed',
 
@@ -847,7 +847,7 @@ $F.generateId = function() {
 				break;
 
 				case 'confirm':
-					message = $F.MSG_INVALID_CONFIRM + '"' + control.prev().find(':-xf-label').text().replace(/[?:]*$/, '') + '"';
+					message = $F.MSG_INVALID_CONFIRM + control.prev().find(':-xf-label').text().replace(/[?:]*$/, '');
 				break;
 
 				case 'date':
@@ -945,7 +945,7 @@ $F.generateId = function() {
 									alert = $F.MSG_INVALID_EMAIL;
 								break;
 								case 'confirm':
-									alert = $F.MSG_INVALID_CONFIRM + '"' + widget.closest(':-xf-control').prev().find(':-xf-label').text().replace(/[?:]*$/, '') + '"';
+									alert = $F.MSG_INVALID_CONFIRM + widget.closest(':-xf-control').prev().find(':-xf-label').text().replace(/[?:]*$/, '');
 								break;
 								case 'number':
 									alert = $F.MSG_INVALID_NUMBER;

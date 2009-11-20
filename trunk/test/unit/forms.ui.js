@@ -770,12 +770,12 @@ Tester.use('console', 'test', function(Y){
 			$('#email').val('foo');
 			$('#confirm-email').val('bar')
 			$('#form').submit();
-			Assert.areSame('Confirm email: must match "Email"', $('.tf-status').find('li').text(), 'confirm must match status alert not shown');
-			Assert.areSame('must match "Email"', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm must match inline alert not shown');
+			Assert.areSame('Confirm email: doesn\'t match Email', $('.tf-status').find('li').text(), 'confirm must match status alert not shown');
+			Assert.areSame('doesn\'t match Email', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm must match inline alert not shown');
 
 			$('#email').val('');
 			$('#form').submit();
-			Assert.areSame('Confirm email: must match "Email"', $('.tf-status').find('li').text(), 'confirm must match status alert not shown (email is blank)');
+			Assert.areSame('Confirm email: doesn\'t match Email', $('.tf-status').find('li').text(), 'confirm must match status alert not shown (email is blank)');
 			Assert.areSame('must match "Email"', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm must match inline alert not shown (email is blank)');
 
 			$('#email, #confirm-email').val('foo');
