@@ -4,7 +4,7 @@
  * @license GNU GENERAL PUBLIC LICENSE Version 3 <http://www.gnu.org/licenses/gpl.html>
  */
 
- /* legend reset */
+/* legend reset */
 fieldset {
 	border: none;
 	margin: 0;
@@ -67,17 +67,24 @@ legend span span {
 }
 /* horizontal layout for slot-in and gathered answer types */
 .ftw-gathered li,
-.ftw-slot-in li {
+.ftw-slot-in li{
 	padding-left: 13.5em;
 }
+.ftw-slot-in dl,
+.ftw-gathered .tf-submit,
+.ftw-slot-in .tf-submit {
+	padding-left: 12em;
+}
 .ftw-gathered .xf-label,
-.ftw-slot-in .xf-label {
+.ftw-slot-in .xf-label,
+.ftw-slot-in dt {
 	position: absolute;
 	left: 1.5em;
 	width: 10.5em;
 }
 .tt-citizen .ftw-gathered .xf-label,
-.tt-citizen .ftw-slot-in .xf-label {
+.tt-citizen .ftw-slot-in .xf-label,
+.ftw-slot-in dt {
 	text-align: right;
 }
 .ftw-gathered .ftw-questions li,
@@ -139,7 +146,7 @@ legend span span {
 	text-align: center;
 }
 .ftw-gathered .xf-required,
-.ftw-slot-in .xf-required {
+.ftw-slot-in .xf-required{
 	left: 12em;
 }
 /* alerts */
@@ -208,6 +215,8 @@ strong input {
 .tf-form dd {
 	margin: 0 1.5em 1em;
 	padding: .5em 1.5em;
+	min-height: 1.5em;
+	_height: 1.5em;
 	border-radius: 7px;
 	-moz-border-radius: 7px;
 	-webkit-border-radius: 7px;
