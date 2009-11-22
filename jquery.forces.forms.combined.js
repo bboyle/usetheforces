@@ -450,6 +450,21 @@ $F.generateId = function() {
 
 
 
+	// establish a "confirmation" field relationship
+	$.fn.forces_isConfirmationFor = function(forElement) {
+		var confirm = $(this);
+		if (forElement) {
+			forElement = $(forElement);
+			return confirm.data('-tf-CONFIRMS', forElement.data('-tf-VALIDATE', confirm));
+		} else {
+			return confirm.data('-tf-CONFIRMS');
+		}
+	};
+
+
+
+
+
 	// recalculate all fields
 	$.fn.forces_recalculate = function() {
 		var e, f;
@@ -504,19 +519,6 @@ $F.generateId = function() {
 						valid = $F.REXP_EMAIL.exec(value);
 					break;
 					
-					case 'confirm':
-						var previous = e.closest('form');
-						if (previous.length) {
-							previous = previous.find('input');
-							for (var i = 1; i < previous.length; i++) {
-								if (previous.eq(i).get(0) == this) {
-									valid = value == $.trim(previous.eq(i-1).val());
-									break;
-								}
-							}
-						}
-					break;
-
 					case 'date':
 						valid = $F.dateParse(value);
 					break;
@@ -524,6 +526,11 @@ $F.generateId = function() {
 					case 'number':
 						valid = $F.REXP_NUMBER.exec(value);
 					break;
+				}
+
+				var confirmation = e.forces_isConfirmationFor();
+				if (confirmation) {
+					valid = $.trim(confirmation.val()) == value;
 				}
 
 				if (valid) {
@@ -636,7 +643,9 @@ $F.generateId = function() {
 				;
 				if (control.val() !== oldValue) {
 					control
-						.forces_validate()
+						.add(control.data('-tf-VALIDATE'))
+							.forces_validate()
+						.end()
 						.trigger($F.EVENT_XF_VALUE_CHANGED)
 					;
 				}
@@ -846,10 +855,6 @@ $F.generateId = function() {
 					message = $F.MSG_INVALID_EMAIL;
 				break;
 
-				case 'confirm':
-					message = $F.MSG_INVALID_CONFIRM + control.prev().find(':-xf-label').text().replace(/[?:]*$/, '');
-				break;
-
 				case 'date':
 					message = $F.MSG_INVALID_DATE;
 				break;
@@ -859,7 +864,12 @@ $F.generateId = function() {
 				break;
 
 				default:
-					message = 'invalid';
+					var confirmation = control.find('input,select,textarea').forces_isConfirmationFor();
+					if (confirmation) {
+						message = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
+					} else {
+						message = 'invalid';
+					}
 			}
 		
 			control
@@ -934,8 +944,14 @@ $F.generateId = function() {
 				.filter(':-xf-required:-xf-empty, :-xf-invalid')
 					.each(function() {
 						var widget = $(this);
+						var confirmation = widget.forces_isConfirmationFor();
+
 						if (widget.is(':-xf-empty')) {
 							alert = $F.MSG_MISSING;
+
+						} else if (confirmation) {
+							alert = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
+
 						} else {
 							switch (widget.forces_attr('type')) {
 								case 'date':
@@ -944,14 +960,12 @@ $F.generateId = function() {
 								case 'email':
 									alert = $F.MSG_INVALID_EMAIL;
 								break;
-								case 'confirm':
-									alert = $F.MSG_INVALID_CONFIRM + widget.closest(':-xf-control').prev().find(':-xf-label').text().replace(/[?:]*$/, '');
-								break;
 								case 'number':
 									alert = $F.MSG_INVALID_NUMBER;
 								break;
 							}
 						}
+
 						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>');
 						errorList.append($('<li></li>').append(link));
 						alert = $F.MSG_INVALID;

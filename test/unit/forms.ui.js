@@ -589,6 +589,8 @@ Tester.use('console', 'test', function(Y){
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
+
+			$('#confirm-email').forces_isConfirmationFor('#email');
 		},
 
 		tearDown: function() {
@@ -756,7 +758,7 @@ Tester.use('console', 'test', function(Y){
 
 
 		test_invalidConfirmMessageDisplayed: function() {
-			$('#confirm-email').forces_attr('type', 'confirm').forces_attr('required', true);
+			$('#confirm-email').forces_attr('required', true);
 
 			$('#form').submit();
 			Assert.areSame('Confirm email: must be completed', $('.tf-status').find('li').text(), 'required status alert not shown');
@@ -781,7 +783,17 @@ Tester.use('console', 'test', function(Y){
 			$('#email, #confirm-email').val('foo');
 			$('#form').submit();
 			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
-			Assert.areSame(0, $('#email-confirm').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
+			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
+		},
+
+
+		test_invalidConfirmMessageDisplayedInline: function() {
+			$('#email').focus().val('foo').blur();
+			$('#confirm-email').focus().val('foo@example.com').blur();
+			Assert.areSame('doesn\'t match Email', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm validation message not present');
+
+			$('#email').focus().val('foo@example.com').blur();
+			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
 		},
 
 

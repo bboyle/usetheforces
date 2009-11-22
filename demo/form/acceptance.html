@@ -221,8 +221,7 @@
 	$('#gate-open').forces_attr('required', true);
 
 	$('#number').forces_attr('type', 'number');
-	$('#email').forces_attr('type', 'email');
-	$('#email-confirm').forces_attr('type', 'confirm');
+	$('#email-confirm').forces_isConfirmationFor($('#email').forces_attr('type', 'email'));
 	$('#date-start,#date-birth').forces_attr('type', 'date');
 //	$('#date-start').click(function() {
 //		$(this).after($.forces.uiHtmlCalendar());

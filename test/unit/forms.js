@@ -215,6 +215,76 @@ Tester.use('console', 'test', function(Y){
 	}));
 
 
+	Y.forces.test.FormUnitSuite.add(new Y.Test.Case({
+		name: "Confirmation fields unit tests",
+
+		//---------------------------------------------
+		// Setup and tear down
+		//---------------------------------------------
+
+		setUp: function () {
+			$(
+				'<form id="form" action="#form"><ol>' +
+					'<li><input type="text" name="input1" id="input1" /></li>' +
+					'<li><input type="text" name="input2" id="input2" /></li>' +
+				'</ol></form>'
+			).appendTo('body').forces_enable();
+			$('#input2').forces_isConfirmationFor('#input1');
+		},
+
+		tearDown: function () {
+			$('#form').remove();
+		},
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+
+		test_canFindConfirmationField: function() {
+			Assert.areSame($('#input1').get(0), $('#input2').forces_isConfirmationFor().get(0), 'not found using ID');
+
+			var input1 = $('#input1');
+			$('#input2').forces_isConfirmationFor(input1);
+			Assert.areSame(input1.get(0), $('#input2').forces_isConfirmationFor().get(0), 'not found using object');
+		},
+
+		test_canFindValidationDependency: function() {
+			Assert.areSame($('#input2').get(0), $('#input1').data('-tf-VALIDATE').get(0), 'not found using ID');
+
+			var input1 = $('#input1');
+			$('#input2').forces_isConfirmationFor(input1);
+			Assert.areSame($('#input2').get(0), $('#input1').data('-tf-VALIDATE').get(0), 'not found using object');
+		},
+
+		test_shouldBeValidWhenValuesMatch: function() {
+			$('#input1').focus().val('foo').blur();
+			$('#input2').focus().val('foo').blur();
+			Assert.areSame(true, $('#input2').is(':-xf-valid'));
+		},
+
+		test_shouldBeInvalidWhenValuesDoNotMatch: function() {
+			$('#input1').focus().val('foo').blur();
+			$('#input2').focus().val('bar').blur();
+			Assert.areSame(true, $('#input2').is(':-xf-invalid'));
+		},
+
+		test_shouldToggleValidationCorrectly: function() {
+			$('#input1').focus().val('foo').blur();
+			$('#input2').focus().val('bar').blur();
+			Assert.areSame(true, $('#input2').is(':-xf-invalid'), 'invalid expected (foo != bar)');
+
+			$('#input2').focus().val('foo').blur();
+			Assert.areSame(true, $('#input2').is(':-xf-valid'), 'valid expected (foo = bar ~ foo)');
+
+			$('#input1').focus().val('fo').blur();
+			Assert.areSame(true, $('#input2').is(':-xf-invalid'), 'invalid expected (foo ~ fo != foo)');
+
+			$('#input1').focus().val('foo').blur();
+			Assert.areSame(true, $('#input2').is(':-xf-valid'), 'valid expected (fo ~ foo = foo)');
+		}
+	}));
+
+
 	//add the test suite
 	Y.Test.Runner.add(Y.forces.test.FormUnitSuite);
 
