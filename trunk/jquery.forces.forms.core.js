@@ -149,6 +149,21 @@
 
 
 
+	// establish a "confirmation" field relationship
+	$.fn.forces_isConfirmationFor = function(forElement) {
+		var confirm = $(this);
+		if (forElement) {
+			forElement = $(forElement);
+			return confirm.data('-tf-CONFIRMS', forElement.data('-tf-VALIDATE', confirm));
+		} else {
+			return confirm.data('-tf-CONFIRMS');
+		}
+	};
+
+
+
+
+
 	// recalculate all fields
 	$.fn.forces_recalculate = function() {
 		var e, f;
@@ -203,19 +218,6 @@
 						valid = $F.REXP_EMAIL.exec(value);
 					break;
 					
-					case 'confirm':
-						var previous = e.closest('form');
-						if (previous.length) {
-							previous = previous.find('input');
-							for (var i = 1; i < previous.length; i++) {
-								if (previous.eq(i).get(0) == this) {
-									valid = value == $.trim(previous.eq(i-1).val());
-									break;
-								}
-							}
-						}
-					break;
-
 					case 'date':
 						valid = $F.dateParse(value);
 					break;
@@ -223,6 +225,11 @@
 					case 'number':
 						valid = $F.REXP_NUMBER.exec(value);
 					break;
+				}
+
+				var confirmation = e.forces_isConfirmationFor();
+				if (confirmation) {
+					valid = $.trim(confirmation.val()) == value;
 				}
 
 				if (valid) {
@@ -335,7 +342,9 @@
 				;
 				if (control.val() !== oldValue) {
 					control
-						.forces_validate()
+						.add(control.data('-tf-VALIDATE'))
+							.forces_validate()
+						.end()
 						.trigger($F.EVENT_XF_VALUE_CHANGED)
 					;
 				}

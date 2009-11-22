@@ -175,10 +175,6 @@
 					message = $F.MSG_INVALID_EMAIL;
 				break;
 
-				case 'confirm':
-					message = $F.MSG_INVALID_CONFIRM + control.prev().find(':-xf-label').text().replace(/[?:]*$/, '');
-				break;
-
 				case 'date':
 					message = $F.MSG_INVALID_DATE;
 				break;
@@ -188,7 +184,12 @@
 				break;
 
 				default:
-					message = 'invalid';
+					var confirmation = control.find('input,select,textarea').forces_isConfirmationFor();
+					if (confirmation) {
+						message = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
+					} else {
+						message = 'invalid';
+					}
 			}
 		
 			control
@@ -263,8 +264,14 @@
 				.filter(':-xf-required:-xf-empty, :-xf-invalid')
 					.each(function() {
 						var widget = $(this);
+						var confirmation = widget.forces_isConfirmationFor();
+
 						if (widget.is(':-xf-empty')) {
 							alert = $F.MSG_MISSING;
+
+						} else if (confirmation) {
+							alert = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
+
 						} else {
 							switch (widget.forces_attr('type')) {
 								case 'date':
@@ -273,14 +280,12 @@
 								case 'email':
 									alert = $F.MSG_INVALID_EMAIL;
 								break;
-								case 'confirm':
-									alert = $F.MSG_INVALID_CONFIRM + widget.closest(':-xf-control').prev().find(':-xf-label').text().replace(/[?:]*$/, '');
-								break;
 								case 'number':
 									alert = $F.MSG_INVALID_NUMBER;
 								break;
 							}
 						}
+
 						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>');
 						errorList.append($('<li></li>').append(link));
 						alert = $F.MSG_INVALID;
