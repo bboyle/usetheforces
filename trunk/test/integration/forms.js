@@ -69,6 +69,28 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_valueChangedtEventsFireCorrectly: function() {
+			$(document).bind($.forces.EVENT_XF_VALUE_CHANGED, function(evt) {
+				$(evt.target).before('<span class="changed">CHANGED</span>');
+			});
+
+			Assert.areSame(0, $('#input1').prev('.changed').length);
+			
+			$('#input1').focus().val('foo').blur();
+			Assert.areSame(1, $('#input1').parent().find('.changed').length, 'VALUE CHANGED event did not fire');
+			Assert.areSame('CHANGED', $('#input1').prev('.changed').text());
+			
+			$('#input1').focus().val('foo').blur();
+			Assert.areSame(1, $('#input1').parent().find('.changed').length, 'VALUE CHANGED event fired when value did not change');
+			
+			$('#input1').focus().val('bar').blur();
+			Assert.areSame(2, $('#input1').parent().find('.changed').length, 'VALUE CHANGED event did not fire on second change');
+			
+			$('#input1').focus().val('').blur();
+			Assert.areSame(3, $('#input1').parent().find('.changed').length, 'VALUE CHANGED event did not fire when changed to empty string');
+		},
+
+
 		test_submitEventsFireCorrectly: function() {
 			var done = 0;
 			$(document).bind($.forces.EVENT_XF_SUBMIT_DONE, function() { ++done; });

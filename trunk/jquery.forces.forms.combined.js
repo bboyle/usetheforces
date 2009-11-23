@@ -643,10 +643,9 @@ $F.generateId = function() {
 				;
 				if (control.val() !== oldValue) {
 					control
+						.trigger($F.EVENT_XF_VALUE_CHANGED)
 						.add(control.data('-tf-VALIDATE'))
 							.forces_validate()
-						.end()
-						.trigger($F.EVENT_XF_VALUE_CHANGED)
 					;
 				}
 			break;
