@@ -144,6 +144,7 @@ legend span span {
 	left: 0;
 	width: 1.5em;
 	text-align: center;
+	z-index: 2;
 }
 .ftw-gathered .xf-required,
 .ftw-slot-in .xf-required{
