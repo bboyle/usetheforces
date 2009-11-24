@@ -367,11 +367,7 @@ $F.generateId = function() {
 			return ($(e).data('-tf-FLAGS') & 48) == 0;
 		},
 		'-xf-empty': function(e) {
-			e = $(e);
-			if (e.find(':radio,:checkbox').length) {
-				return e.find(':checked').length == 0;
-			}
-			return $.trim(e.val()).length == 0;
+			return $.trim($(e).forces_val()).length == 0;
 		},
 		'-xf-invalid': function(e) {
 			return ($(e).data('-tf-FLAGS') & 32) == 32;
@@ -445,8 +441,19 @@ $F.generateId = function() {
 		}
 		return this.removeData('-tf-@' + name).forces_recalculate();
 	};
-	
-	
+
+
+
+
+
+	// get value
+	$.fn.forces_val = function() {
+		var e = $(this);
+		
+		return e.val() || e.find(':checked').val() || null;
+	};
+
+
 
 
 
@@ -510,7 +517,7 @@ $F.generateId = function() {
 		return $(this).each(function() {
 			var e = $(this);
 			var valid = true;
-			var value = $.trim(e.val());
+			var value = $.trim(e.forces_val());
 
 			if (value) {
 				switch (e.forces_attr('type')) {
@@ -533,24 +540,21 @@ $F.generateId = function() {
 					valid = $.trim(confirmation.val()) == value;
 				}
 
-				if (valid) {
-					e
-						.forces__flags(32, false)
-						.forces__flags(16, true)
-						.trigger($F.EVENT_XF_VALID)
-					;
-				} else {
-					e
-						.forces__flags(16, false)
-						.forces__flags(32, true)
-						.trigger($F.EVENT_XF_INVALID)
-					;
-				}
+			} else if (e.is(':-xf-required')) {
+				valid = false;
+			}
 
+			if (valid) {
+				e
+					.forces__flags(32, false)
+					.forces__flags(16, true)
+					.trigger($F.EVENT_XF_VALID)
+				;
 			} else {
 				e
 					.forces__flags(16, false)
-					.forces__flags(32, false)
+					.forces__flags(32, true)
+					.trigger($F.EVENT_XF_INVALID)
 				;
 			}
 		});
