@@ -22,11 +22,17 @@ Tester.use('console', 'test', function(Y){
 					'<li class="required"><input type="text" name="input3" id="input3" /></li>' +
 					'<li class="required"><input type="text" name="input4" id="input4" /></li>' +
 					'<li><input type="text" name="input5" id="input5" /></li>' +
+					'<li><fieldset id="radio1">' +
+						'<input type="radio" id="radio1a" name="radio1" value="a" />' +
+						'<input type="radio" id="radio1b" name="radio1" value="b" />' +
+						'<input type="radio" id="radio1c" name="radio1" value="c" />' +
+					'</fieldset></li>' +
 				'</ol></form>'
 			).appendTo('body');
 			$('#input2').forces_attr('required', true);
 			$('.required input', '#form').forces_attr('required', true);
 			$('#input5').forces_attr('required', 'input1 = "5 is required"');
+			$('#radio1').forces_attr('required', true);
 		},
 
 		tearDown: function () {
@@ -40,6 +46,7 @@ Tester.use('console', 'test', function(Y){
 		test_readRequiredAttribute: function () {
 			Assert.areSame('required', $('#input2').forces_attr('required'));
 			Assert.areSame(null, $('#input1').forces_attr('required'));
+			Assert.areSame('required', $('#radio1').forces_attr('required'), 'radio1 should be required');
 		},
 
 		test_canSetRequiredUsingForcesAttr: function () {
@@ -47,6 +54,11 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(false, $('#input1').forces_attr('required', false).is(':-xf-required'));
 			Assert.areSame(false, $('#input1').forces_removeAttr('required').is(':-xf-required'));
 			Assert.areSame(null, $('#input1').forces_attr('required'));
+
+			Assert.areSame(true, $('#radio1').forces_attr('required', true).is(':-xf-required'));
+			Assert.areSame(false, $('#radio1').forces_attr('required', false).is(':-xf-required'));
+			Assert.areSame(false, $('#radio1').forces_removeAttr('required').is(':-xf-required'));
+			Assert.areSame(null, $('#radio1').forces_attr('required'));
 		},
 
 		test_setRequiredFromAncestorClass: function () {
@@ -54,7 +66,7 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#input4').is(':-xf-required'));
 		},
 
-		test_readCalculationFromRequiredAttribute: function () {
+		test_readArbitraryValueFromRequiredAttribute: function () {
 			Assert.areSame('input1 = "5 is required"', $('#input5').forces_attr('required'));
 		}
 	}));
@@ -211,6 +223,60 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('email', $('#input2').forces_attr('type'));
 			Assert.areSame('email', $('#input1').forces_attr('type', 'email').forces_attr('type'));
 			Assert.areNotSame('email', $('#input1').forces_removeAttr('type').forces_attr('type'));
+		}
+	}));
+
+
+	Y.forces.test.FormUnitSuite.add(new Y.Test.Case({
+		name: "Validation system unit tests",
+
+		//---------------------------------------------
+		// Setup and tear down
+		//---------------------------------------------
+
+		setUp: function () {
+			$(
+				'<form id="form" action="#form"><ol>' +
+					'<li><input type="text" name="input1" id="input1" /></li>' +
+					'<li><input type="text" name="input2" id="input2" /></li>' +
+					'<li><fieldset id="radio1">' +
+						'<input type="radio" id="radio1a" name="radio1" value="a" />' +
+						'<input type="radio" id="radio1b" name="radio1" value="b" />' +
+						'<input type="radio" id="radio1c" name="radio1" value="c" />' +
+					'</fieldset></li>' +
+				'</ol></form>'
+			).appendTo('body').forces_enable();
+		},
+
+		tearDown: function () {
+			$('#form').remove();
+		},
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+
+		test_requiredTextFieldValidation: function() {
+			$('#input1').forces_validate();
+			Assert.areSame(true, $('#input1').is(':-xf-valid'), 'input1 should be valid by default');
+
+			$('#input1').forces_attr('required', true).forces_validate();
+			Assert.areSame(false, $('#input1').is(':-xf-valid'), 'required input1 should be invalid when empty');
+
+			$('#input1').val('foo').forces_validate();
+			Assert.areSame(true, $('#input1').is(':-xf-valid'), 'required input1 should be valid when "foo"');
+		},
+
+		test_requiredRadioButtonsValidation: function() {
+			$('#radio1').forces_validate();
+			Assert.areSame(true, $('#radio1').is(':-xf-valid'), 'radio1 should be valid by default');
+
+			$('#radio1').forces_attr('required', true).forces_validate();
+			Assert.areSame(false, $('#radio1').is(':-xf-valid'), 'required radio1 should be invalid when empty');
+
+			$('#radio1a').click();
+			$('#radio1').forces_validate();
+			Assert.areSame(true, $('#radio1').is(':-xf-valid'), 'required radio1 should be valid when "a" checked');
 		}
 	}));
 
