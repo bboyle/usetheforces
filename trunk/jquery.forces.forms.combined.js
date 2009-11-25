@@ -968,12 +968,15 @@ $F.generateId = function() {
 						var widget = $(this);
 						var confirmation = widget.forces_isConfirmationFor();
 
-						if (widget.is(':-xf-empty')) {
+						if (alert = widget.forces_validationMessage()) {
+							// message already known
+
+						} else if (widget.is(':-xf-empty')) {
 							alert = $F.MSG_MISSING;
 
 						} else if (confirmation) {
 							alert = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
-
+							
 						} else {
 							switch (widget.forces_attr('type')) {
 								case 'date':

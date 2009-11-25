@@ -218,7 +218,10 @@
 <script type="text/javascript">
 <!-- //
 
-	$('#gate-open').forces_attr('required', true);
+	$('#gate-open')
+		.forces_attr('required', true)
+		.forces_setCustomValidity('the wicked gate will not allow you to pass')
+	;
 
 	$('#number').forces_attr('type', 'number');
 	$('#email-confirm').forces_isConfirmationFor($('#email').forces_attr('type', 'email'));

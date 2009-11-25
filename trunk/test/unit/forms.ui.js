@@ -812,6 +812,20 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(0, $('.tf-status').find('li').length);
 		},
 		
+		test_invalidCustomMessageDisplayed: function() {
+			$('#textarea1').forces_setCustomValidity('foo');
+			$('#form').submit();
+			Assert.areSame('Textarea: foo', $('.tf-status').find('li').text());
+			
+			$('#textarea1').forces_setCustomValidity('bar');
+			$('#form').submit();
+			Assert.areSame('Textarea: bar', $('.tf-status').find('li').text());
+
+			$('#textarea1').forces_setCustomValidity('');
+			$('#form').submit();
+			Assert.areSame(0, $('.tf-status').find('li').length);
+		},
+		
 		test_shouldListSubmitErrorsInSourceOrder: function() {
 			$('#input1,#date').forces_attr('required', true);
 			$('#email').forces_attr('type', 'email').val('foo');
