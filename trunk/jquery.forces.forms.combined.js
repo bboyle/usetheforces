@@ -467,6 +467,15 @@ $F.generateId = function() {
 
 
 
+	// validationMessage()
+	$.fn.forces_validationMessage = function() {
+		return $(this).data('-tf-CUSTOM-VALIDITY') || '';
+	},
+
+
+
+
+
 	// establish a "confirmation" field relationship
 	$.fn.forces_isConfirmationFor = function(forElement) {
 		var confirm = $(this);
