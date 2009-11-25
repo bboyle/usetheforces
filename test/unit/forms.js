@@ -277,6 +277,16 @@ Tester.use('console', 'test', function(Y){
 			$('#radio1a').click();
 			$('#radio1').forces_validate();
 			Assert.areSame(true, $('#radio1').is(':-xf-valid'), 'required radio1 should be valid when "a" checked');
+		},
+		
+		test_shouldBeInvalidOnSetCustomValidityWithMessage: function() {
+			Assert.areSame(false, $('#input1').is(':-xf-invalid'), 'input1 should not be invalid by default');
+
+			$('#input1').forces_setCustomValidity('foo').forces_validate();
+			Assert.areSame(true, $('#input1').is(':-xf-invalid'));
+
+			$('#input1').forces_setCustomValidity('').forces_validate();
+			Assert.areSame(false, $('#input1').is(':-xf-invalid'));
 		}
 	}));
 
