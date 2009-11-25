@@ -285,6 +285,10 @@ Tester.use('console', 'test', function(Y){
 			$('#input1').forces_setCustomValidity('foo').forces_validate();
 			Assert.areSame(true, $('#input1').is(':-xf-invalid'));
 
+			$('#input1').forces_setCustomValidity('foo').forces_validate();
+			Assert.areSame(true, $('#input1').is(':-xf-invalid'));
+			Assert.areSame('foo', $('#input1').forces_validationMessage());
+
 			$('#input1').forces_setCustomValidity('').forces_validate();
 			Assert.areSame(false, $('#input1').is(':-xf-invalid'));
 		}
