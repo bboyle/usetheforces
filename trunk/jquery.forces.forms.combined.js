@@ -457,6 +457,16 @@ $F.generateId = function() {
 
 
 
+	// setCustomValidity
+	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-setcustomvalidity
+	$.fn.forces_setCustomValidity = function(message) {
+		return $(this).data('-tf-CUSTOM-VALIDITY', message);
+	},
+
+
+
+
+
 	// establish a "confirmation" field relationship
 	$.fn.forces_isConfirmationFor = function(forElement) {
 		var confirm = $(this);
@@ -516,10 +526,10 @@ $F.generateId = function() {
 	$.fn.forces_validate = function() {
 		return $(this).each(function() {
 			var e = $(this);
-			var valid = true;
+			var valid = e.data('-tf-CUSTOM-VALIDITY') ? false : true;
 			var value = $.trim(e.forces_val());
 
-			if (value) {
+			if (valid && value) {
 				switch (e.forces_attr('type')) {
 
 					case 'email':
