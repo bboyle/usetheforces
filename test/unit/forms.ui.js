@@ -816,10 +816,12 @@ Tester.use('console', 'test', function(Y){
 			$('#textarea1').forces_setCustomValidity('foo');
 			$('#form').submit();
 			Assert.areSame('Textarea: foo', $('.tf-status').find('li').text());
+			Assert.areSame('foo', $('#textarea1').closest(':-xf-control').find('.xf-alert').text());
 			
 			$('#textarea1').forces_setCustomValidity('bar');
 			$('#form').submit();
 			Assert.areSame('Textarea: bar', $('.tf-status').find('li').text());
+			Assert.areSame('bar', $('#textarea1').closest(':-xf-control').find('.xf-alert').text());
 
 			$('#textarea1').forces_setCustomValidity('');
 			$('#form').submit();

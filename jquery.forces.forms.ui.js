@@ -167,29 +167,33 @@
 		.live($F.EVENT_XF_INVALID, function() {
 			var control = $(this);
 
-			var message = control.find(':text').forces_attr('type');
-			
-			switch (message) {
+			var message = control.find('fieldset,input,select,textarea').forces_validationMessage();
 
-				case 'email':
-					message = $F.MSG_INVALID_EMAIL;
-				break;
+			if (!message) {
 
-				case 'date':
-					message = $F.MSG_INVALID_DATE;
-				break;
-
-				case 'number':
-					message = $F.MSG_INVALID_NUMBER;
-				break;
-
-				default:
-					var confirmation = control.find('input,select,textarea').forces_isConfirmationFor();
-					if (confirmation) {
-						message = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
-					} else {
-						message = 'invalid';
-					}
+				var type = control.find(':text').forces_attr('type');
+				switch (type) {
+		
+					case 'email':
+						message = $F.MSG_INVALID_EMAIL;
+					break;
+		
+					case 'date':
+						message = $F.MSG_INVALID_DATE;
+					break;
+		
+					case 'number':
+						message = $F.MSG_INVALID_NUMBER;
+					break;
+		
+					default:
+						var confirmation = control.find('input,select,textarea').forces_isConfirmationFor();
+						if (confirmation) {
+							message = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
+						} else {
+							message = 'invalid';
+						}
+				}
 			}
 		
 			control
