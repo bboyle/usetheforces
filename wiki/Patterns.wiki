@@ -13,6 +13,9 @@ Of particular interest are patterns that determine the structure of forms (form 
 Add your content here.  Format your content with:
   * [http://www.welie.com/patterns/showPattern.php?patternID=forms Form (Interaction Design Pattern Library - Welie.com)]
 
+= Forms design =
+ * [http://www.cxpartners.co.uk/thoughts/web_forms_design_guidelines_an_eyetracking_study.htm Web form design guidelines: an eyetracking study]
+
 = Pattern analysis =
   * [http://www.smashingmagazine.com/2008/07/04/web-form-design-patterns-sign-up-forms/ Web Form Design Patterns: Sign-Up Forms (Smashing Magazine)]
   * [http://www.smashingmagazine.com/2008/07/08/web-form-design-patterns-sign-up-forms-part-2/ Web Form Design Patterns: Sign-Up Forms, Part 2 (Smashing Magazine)]
