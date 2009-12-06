@@ -14,7 +14,12 @@ Add your content here.  Format your content with:
   * [http://www.welie.com/patterns/showPattern.php?patternID=forms Form (Interaction Design Pattern Library - Welie.com)]
 
 = Forms design =
- * [http://www.cxpartners.co.uk/thoughts/web_forms_design_guidelines_an_eyetracking_study.htm Web form design guidelines: an eyetracking study]
+ # [http://www.cxpartners.co.uk/thoughts/web_forms_design_guidelines_an_eyetracking_study.htm Web form design guidelines: an eyetracking study] (April 2009)
+ # [http://www.formsthatwork.com/ Forms that Work], Caroline Jarrett and Gerry Gaffney 2009
+ # [http://www.acs.org.au/act/2008conference/docs/ACSe-GovernmentPresentation.ppt Introducing a Novel Market Segmentation for e-Government] (Powerpoint file) Tim Turner
+ # [http://www.rosenfeldmedia.com/books/webforms/ Web Form Design], Luke Wroblewski 2008
+ # [http://www.webdirections.org/resources/aaron-gustafson/ Learning to Love Forms], Aaron Gustafson 2007
+
 
 = Pattern analysis =
   * [http://www.smashingmagazine.com/2008/07/04/web-form-design-patterns-sign-up-forms/ Web Form Design Patterns: Sign-Up Forms (Smashing Magazine)]
