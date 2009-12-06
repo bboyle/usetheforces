@@ -1,0 +1,26 @@
+#summary css identifiers used by forces
+
+= Introduction =
+
+CSS id and class identifiers used by forces.
+
+
+= Details =
+
+|| identifier || description || application || namespace ||
+|| .ftw-questions || list of questions || OL, UL || Forms That Work ||
+|| .ftw-preamble || introductory instructions || DIV || Forms That Work ||
+|| .tt-citizen || citizen interaction || FORM || Tim Turner (Market Segmentation) ||
+|| .wfd-action-primary || primary action || BUTTON, INPUT[type="submit"] || Web Forms Design ||
+|| .xf-required || required marker || ABBR || XForms ||
+|| .xf-input ||
+|| .xf-secret ||
+|| .xf-select1 ||
+|| .xf-select ||
+|| .xf-textarea ||
+|| .xf-choices ||
+|| .xf-appearance-compact ||
+|| .section || sectioning element || DIV || HTML 5 ||
+|| .tf-form || sectioning element (form) || DIV || (use) the forces ||
+|| .tf-footer ||
+|| .tf-submit ||
