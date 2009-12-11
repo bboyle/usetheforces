@@ -265,7 +265,7 @@
 			var alert;
 			
 			controls
-				.filter(':-xf-required:-xf-empty, :-xf-invalid')
+				.filter(':-xf-invalid')
 					.each(function() {
 						var widget = $(this);
 						var confirmation = widget.forces_isConfirmationFor();
