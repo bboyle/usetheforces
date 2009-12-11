@@ -652,7 +652,7 @@ Tester.use('console', 'test', function(Y){
 
 		test_requiredAlertMessageDisplayed: function() {
 			$('#input1,#textarea1,#radio1').forces_attr('required', true);
-
+			
 			$('#form').submit();
 			var status = $('div.tf-status');
 			Assert.areSame(3, status.find('li').length, 'expected 3 alerts in status');
