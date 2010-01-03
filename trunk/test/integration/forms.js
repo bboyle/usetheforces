@@ -69,7 +69,7 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
-		test_valueChangedtEventsFireCorrectly: function() {
+		test_valueChangedEventsFireCorrectly: function() {
 			$(document).bind($.forces.EVENT_XF_VALUE_CHANGED, function(evt) {
 				$(evt.target).before('<span class="changed">CHANGED</span>');
 			});
