@@ -15,14 +15,14 @@ Validation for ABN values.
             } else if (value.match(/^[0-9]{11}$/)) {
                 var d = value.split('');
 
-                var checksum = (d[0] - 1) * 10;
+                var checksum = d[0] * 10;
                 var weight = 1;
                 for (var i = 1; 11 > i; i++) {
                     checksum += (d[i] * weight);
                     weight += 2;
                 }
 
-                if (checksum % 89 === 0) {
+                if (checksum % 89 === 10) {
                     abn.forces_setCustomValidity('');
                 } else {
                     abn.forces_setCustomValidity('invalid ABN');
