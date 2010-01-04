@@ -794,6 +794,35 @@ Tester.use('console', 'test', function(Y){
 
 			$('#email').focus().val('foo@example.com').blur();
 			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
+
+			$('#email').focus().val('').blur();
+			$('#confirm-email').focus().val('').blur();
+			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'inline alert present when empty');
+
+			$('#email,#confirm-email').forces_attr('required', true);
+			$('#email').focus().val('foo').blur();
+			$('#confirm-email').focus().val('foo').blur();
+			$('#email').focus().val('').blur();
+			$('#confirm-email').focus().val('').blur();
+// TODO fix this (better handling of validation messages between core and UI layers)
+//			Assert.areSame('must be completed', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm message displayed instead of required message');
+		},
+
+
+		test_shouldNotValidateEmptyConfirmFieldPrematurely: function() {
+			$('#email').focus().val('foo').blur();
+			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'alert displayed prematurely (optional confirmation)');
+
+			$('#confirm-email').forces_attr('required', true);
+			$('#email').focus().val('foo2').blur();
+			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'alert displayed prematurely (required confirmation)');
+		},
+
+
+		test_shouldValidateNonEmptyConfirmField: function() {
+			$('#confirm-email').val('bar');
+			$('#email').focus().val('foo').blur();
+			Assert.areSame('doesn\'t match Email', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm validation message not present');
 		},
 
 

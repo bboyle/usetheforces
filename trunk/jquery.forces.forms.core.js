@@ -68,6 +68,9 @@
 		'-xf-empty': function(e) {
 			return $.trim($(e).forces_val()).length == 0;
 		},
+		'-xf-non-empty': function(e) {
+			return $.trim($(e).forces_val()).length > 0;
+		},
 		'-xf-invalid': function(e) {
 			return ($(e).data('-tf-FLAGS') & 32) == 32;
 		},
@@ -366,8 +369,8 @@
 				if (control.val() !== oldValue) {
 					control
 						.trigger($F.EVENT_XF_VALUE_CHANGED)
-						.add(control.data('-tf-VALIDATE'))
-							.forces_validate()
+						.add($(control.data('-tf-VALIDATE')).not(':-tf-not-validated:-xf-empty'))
+						.forces_validate()
 					;
 				}
 			break;
