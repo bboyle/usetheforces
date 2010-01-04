@@ -34,7 +34,5 @@ Validation for ABN values.
 }}}
 
 
-= Details =
-
 = Reference =
 [http://ato.gov.au/businesses/content.asp?doc=/content/13187.htm&pc=001/003/021/001/008&mnu=59&mfp=001/003&st=&cy=1 Format of the Australian Business Number (ABN)]
