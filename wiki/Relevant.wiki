@@ -33,3 +33,24 @@ $('#my-discount').relevant(function() {
 
 = References =
   * [http://www.w3.org/TR/xforms/#model-prop-relevant]
+
+----
+
+= Alternative implementation =
+
+Toggle relevance with true/false values, like so:
+{{{
+  $("#my-discount").forces_attr('relevant', true);
+}}}
+
+Specify function using the following pattern:
+{{{
+  var myAmount = $('#my-amount');
+  var myDiscount = $('#my-discount');
+  myAmount.change(function() {
+    myDiscount.forces_attr('relevant', myAmount.val() > 1000);
+    return arguments.callee;
+  }());
+}}}
+
+This runs the function whenever the value of "my amount" changes, recalculating the relevance of "my discount". This use of `return arguments.callee` and `function() { ... }()` ensures the calculation is run once after definition, to ensure an accurate initial state.
