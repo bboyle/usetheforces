@@ -80,7 +80,10 @@
 		controls.find('.xf-alert').remove();
 
 		if (message) {
-			controls.append($F.HTML_ALERT_INLINE(message));
+			controls.map(function() {
+				var f = $(this).children('fieldset');
+				return f.length == 1 ? f.get(0) : this;
+			}).append($F.HTML_ALERT_INLINE(message));
 		}
 
 		return src;
