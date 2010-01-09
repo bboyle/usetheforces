@@ -625,7 +625,7 @@ $F.generateId = function() {
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
 			// are there invalid fields?
-			if (form.find($F.EXPR_HTML_CONTROLS).forces_validate().length) {
+			if (form.find($F.EXPR_HTML_CONTROLS).filter(':-xf-relevant').forces_validate().length) {
 				// throw a submit error
 				form.trigger($F.EVENT_XF_SUBMIT_ERROR);
 				// re-enable submit events (delete the stored submit time)
