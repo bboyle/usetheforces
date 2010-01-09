@@ -536,7 +536,7 @@ $F.generateId = function() {
 
 	// validate
 	$.fn.forces_validate = function() {
-		return $(this).each(function() {
+		return $(this).filter(function() {
 			var e = $(this);
 			var valid = e.data('-tf-CUSTOM-VALIDITY') ? false : true;
 			var value = $.trim(e.forces_val());
@@ -579,6 +579,8 @@ $F.generateId = function() {
 					.trigger($F.EVENT_XF_INVALID)
 				;
 			}
+			
+			return !valid;
 		});
 	};
 
@@ -622,13 +624,8 @@ $F.generateId = function() {
 			// prevent repeat submit events (store time of submit)
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
-			var controls = form.find($F.EXPR_HTML_CONTROLS);
-			// TODO skip already validated fields?
-			controls.forces_validate();
-	
 			// are there invalid fields?
-			var invalid = controls.filter(':-xf-required:-xf-empty, :-xf-invalid');
-			if (invalid.length) {
+			if (form.find($F.EXPR_HTML_CONTROLS).forces_validate().length) {
 				// throw a submit error
 				form.trigger($F.EVENT_XF_SUBMIT_ERROR);
 				// re-enable submit events (delete the stored submit time)
@@ -728,11 +725,6 @@ $F.generateId = function() {
 		CSS_SUBMIT_ERROR: 'xf-submit-error',
 		CSS_VALID: 'xf-valid',
 
-		// HTML markup
-		HTML_ALERT_INLINE: function(message) { return $('<em></em>').addClass(this.CSS_ALERT).text(message); },
-		HTML_REQUIRED: function() { return $(document.createElement('abbr')).addClass(this.CSS_REQUIRED).attr('title', 'required').text('*'); },
-		HTML_STATUS: function() { return $('<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>'); },
-
 		// messages
 		MSG_INVALID: 'is invalid',
 		MSG_INVALID_DATE: 'unrecognised date format',
@@ -740,6 +732,12 @@ $F.generateId = function() {
 		MSG_INVALID_CONFIRM: 'doesn\'t match ',
 		MSG_INVALID_NUMBER: 'must contain only digits',
 		MSG_MISSING: 'must be completed',
+		MSG_SUBMIT_ERROR: 'Unable to process this form',
+
+		// HTML markup
+		HTML_ALERT_INLINE: function(message) { return $('<em></em>').addClass(this.CSS_ALERT).text(message); },
+		HTML_REQUIRED: function() { return $(document.createElement('abbr')).addClass(this.CSS_REQUIRED).attr('title', 'required').text('*'); },
+		HTML_STATUS: function() { return $('<div class="tf-status"><div class="tf-alert inner"><h1>' + this.MSG_SUBMIT_ERROR + '</h1><ol></ol></div></div>'); },
 
 		// millisecond timers
 		MS_ENABLE: 300,
@@ -895,9 +893,12 @@ $F.generateId = function() {
 					break;
 		
 					default:
-						var confirmation = control.find('input,select,textarea').forces_isConfirmationFor();
+						var widget = control.find('input,select,textarea');
+						var confirmation = widget.forces_isConfirmationFor();
 						if (confirmation) {
 							message = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
+						} else if (widget.is(':-xf-empty')) {
+							message = $F.MSG_MISSING;
 						} else {
 							message = 'invalid';
 						}

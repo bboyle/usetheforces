@@ -606,7 +606,7 @@ Tester.use('console', 'test', function(Y){
 			var status = $('#form-container').prev('div');
 			Assert.areSame(true, status.children().is('div.tf-alert'), 'div.tf-status > div.tf-alert not found');
 			Assert.areSame(1, status.find('h1').length, 'h1 not found');
-			Assert.areSame('Unable to submit form', status.find('h1').text());
+			Assert.areSame('Unable to process this form', status.find('h1').text());
 			// second error should not create a new error box
 			$('#form').trigger($.forces.EVENT_XF_SUBMIT_ERROR);
 			Assert.areSame(1, $('div.tf-status').length, 'submit error box duplicated')

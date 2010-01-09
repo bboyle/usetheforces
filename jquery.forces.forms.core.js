@@ -235,7 +235,7 @@
 
 	// validate
 	$.fn.forces_validate = function() {
-		return $(this).each(function() {
+		return $(this).filter(function() {
 			var e = $(this);
 			var valid = e.data('-tf-CUSTOM-VALIDITY') ? false : true;
 			var value = $.trim(e.forces_val());
@@ -278,6 +278,8 @@
 					.trigger($F.EVENT_XF_INVALID)
 				;
 			}
+			
+			return !valid;
 		});
 	};
 
@@ -321,13 +323,8 @@
 			// prevent repeat submit events (store time of submit)
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
-			var controls = form.find($F.EXPR_HTML_CONTROLS);
-			// TODO skip already validated fields?
-			controls.forces_validate();
-	
 			// are there invalid fields?
-			var invalid = controls.filter(':-xf-required:-xf-empty, :-xf-invalid');
-			if (invalid.length) {
+			if (form.find($F.EXPR_HTML_CONTROLS).forces_validate().length) {
 				// throw a submit error
 				form.trigger($F.EVENT_XF_SUBMIT_ERROR);
 				// re-enable submit events (delete the stored submit time)
