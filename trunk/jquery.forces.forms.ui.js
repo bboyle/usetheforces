@@ -23,11 +23,6 @@
 		CSS_SUBMIT_ERROR: 'xf-submit-error',
 		CSS_VALID: 'xf-valid',
 
-		// HTML markup
-		HTML_ALERT_INLINE: function(message) { return $('<em></em>').addClass(this.CSS_ALERT).text(message); },
-		HTML_REQUIRED: function() { return $(document.createElement('abbr')).addClass(this.CSS_REQUIRED).attr('title', 'required').text('*'); },
-		HTML_STATUS: function() { return $('<div class="tf-status"><div class="tf-alert inner"><h1>Unable to submit form</h1><ol></ol></div></div>'); },
-
 		// messages
 		MSG_INVALID: 'is invalid',
 		MSG_INVALID_DATE: 'unrecognised date format',
@@ -35,6 +30,12 @@
 		MSG_INVALID_CONFIRM: 'doesn\'t match ',
 		MSG_INVALID_NUMBER: 'must contain only digits',
 		MSG_MISSING: 'must be completed',
+		MSG_SUBMIT_ERROR: 'Unable to process this form',
+
+		// HTML markup
+		HTML_ALERT_INLINE: function(message) { return $('<em></em>').addClass(this.CSS_ALERT).text(message); },
+		HTML_REQUIRED: function() { return $(document.createElement('abbr')).addClass(this.CSS_REQUIRED).attr('title', 'required').text('*'); },
+		HTML_STATUS: function() { return $('<div class="tf-status"><div class="tf-alert inner"><h1>' + this.MSG_SUBMIT_ERROR + '</h1><ol></ol></div></div>'); },
 
 		// millisecond timers
 		MS_ENABLE: 300,
@@ -190,9 +191,12 @@
 					break;
 		
 					default:
-						var confirmation = control.find('input,select,textarea').forces_isConfirmationFor();
+						var widget = control.find('input,select,textarea');
+						var confirmation = widget.forces_isConfirmationFor();
 						if (confirmation) {
 							message = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
+						} else if (widget.is(':-xf-empty')) {
+							message = $F.MSG_MISSING;
 						} else {
 							message = 'invalid';
 						}
