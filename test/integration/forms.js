@@ -110,6 +110,24 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_submitIgnoresIrrelevantFields: function() {
+			var done = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_DONE, function() { ++done; });
+			var error = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_ERROR, function() { ++error; });
+
+			$('#input2').forces_attr('required', true);
+			$('#form').submit();
+			Assert.areSame(0, done, '"DONE" should not fire on submit failure');
+			Assert.areSame(1, error, '"ERROR" should fire on submit failure');
+
+			$('#input2').forces_attr('relevant', false);
+			$('#form').submit();
+			Assert.areSame(1, done, 'submit should succeed when invalid field is irrelevant');
+			Assert.areSame(1, error, 'submit should not error when invalid field is irrelevant');
+		},
+
+
 		test_submitEventsCanBeDisabled: function() {
 			var done = 0;
 			$(document).bind($.forces.EVENT_XF_SUBMIT_DONE, function() { ++done; });
