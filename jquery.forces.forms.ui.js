@@ -16,6 +16,7 @@
 		// css class names
 		CSS_ACTIVE: 'tf-active',
 		CSS_ALERT: 'xf-alert',
+		CSS_HINT: 'xf-hint',
 		CSS_INVALID: 'xf-invalid',
 		CSS_MISSING: 'tf-missing',
 		CSS_REQUIRED: 'xf-required',
@@ -34,8 +35,10 @@
 
 		// HTML markup
 		HTML_ALERT_INLINE: function(message) { return $('<em></em>').addClass(this.CSS_ALERT).text(message); },
+		HTML_HINT_INLINE: function(message) { return $('<small class="xf-hint"></small>').addClass(this.CSS_HINT).text(message); },
 		HTML_REQUIRED: function() { return $(document.createElement('abbr')).addClass(this.CSS_REQUIRED).attr('title', 'required').text('*'); },
 		HTML_STATUS: function() { return $('<div class="tf-status"><div class="tf-alert inner"><h1>' + this.MSG_SUBMIT_ERROR + '</h1><ol></ol></div></div>'); },
+		HTML_STATUS_ID: 'tf-status-alert',
 
 		// millisecond timers
 		MS_ENABLE: 300,
@@ -85,6 +88,30 @@
 				var f = $(this).children('fieldset');
 				return f.length == 1 ? f.get(0) : this;
 			}).append($F.HTML_ALERT_INLINE(message));
+		}
+
+		return src;
+	};
+
+
+
+
+
+	// set an alert for a control
+	$.fn.forces_hint = function(message) {
+		var src = $(this);
+		
+		var controls = src.closest(':-xf-control');
+		controls.find('.xf-hint').remove();
+
+		if (message) {
+			controls
+				.find('.xf-label')
+					.parent()
+						.append(
+							$F.HTML_HINT_INLINE(message)
+						)
+			;
 		}
 
 		return src;
@@ -316,7 +343,7 @@
 						.fadeIn(300)
 				)
 			;
-			status.forces_id('status-alert');
+			status.forces_id(this.HTML_STATUS_ID);
 			status
 				.scrollTo({ hash: true, focus: true })
 				.shake({ interval: 250, distance: 8, shakes: 1 })

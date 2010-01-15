@@ -15,22 +15,23 @@ Tester.use('console', 'test', function(Y){
 		//---------------------------------------------
 
 		test_luhn: function() {
-			var valid = [
+			var numbers = [
 				'4111 1111 1111 1111',
 				'4000 1000 2000 3000',
-				'0000 0000 0000 0000',
+				'0000 0000 0000 0000'
 			];
-			var invalid = [
+			for (var i = 0; i < numbers.length; i++) {
+				Assert.areSame(true, $.forces.isValidLuhn(numbers[i].replace(/[^0-9]+/g, '')), numbers[i] + ' failed luhn check');
+			}
+
+			numbers = [
 				'0000 0000 0000 0001',
 				'53 004 085 616',
 				'4875697858795787',
 				'1234567890'
 			];
-			for (var i = 0; i < valid.length; i++) {
-				Assert.areSame(true, $.forces.isValidLuhn(valid[i].replace(/[^0-9]+/g, '')), valid[i] + ' failed luhn check');
-			}
-			for (var i = 0; i < invalid.length; i++) {
-				Assert.areSame(false, $.forces.isValidLuhn(invalid[i].replace(/[^0-9]+/g, '')), invalid[i] + ' passed luhn check');
+			for (var i = 0; i < numbers.length; i++) {
+				Assert.areSame(false, $.forces.isValidLuhn(numbers[i].replace(/[^0-9]+/g, '')), numbers[i] + ' passed luhn check');
 			}
 		}
 

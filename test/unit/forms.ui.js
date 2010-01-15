@@ -133,6 +133,26 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+		test_canSetHintForControls: function() {
+			Assert.areSame(0, $('#input01-container, #select-container').find('.xf-hint').length);
+
+			$('#input01-container, #select-container').forces_hint('test hint');
+			Assert.areSame(1, $('#input01-container').find('.xf-hint').length, 'expected hint on input');
+			Assert.areSame(1, $('#select-container').find('.xf-hint').length, 'expected hint on select');
+			Assert.areSame('test hint', $('#input01-container').find('.xf-hint').text(), 'expected "test hint" on input');
+			Assert.areSame('test hint', $('#select-container').find('.xf-hint').text(), 'expected "test hint" on select');
+
+			$('#input01-container').forces_hint('foo');
+			Assert.areSame(1, $('#input01-container').find('.xf-hint').length, 'expected 1 hint');
+			Assert.areSame('foo', $('#input01-container').find('.xf-hint').text());
+			Assert.areSame(1, $('#select-container').find('.xf-hint').length);
+			Assert.areSame('test hint', $('#select-container').find('.xf-hint').text());
+
+			$('#input01-container').forces_hint();
+			Assert.areSame(0, $('#input01-container').find('.xf-hint').length, 'hint still present');
+		},
+
+
 		test_canFindForm: function() {
 			Assert.areSame(1, $('#input01').closest(':-tf-form').length, 'should find one form');
 			Assert.areSame('form-container', $('#input01').closest(':-tf-form').attr('id'), 'should find correct form');
