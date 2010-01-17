@@ -19,6 +19,7 @@ Tester.use('console', 'test', function(Y){
 				'<form id="form" action="javascript:"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
 					'<li><input type="text" name="input2" id="input2" /></li>' +
+					'<li><fieldset id="fieldset1"><input type="text" name="input3" id="input3" /></fieldset></li>' +
 				'</ol></form>'
 			).appendTo('body').forces_enable();
 		},
@@ -125,6 +126,20 @@ Tester.use('console', 'test', function(Y){
 			$('#form').submit();
 			Assert.areSame(1, done, 'submit should succeed when invalid field is irrelevant');
 			Assert.areSame(1, error, 'submit should not error when invalid field is irrelevant');
+		},
+
+
+		test_submitIgnoresNestedIrrelevantFields: function() {
+			var done = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_DONE, function() { ++done; });
+			var error = 0;
+			$(document).bind($.forces.EVENT_XF_SUBMIT_ERROR, function() { ++error; });
+
+			$('#input3').forces_attr('required', true);
+			$('#fieldset1').forces_attr('relevant', false);
+			$('#form').submit();
+			Assert.areSame(1, done, 'submit should succeed when nested field is irrelevant');
+			Assert.areSame(0, error, 'submit should not error when nested invalid field is irrelevant');
 		},
 
 
