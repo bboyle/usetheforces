@@ -998,7 +998,12 @@ $F.generateId = function() {
 		var form = $(this);
 			var controls = form.find($F.EXPR_HTML_CONTROLS);
 
-			var status = form.data(DOM_STATUS) || form.data(DOM_STATUS, $F.HTML_STATUS()).data(DOM_STATUS);
+			var status = form.data(DOM_STATUS);
+			if (!status) {
+				status = form.data(DOM_STATUS, $F.HTML_STATUS()).data(DOM_STATUS);
+				form.find('.tf-status > .tf-alert').parent().remove();
+			}
+			
 			var errorList = $('<ol></ol>');
 			var alert;
 			
@@ -1050,7 +1055,7 @@ $F.generateId = function() {
 			status.forces_id(this.HTML_STATUS_ID);
 			status
 				.scrollTo({ hash: true, focus: true })
-				.shake({ interval: 250, distance: 8, shakes: 1 })
+//				.shake({ interval: 250, distance: 8, shakes: 1 })
 			;
 
 			controls
