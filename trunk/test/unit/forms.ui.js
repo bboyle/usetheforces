@@ -882,7 +882,7 @@ Tester.use('console', 'test', function(Y){
 		test_shouldReuseExistingStatusBlock: function() {
 			$('#input1').forces_attr('required', true);
 			
-			$('#form').before($.forces.HTML_STATUS());
+			$('.tf-form').before($.forces.HTML_STATUS());
 			Assert.areSame(1, $('.tf-status > .tf-alert').length, 'expected 1 status alert block before submit');
 			
 			$('#form').submit();
