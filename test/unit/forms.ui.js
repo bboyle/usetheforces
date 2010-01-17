@@ -861,6 +861,7 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(0, $('.tf-status').find('li').length);
 		},
 		
+
 		test_invalidCustomMessageDisplayed: function() {
 			$('#textarea1').forces_setCustomValidity('foo');
 			$('#form').submit();
@@ -876,7 +877,20 @@ Tester.use('console', 'test', function(Y){
 			$('#form').submit();
 			Assert.areSame(0, $('.tf-status').find('li').length);
 		},
-		
+
+
+		test_shouldReuseExistingStatusBlock: function() {
+			$('#input1').forces_attr('required', true);
+			
+			$('#form').before($.forces.HTML_STATUS());
+			Assert.areSame(1, $('.tf-status > .tf-alert').length, 'expected 1 status alert block before submit');
+			
+			$('#form').submit();
+			Assert.areSame(1, $('.tf-status > .tf-alert').length, 'expected 1 status alert block after submit');
+			Assert.areSame(1, $('.tf-status').length, 'expected 1 status block after submit');
+		},
+
+
 		test_shouldListSubmitErrorsInSourceOrder: function() {
 			$('#input1,#date').forces_attr('required', true);
 			$('#email').forces_attr('type', 'email').val('foo');
