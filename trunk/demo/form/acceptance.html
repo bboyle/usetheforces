@@ -224,7 +224,9 @@
 	;
 
 	$('#number').forces_attr('type', 'number');
-	$('#email-confirm').forces_isConfirmationFor($('#email').forces_attr('type', 'email'));
+	$('#email').forces_attr('type', 'email');
+// TODO use custom validity
+//	$('#email-confirm').forces_isConfirmationFor();
 	$('#date-start,#date-birth').forces_attr('type', 'date');
 //	$('#date-start').click(function() {
 //		$(this).after($.forces.uiHtmlCalendar());

@@ -30,7 +30,7 @@
 		EVENT_XF_SUBMIT_ERROR: '-xf-submit-error',
 		EVENT_TF_SUBMIT_SUPPRESSED: '-tf-submit-suppressed',
 
-		EXPR_HTML_CONTROLS: ':text,select,textarea,.xf-select1 fieldset',
+		EXPR_HTML_CONTROLS: ':text,select,textarea,.xf-select>fieldset,.xf-select1>fieldset',
 		
 		// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
 		// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
@@ -159,35 +159,34 @@
 
 
 
-	// setCustomValidity
+	// setCustomValidity() method
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-setcustomvalidity
 	$.fn.forces_setCustomValidity = function(message) {
-		return $(this).data('-tf-CUSTOM-VALIDITY', message);
+		return $(this).data('-tf-customValidityErrorMessage', message);
 	},
 
 
 
 
 
-	// validationMessage()
-	$.fn.forces_validationMessage = function() {
-		return $(this).data('-tf-CUSTOM-VALIDITY') || '';
+	// validity property
+	// PARTIAL: supports valueMissing, typeMismatch (email, date, number) and customError
+	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#validitystate
+	$.fn.forces_validity = function() {
+		var e = $(this);
+
+		return e.data('-tf-validity') || e.data('-tf-validity', { 
+			valueMissing: false,
+			typeMismatch: false,
+//			patternMismatch: false,
+//			tooLong: false,
+//			rangeUnderflow: false,
+//			rangeOverflow: false,
+//			stepMismatch: false,
+//			customError: false,
+			valid: true
+		}).data('-tf-validity');
 	},
-
-
-
-
-
-	// establish a "confirmation" field relationship
-	$.fn.forces_isConfirmationFor = function(forElement) {
-		var confirm = $(this);
-		if (forElement) {
-			forElement = $(forElement);
-			return confirm.data('-tf-CONFIRMS', forElement.data('-tf-VALIDATE', confirm));
-		} else {
-			return confirm.data('-tf-CONFIRMS');
-		}
-	};
 
 
 
@@ -234,36 +233,49 @@
 
 
 	// validate
-	$.fn.forces_validate = function() {
+	// validityFilter can filter the jquery object: true = valid controls; false = invalid controls; undefined = all controls (no filter)
+	$.fn.forces_validate = function(validityFilter) {
 		return $(this).filter(function() {
-			var e = $(this);
-			var valid = e.data('-tf-CUSTOM-VALIDITY') ? false : true;
-			var value = $.trim(e.forces_val());
 
-			if (valid && value) {
+			var e = $(this);
+			var validityState = e.forces_validity();
+
+			// valueMissing = required and empty
+			validityState.valueMissing = e.is(':-xf-required:-xf-empty');
+
+			// custom error = setCustomValidity(message) called
+			validityState.customError = !!e.data('-tf-customValidityErrorMessage');
+
+			// typeMismatch tests
+			var value = $.trim(e.forces_val());
+			if (value) {
 				switch (e.forces_attr('type')) {
 
 					case 'email':
-						valid = $F.REXP_EMAIL.exec(value);
+						// email doesn't match regex
+						validityState.typeMismatch = !$F.REXP_EMAIL.exec(value);
 					break;
 					
 					case 'date':
-						valid = $F.dateParse(value);
+						// unable to parse date
+						validityState.typeMismatch = $F.dateParse(value) == null;
 					break;
 
 					case 'number':
-						valid = $F.REXP_NUMBER.exec(value);
+						// number doesn't match regex
+						validityState.typeMismatch = !$F.REXP_NUMBER.exec(value);
 					break;
+					
+					default:
+						// unknown type? assume valid
+						validityState.typeMismatch = false;
 				}
-
-				var confirmation = e.forces_isConfirmationFor();
-				if (confirmation) {
-					valid = $.trim(confirmation.val()) == value;
-				}
-
-			} else if (e.is(':-xf-required')) {
-				valid = false;
+			} else {
+				validityState.typeMismatch = false;
 			}
+
+			// valid = no states are true
+			var valid = validityState.valid = !(validityState.valueMissing || validityState.customError || validityState.typeMismatch);
 
 			if (valid) {
 				e
@@ -278,8 +290,8 @@
 					.trigger($F.EVENT_XF_INVALID)
 				;
 			}
-			
-			return !valid;
+
+			return validityFilter === undefined || validityFilter === valid;
 		});
 	};
 
@@ -324,9 +336,9 @@
 			form.data(SUBMIT_TIMESTAMP, evt.timeStamp);
 			
 			// are there invalid fields?
-			// invalid nesting
+			// ignore fields irrelevant due to nesting
 			var nestedIrrelevant = form.find('fieldset:-xf-irrelevant').find($F.EXPR_HTML_CONTROLS);
-			if (form.find($F.EXPR_HTML_CONTROLS).filter(':-xf-relevant').not(nestedIrrelevant).forces_validate().length) {
+			if (form.find($F.EXPR_HTML_CONTROLS).filter(':-xf-relevant').not(nestedIrrelevant).forces_validate(false).length) {
 				// throw a submit error
 				form.trigger($F.EVENT_XF_SUBMIT_ERROR);
 				// re-enable submit events (delete the stored submit time)
@@ -368,7 +380,6 @@
 				if (control.val() !== oldValue) {
 					control
 						.trigger($F.EVENT_XF_VALUE_CHANGED)
-						.add($(control.data('-tf-VALIDATE')).not(':-tf-not-validated:-xf-empty'))
 						.forces_validate()
 					;
 				}
