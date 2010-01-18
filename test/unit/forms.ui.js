@@ -471,6 +471,12 @@ Tester.use('console', 'test', function(Y){
 						'<li><label for="radio1-true"><input type="radio" name="radio1" id="radio1-true" value="true" />true</label></li>' +
 						'<li><label for="radio1-false"><input type="radio" name="radio1" id="radio1-false" value="false" />false</label></li>' +
 					'</ul></fieldset></li>' +
+					'<li><fieldset id="group1"><ol>' +
+						'<li class="xf-input">' +
+							'<label for="input2"><span class="xf-label">Input2</span></label>' +
+							'<input type="text" name="input2" id="input2" />' +
+						'</li>' +
+					'</ol></fieldset></li>' +
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
@@ -670,6 +676,16 @@ Tester.use('console', 'test', function(Y){
 			$('#textarea1').forces_setCustomValidity('');
 			$('#form').submit();
 			Assert.areSame(0, $('.tf-status').find('li').length);
+		},
+
+
+		test_irrelevantMessagesNotDisplayed: function() {
+			$('#input1,#input2').forces_attr('required', true).forces_validate();
+			$('#group1').forces_attr('relevant', false);
+			$('#form').submit();
+
+			Assert.areSame(1, $('.tf-status').find('li').length, 'expected 1 alert');
+			Assert.areSame('Input: must be completed', $('.tf-status').find('ol').text(), 'expected only relevant alert message');
 		},
 
 

@@ -956,7 +956,7 @@ $F.generateId = function() {
 		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
 
 			var form = $(this);
-			var controls = form.find($F.EXPR_HTML_CONTROLS);
+			var controls = form.find($F.EXPR_HTML_CONTROLS).not($('fieldset:-xf-irrelevant').find($F.EXPR_HTML_CONTROLS));
 
 			var status = form.data(DOM_STATUS);
 			if (!status) {
