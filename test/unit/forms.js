@@ -154,7 +154,7 @@ Tester.use('console', 'test', function(Y){
 		// Tests
 		//---------------------------------------------
 
-		test_emptySelectorWithInput: function ) {
+		test_emptySelectorWithInput: function() {
 			Assert.areSame(true, $('#input1').is(':-xf-empty'));
 			Assert.areSame(false, $('#input2').is(':-xf-empty'));
 			Assert.areSame(true, $('#input2').val(' ').is(':-xf-empty'));
@@ -257,14 +257,15 @@ Tester.use('console', 'test', function(Y){
 		//---------------------------------------------
 
 		test_requiredTextFieldValidation: function() {
-			$('#input1').forces_validate();
-			Assert.areSame(true, $('#input1').is(':-xf-valid'), 'input1 should be valid by default');
+			var input1 = $('#input1');
+			input1.forces_validate();
+			Assert.areSame(true, input1.is(':-xf-valid'), 'input1 should be valid by default');
 
-			$('#input1').forces_attr('required', true).forces_validate();
-			Assert.areSame(false, $('#input1').is(':-xf-valid'), 'required input1 should be invalid when empty');
+			input1.forces_attr('required', true).forces_validate();
+			Assert.areSame(false, input1.is(':-xf-valid'), 'required input1 should be invalid when empty');
 
-			$('#input1').val('foo').forces_validate();
-			Assert.areSame(true, $('#input1').is(':-xf-valid'), 'required input1 should be valid when "foo"');
+			input1.val('foo').forces_validate();
+			Assert.areSame(true, input1.is(':-xf-valid'), 'required input1 should be valid when "foo"');
 		},
 
 		test_requiredRadioButtonsValidation: function() {
@@ -286,81 +287,30 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#input1').is(':-xf-invalid'));
 
 			$('#input1').forces_setCustomValidity('foo').forces_validate();
-			Assert.areSame(true, $('#input1').is(':-xf-invalid'));
+			Assert.areSame(true, $('#input1').is(':-xf-invalid'), 'input should be flagged invalid');
+			Assert.areSame(true, $('#input1').forces_validity().customError, 'validity.customError should be true');
 			Assert.areSame('foo', $('#input1').forces_validationMessage());
 
 			$('#input1').forces_setCustomValidity('').forces_validate();
 			Assert.areSame(false, $('#input1').is(':-xf-invalid'));
-		}
-	}));
-
-
-	Y.forces.test.FormUnitSuite.add(new Y.Test.Case({
-		name: "Confirmation fields unit tests",
-
-		//---------------------------------------------
-		// Setup and tear down
-		//---------------------------------------------
-
-		setUp: function() {
-			$(
-				'<form id="form" action="#form"><ol>' +
-					'<li><input type="text" name="input1" id="input1" /></li>' +
-					'<li><input type="text" name="input2" id="input2" /></li>' +
-				'</ol></form>'
-			).appendTo('body').forces_enable();
-			$('#input2').forces_isConfirmationFor('#input1');
 		},
-
-		tearDown: function() {
-			$('#form').remove();
-		},
-
-		//---------------------------------------------
-		// Tests
-		//---------------------------------------------
-
-		test_canFindConfirmationField: function() {
-			Assert.areSame($('#input1').get(0), $('#input2').forces_isConfirmationFor().get(0), 'not found using ID');
-
+		
+		
+		test_validityStateIsLive: function() {
 			var input1 = $('#input1');
-			$('#input2').forces_isConfirmationFor(input1);
-			Assert.areSame(input1.get(0), $('#input2').forces_isConfirmationFor().get(0), 'not found using object');
-		},
-
-		test_canFindValidationDependency: function() {
-			Assert.areSame($('#input2').get(0), $('#input1').data('-tf-VALIDATE').get(0), 'not found using ID');
-
-			var input1 = $('#input1');
-			$('#input2').forces_isConfirmationFor(input1);
-			Assert.areSame($('#input2').get(0), $('#input1').data('-tf-VALIDATE').get(0), 'not found using object');
-		},
-
-		test_shouldBeValidWhenValuesMatch: function() {
-			$('#input1').focus().val('foo').blur();
-			$('#input2').focus().val('foo').blur();
-			Assert.areSame(true, $('#input2').is(':-xf-valid'));
-		},
-
-		test_shouldBeInvalidWhenValuesDoNotMatch: function() {
-			$('#input1').focus().val('foo').blur();
-			$('#input2').focus().val('bar').blur();
-			Assert.areSame(true, $('#input2').is(':-xf-invalid'));
-		},
-
-		test_shouldToggleValidationCorrectly: function() {
-			$('#input1').focus().val('foo').blur();
-			$('#input2').focus().val('bar').blur();
-			Assert.areSame(true, $('#input2').is(':-xf-invalid'), 'invalid expected (foo != bar)');
-
-			$('#input2').focus().val('foo').blur();
-			Assert.areSame(true, $('#input2').is(':-xf-valid'), 'valid expected (foo = bar ~ foo)');
-
-			$('#input1').focus().val('fo').blur();
-			Assert.areSame(true, $('#input2').is(':-xf-invalid'), 'invalid expected (foo ~ fo != foo)');
-
-			$('#input1').focus().val('foo').blur();
-			Assert.areSame(true, $('#input2').is(':-xf-valid'), 'valid expected (fo ~ foo = foo)');
+			Assert.isUndefined(input1.data('-tf-validity'), 'validityState defined before validation');
+			
+			var validityState = input1.forces_validate().data('-tf-validity');
+			Assert.isNotUndefined(validityState, 'validityState not defined post validation');
+			Assert.areSame(true, validityState.valid, 'validityState.valid should be true (default)');
+			
+			input1.forces_attr('required', true).forces_validate();
+			Assert.areSame(true, validityState.valueMissing, 'validityState.valueMissing should be true');
+			Assert.areSame(false, validityState.valid, 'validityState.valid should be false (valueMissing)');
+			
+			input1.forces_attr('required', false).forces_validate();
+			Assert.areSame(false, validityState.valueMissing, 'validityState.valueMissing should be true (not required)');
+			Assert.areSame(true, validityState.valid, 'validityState.valid should be true (not required)');
 		}
 	}));
 

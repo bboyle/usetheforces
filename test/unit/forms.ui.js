@@ -434,137 +434,6 @@ Tester.use('console', 'test', function(Y){
 	}));
 
 
-	// form datepicker UI unit tests
-	Y.forces.test.FormUiUnitSuite.add(new Y.Test.Case({
-		name: "Form datepicker UI unit tests",
-
-		//---------------------------------------------
-		// Setup and tear down
-		//---------------------------------------------
-
-		setUp: function() {
-			$(
-				'<div id="form-container" class="tf-form">'+
-				'<form id="form" action="javascript:" onsubmit="return false;"><ol class="ftw-questions">' +
-					'<li class="xf-input">' +
-						'<label for="date1"><span class="xf-label">Date</span></label>' +
-						'<input type="text" name="date1" id="date1" />' +
-					'</li>' +
-				'</ol></form>' +
-				'</div>'
-			).appendTo('body').forces_enable();
-
-			/*	5 week month
-				S M T W T F S
-				(Nov) 1 2 3 4
-				5 6 7 8 9 0 1
-				2 3 4 5 6 7 8
-				9 0 1 2 3 4 5
-				6 7 8 9 0 1 1 (Jan 1977)
-			*/
-			christmas1976 = new Date(1976, 11, 25);
-
-			/*	6 weeks, starts on Sunday
-				S M T W T F S
-				(Feb)       1
-				2 3 4 5 6 7 8 
-				9 0 1 2 3 4 5 
-				6 7 8 9 0 1 2 
-				3 4 5 6 7 8 9 
-				0 1 (April)
-			*/
-			patricks2008 = new Date(2008, 2, 17);
-
-			/* 	4 week month
-				S M T W T F S
-				1 2 3 4 5 6 7
-				8 9 0 1 2 3 4
-				5 6 7 8 9 0 1 
-				2 3 4 5 6 7 8
-			*/
-			valentines2009 = new Date(2009, 1, 14);
-			
-			/* 6 weeks, ends on a Sunday
-				S M T W T F S
-				(2009)    1 2
-				3 4 5 6 7 8 9
-				0 1 2 3 4 5 6
-				7 8 9 0 1 2 3
-				4 5 6 7 8 9 0
-				1 (Feb)
-			*/
-			australia2010 = new Date(2010, 0, 25);
-		},
-
-		tearDown: function() {
-			$('#form-container, div.tf-status').remove();
-			delete christmas1976;
-			delete patricks2008;
-			delete valentines2009;
-			delete australia2010;
-		},
-
-		//---------------------------------------------
-		// Tests
-		//---------------------------------------------
-	
-
-		test_shouldCreateCalendarTable: function() {
-			var calendar = $.forces.HTML_CALENDAR({ date: christmas1976 });
-			Assert.areSame('December 1976', calendar.find('caption').text());
-			Assert.areSame('SMTWTFS', calendar.find('thead').text());
-			Assert.areSame(5, calendar.find('tbody tr').length);
-			Assert.areSame('1234', calendar.find('tbody tr').eq(0).text());
-			Assert.areSame('567891011', calendar.find('tbody tr').eq(1).text());
-			Assert.areSame('12131415161718', calendar.find('tbody tr').eq(2).text());
-			Assert.areSame('19202122232425', calendar.find('tbody tr').eq(3).text());
-			Assert.areSame('262728293031', calendar.find('tbody tr').eq(4).text());
-			Assert.isNull(calendar.find('tbody td:last').html().match(/colspan/));
-			
-			calendar = $.forces.HTML_CALENDAR({ date: valentines2009 });
-			Assert.areSame('February 2009', calendar.find('caption').text());
-			Assert.areSame('SMTWTFS', calendar.find('thead').text());
-			Assert.areSame(4, calendar.find('tbody tr').length);
-			Assert.areSame('1234567', calendar.find('tbody tr').eq(0).text());
-			Assert.areSame('891011121314', calendar.find('tbody tr').eq(1).text());
-			Assert.areSame('15161718192021', calendar.find('tbody tr').eq(2).text());
-			Assert.areSame('22232425262728', calendar.find('tbody tr').eq(3).text());
-			Assert.isNull(calendar.find('tbody td:last').html().match(/colspan/));
-
-			calendar = $.forces.HTML_CALENDAR({ date: patricks2008 });
-			Assert.areSame('March 2008', calendar.find('caption').text());
-			Assert.areSame('SMTWTFS', calendar.find('thead').text());
-			Assert.areSame(6, calendar.find('tbody tr').length);
-			Assert.areSame('1', calendar.find('tbody tr').eq(0).text());
-			Assert.areSame('2345678', calendar.find('tbody tr').eq(1).text());
-			Assert.areSame('9101112131415', calendar.find('tbody tr').eq(2).text());
-			Assert.areSame('16171819202122', calendar.find('tbody tr').eq(3).text());
-			Assert.areSame('23242526272829', calendar.find('tbody tr').eq(4).text());
-			Assert.areSame('3031', calendar.find('tbody tr').eq(5).text());
-			Assert.areEqual(5, calendar.find('tbody td:last').attr('colspan'));
-
-			calendar = $.forces.HTML_CALENDAR({ date: australia2010 });
-			Assert.areSame('January 2010', calendar.find('caption').text());
-			Assert.areSame('SMTWTFS', calendar.find('thead').text());
-			Assert.areSame(6, calendar.find('tbody tr').length);
-			Assert.areSame('12', calendar.find('tbody tr').eq(0).text());
-			Assert.areSame('3456789', calendar.find('tbody tr').eq(1).text());
-			Assert.areSame('10111213141516', calendar.find('tbody tr').eq(2).text());
-			Assert.areSame('17181920212223', calendar.find('tbody tr').eq(3).text());
-			Assert.areSame('24252627282930', calendar.find('tbody tr').eq(4).text());
-			Assert.areSame('31', calendar.find('tbody tr').eq(5).text());
-			Assert.areEqual(6, calendar.find('tbody td:last').attr('colspan'));
-		},
-		
-		
-		test_shouldHaveSeedDate: function() {
-			var calendar = $.forces.HTML_CALENDAR({ date: christmas1976 });
-			Y.DateAssert.datesAreEqual(christmas1976, calendar.data('-tf-date-seed'), 'seed date does not match');
-			Assert.areNotSame(christmas1976, calendar.data('-tf-date-seed'), 'seed date references supplied date');
-		}
-	}));
-	
-	
 	// form validation UI unit tests
 	Y.forces.test.FormUiUnitSuite.add(new Y.Test.Case({
 		name: "Form validation UI unit tests",
@@ -590,10 +459,6 @@ Tester.use('console', 'test', function(Y){
 						'<input type="text" name="email" id="email" />' +
 					'</li>' +
 					'<li class="xf-input">' +
-						'<label for="email-confirm"><span class="xf-label">Confirm email:</span></label>' +
-						'<input type="text" name="confirmEmail" id="confirm-email" />' +
-					'</li>' +
-					'<li class="xf-input">' +
 						'<label for="number"><span class="xf-label">Number:</span></label>' +
 						'<input type="text" name="number" id="number" />' +
 					'</li>' +
@@ -609,8 +474,6 @@ Tester.use('console', 'test', function(Y){
 				'</ol></form>' +
 				'</div>'
 			).appendTo('body').forces_enable();
-
-			$('#confirm-email').forces_isConfirmationFor('#email');
 		},
 
 		tearDown: function() {
@@ -774,75 +637,6 @@ Tester.use('console', 'test', function(Y){
 			$('#form').submit();
 			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
 			Assert.areSame(0, $('#email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
-		},
-
-
-		test_invalidConfirmMessageDisplayed: function() {
-			$('#confirm-email').forces_attr('required', true);
-
-			$('#form').submit();
-			Assert.areSame('Confirm email: must be completed', $('.tf-status').find('li').text(), 'required status alert not shown');
-			Assert.areSame('must be completed', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'required inline alert not shown');
-			
-			$('#email').val('foo');
-			$('#form').submit();
-			Assert.areSame('Confirm email: must be completed', $('.tf-status').find('li').text(), 'invalid status alert not shown (confirm field is empty)');
-			Assert.areSame('must be completed', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'invalid inline alert not shown (confirm field is empty)');
-
-			$('#email').val('foo');
-			$('#confirm-email').val('bar')
-			$('#form').submit();
-			Assert.areSame('Confirm email: doesn\'t match Email', $('.tf-status').find('li').text(), 'confirm must match status alert not shown');
-			Assert.areSame('doesn\'t match Email', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm must match inline alert not shown');
-
-			$('#email').val('');
-			$('#form').submit();
-			Assert.areSame('Confirm email: doesn\'t match Email', $('.tf-status').find('li').text(), 'confirm must match status alert not shown (email is blank)');
-			Assert.areSame('doesn\'t match Email', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm must match inline alert not shown (email is blank)');
-
-			$('#email, #confirm-email').val('foo');
-			$('#form').submit();
-			Assert.areSame(0, $('.tf-status').find('li').length, 'status alert still present');
-			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
-		},
-
-
-		test_invalidConfirmMessageDisplayedInline: function() {
-			$('#email').focus().val('foo').blur();
-			$('#confirm-email').focus().val('foo@example.com').blur();
-			Assert.areSame('doesn\'t match Email', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm validation message not present');
-
-			$('#email').focus().val('foo@example.com').blur();
-			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'inline alert still present');
-
-			$('#email').focus().val('').blur();
-			$('#confirm-email').focus().val('').blur();
-			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'inline alert present when empty');
-
-			$('#email,#confirm-email').forces_attr('required', true);
-			$('#email').focus().val('foo').blur();
-			$('#confirm-email').focus().val('foo').blur();
-			$('#email').focus().val('').blur();
-			$('#confirm-email').focus().val('').blur();
-// TODO fix this (better handling of validation messages between core and UI layers)
-//			Assert.areSame('must be completed', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm message displayed instead of required message');
-		},
-
-
-		test_shouldNotValidateEmptyConfirmFieldPrematurely: function() {
-			$('#email').focus().val('foo').blur();
-			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'alert displayed prematurely (optional confirmation)');
-
-			$('#confirm-email').forces_attr('required', true);
-			$('#email').focus().val('foo2').blur();
-			Assert.areSame(0, $('#confirm-email').closest(':-xf-control').find('.xf-alert').length, 'alert displayed prematurely (required confirmation)');
-		},
-
-
-		test_shouldValidateNonEmptyConfirmField: function() {
-			$('#confirm-email').val('bar');
-			$('#email').focus().val('foo').blur();
-			Assert.areSame('doesn\'t match Email', $('#confirm-email').closest(':-xf-control').find('.xf-alert').text(), 'confirm validation message not present');
 		},
 
 

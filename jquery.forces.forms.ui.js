@@ -26,10 +26,11 @@
 
 		// messages
 		MSG_INVALID: 'is invalid',
-		MSG_INVALID_DATE: 'unrecognised date format',
-		MSG_INVALID_EMAIL: 'must contain an email address',
-		MSG_INVALID_CONFIRM: 'doesn\'t match ',
-		MSG_INVALID_NUMBER: 'must contain only digits',
+		MSG_TYPE_MISMATCH: {
+			'date': 'unrecognised date format',
+			'email': 'must contain an email address',
+			'number': 'must contain only digits'
+		},
 		MSG_MISSING: 'must be completed',
 		MSG_SUBMIT_ERROR: 'Unable to process this form',
 
@@ -83,6 +84,7 @@
 		var controls = src.closest(':-xf-control');
 		controls.find('.xf-alert').remove();
 
+		message = message || controls.forces_validationMessage();
 		if (message) {
 			controls.map(function() {
 				var f = $(this).children('fieldset');
@@ -97,7 +99,7 @@
 
 
 
-	// set an alert for a control
+	// set a hint message for a control
 	$.fn.forces_hint = function(message) {
 		var src = $(this);
 		
@@ -121,46 +123,27 @@
 
 
 
-	// calendar (date picker)
-	$F.HTML_CALENDAR = function(config) {
-		config = $.extend({ date: $F.DATE_TODAY() }, config);
+	// validationMessage property
+	// PARTIAL: supports custom validity only
+	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-validationmessage
+	$.fn.forces_validationMessage = function() {
+		var e = $(this).find($F.EXPR_HTML_CONTROLS).andSelf().eq(0);
 
-		var calendar = $('<table class="tf-calendar"><caption>' + $F.dateFormat(config.date, '%B %Y') + '</caption><thead><tr></tr></thead><tbody></tbody></table>')
-			.data('-tf-date-seed', new Date(config.date.getTime()))
-		;
+		var validityState = e.forces_validity();
 		
-		var first = new Date(config.date.getTime());
-		first.setDate(1);
-		first = first.getDay();
-		var days = '<tr>' + (first > 0 ? '<td colspan="' + first + '"></td>' : '') + '<td>1</td>';
-		var last = $F.dateEndOfMonth(config.date);
-		for (var i = 2; i < last.getDate(); i++) {
-			if ((first + i) % 7 == 1) {
-				days += '</tr><tr>';
-			}
-			days += '<td>' + i + '</td>';
-		}
-		switch (last.getDay()) {
-			case 6:
-				days += '<td>' + last.getDate() + '</td>';
-			break;
-			case 5:
-				days += '<td>' + last.getDate() + '</td><td></td>';
-			break;
-			case 0:
-				days += '</tr><tr>';
-			default:
-				days += '<td>' + last.getDate() + '</td><td colspan="' + (6 - last.getDay()) + '"></td>';
-		}
-		calendar.find('tbody').html(days + '</tr>');
-		
-		var day = $F.WEEKDAYS();
-		for (var i = 0; i < 7; i++) {
-			calendar.find('thead tr').append('<th scope="col" title="' + day[i] + '">' + day[i].substr(0, 1) + '</th>');
-		}
+		if (validityState.valid) {
+			return '';
 
-		return calendar;
-	};
+		} else if (validityState.customError) {
+			return e.data('-tf-customValidityErrorMessage');
+
+		} else if (validityState.valueMissing) {
+			return $F.MSG_MISSING;
+
+		} else if (validityState.typeMismatch) {
+			return $F.MSG_TYPE_MISMATCH[e.forces_attr('type')];
+		}
+	},
 
 
 
@@ -196,44 +179,10 @@
 		})
 
 		.live($F.EVENT_XF_INVALID, function() {
-			var control = $(this);
-
-			var message = control.find('fieldset,input,select,textarea').forces_validationMessage();
-
-			if (!message) {
-
-				var type = control.find(':text').forces_attr('type');
-				switch (type) {
-		
-					case 'email':
-						message = $F.MSG_INVALID_EMAIL;
-					break;
-		
-					case 'date':
-						message = $F.MSG_INVALID_DATE;
-					break;
-		
-					case 'number':
-						message = $F.MSG_INVALID_NUMBER;
-					break;
-		
-					default:
-						var widget = control.find('input,select,textarea');
-						var confirmation = widget.forces_isConfirmationFor();
-						if (confirmation) {
-							message = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
-						} else if (widget.is(':-xf-empty')) {
-							message = $F.MSG_MISSING;
-						} else {
-							message = 'invalid';
-						}
-				}
-			}
-		
-			control
+			$(this)
 				.removeClass($F.CSS_VALID)
 				.addClass($F.CSS_INVALID)
-				.forces_alert(message)
+				.forces_alert()
 			;
 		})
 
@@ -291,7 +240,7 @@
 
 		.live($F.EVENT_XF_SUBMIT_ERROR, function() {
 
-		var form = $(this);
+			var form = $(this);
 			var controls = form.find($F.EXPR_HTML_CONTROLS);
 
 			var status = form.data(DOM_STATUS);
@@ -301,42 +250,17 @@
 			}
 			
 			var errorList = $('<ol></ol>');
-			var alert;
 			
-			controls
-				.filter(':-xf-invalid')
+			var alerts = controls.filter(':-xf-invalid');
+			if (alerts.length) {
+				alerts
 					.each(function() {
 						var widget = $(this);
-						var confirmation = widget.forces_isConfirmationFor();
-
-						if (alert = widget.forces_validationMessage()) {
-							// message already known
-
-						} else if (widget.is(':-xf-empty')) {
-							alert = $F.MSG_MISSING;
-
-						} else if (confirmation) {
-							alert = $F.MSG_INVALID_CONFIRM + confirmation.closest(':-xf-control').find(':-xf-label').text().replace(/[?: ]*$/, '');
-							
-						} else {
-							switch (widget.forces_attr('type')) {
-								case 'date':
-									alert = $F.MSG_INVALID_DATE;
-								break;
-								case 'email':
-									alert = $F.MSG_INVALID_EMAIL;
-								break;
-								case 'number':
-									alert = $F.MSG_INVALID_NUMBER;
-								break;
-							}
-						}
-
-						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + alert + '</a>');
+						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + widget.forces_validationMessage() + '</a>');
 						errorList.append($('<li></li>').append(link));
-						alert = $F.MSG_INVALID;
 					})
-			;
+				;
+			}
 			
 			form
 				.addClass($F.CSS_SUBMIT_ERROR)
@@ -355,11 +279,7 @@
 			;
 
 			controls
-				.filter(':-xf-required:not(:-xf-empty,:-xf-invalid)')
-					.forces_alert()
-			;
-			controls
-				.filter(':-xf-required:not(:-xf-empty)')
+				.filter(':not(:-xf-empty)')
 					.closest(':-xf-control')
 						.removeClass($F.CSS_MISSING)
 			;
