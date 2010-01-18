@@ -227,6 +227,15 @@
 	$('#email').forces_attr('type', 'email');
 // TODO use custom validity
 //	$('#email-confirm').forces_isConfirmationFor();
+	$('#email,#email-confirm').change(function() {
+		$('#email-confirm').forces_setCustomValidity(
+			$('#email').forces_val() == $('#email-confirm').forces_val() ?
+			'' :
+			"doesn't match email"
+		);
+	});
+
+
 	$('#date-start,#date-birth').forces_attr('type', 'date');
 //	$('#date-start').click(function() {
 //		$(this).after($.forces.uiHtmlCalendar());
