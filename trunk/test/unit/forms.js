@@ -14,7 +14,7 @@ Tester.use('console', 'test', function(Y){
 		// Setup and tear down
 		//---------------------------------------------
 
-		setUp: function () {
+		setUp: function() {
 			$(
 				'<form id="form" action="#form"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
@@ -35,7 +35,7 @@ Tester.use('console', 'test', function(Y){
 			$('#radio1').forces_attr('required', true);
 		},
 
-		tearDown: function () {
+		tearDown: function() {
 			$('#form').remove();
 		},
 
@@ -43,13 +43,13 @@ Tester.use('console', 'test', function(Y){
 		// Tests
 		//---------------------------------------------
 
-		test_readRequiredAttribute: function () {
+		test_readRequiredAttribute: function() {
 			Assert.areSame('required', $('#input2').forces_attr('required'));
 			Assert.areSame(null, $('#input1').forces_attr('required'));
 			Assert.areSame('required', $('#radio1').forces_attr('required'), 'radio1 should be required');
 		},
 
-		test_canSetRequiredUsingForcesAttr: function () {
+		test_canSetRequiredUsingForcesAttr: function() {
 			Assert.areSame(true, $('#input1').forces_attr('required', true).is(':-xf-required'));
 			Assert.areSame(false, $('#input1').forces_attr('required', false).is(':-xf-required'));
 			Assert.areSame(false, $('#input1').forces_removeAttr('required').is(':-xf-required'));
@@ -61,12 +61,12 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(null, $('#radio1').forces_attr('required'));
 		},
 
-		test_setRequiredFromAncestorClass: function () {
+		test_setRequiredFromAncestorClass: function() {
 			Assert.areSame(true, $('#input3').is(':-xf-required'));
 			Assert.areSame(true, $('#input4').is(':-xf-required'));
 		},
 
-		test_readArbitraryValueFromRequiredAttribute: function () {
+		test_readArbitraryValueFromRequiredAttribute: function() {
 			Assert.areSame('input1 = "5 is required"', $('#input5').forces_attr('required'));
 		}
 	}));
@@ -80,7 +80,7 @@ Tester.use('console', 'test', function(Y){
 		// Setup and tear down
 		//---------------------------------------------
 
-		setUp: function () {
+		setUp: function() {
 			$(
 				'<form id="form" action="#form"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
@@ -90,7 +90,7 @@ Tester.use('console', 'test', function(Y){
 			$('#input2', '#form').forces_attr('relevant', false);
 		},
 
-		tearDown: function () {
+		tearDown: function() {
 			$('#form').remove();
 		},
 
@@ -98,17 +98,17 @@ Tester.use('console', 'test', function(Y){
 		// Tests
 		//---------------------------------------------
 
-		test_fieldsAreRelevantByDefault: function () {
+		test_fieldsAreRelevantByDefault: function() {
 			Assert.areSame(true, $('#input1').is(':-xf-relevant'));
 			Assert.areSame(false, $('#input1').is(':-xf-irrelevant'));
 		},
 
-		test_readRelevantAttribute: function () {
+		test_readRelevantAttribute: function() {
 			Assert.areSame('relevant', $('#input1').forces_attr('relevant'));
 			Assert.isNull($('#input2').forces_attr('required'));
 		},
 
-		test_canSetRelevantUsingForcesAttr: function () {
+		test_canSetRelevantUsingForcesAttr: function() {
 			Assert.areSame(true, $('#input1').forces_attr('relevant', true).is(':-xf-relevant'));
 			Assert.areSame(false, $('#input1').forces_attr('relevant', false).is(':-xf-relevant'));
 			Assert.areSame(true, $('#input1').forces_removeAttr('relevant').is(':-xf-relevant'));
@@ -124,7 +124,7 @@ Tester.use('console', 'test', function(Y){
 		// Setup and tear down
 		//---------------------------------------------
 
-		setUp: function () {
+		setUp: function() {
 			$(
 				'<form id="form" action="#form"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
@@ -146,7 +146,7 @@ Tester.use('console', 'test', function(Y){
 			$('#input3').forces_attr('relevant', false);
 		},
 
-		tearDown: function () {
+		tearDown: function() {
 			$('#form').remove();
 		},
 
@@ -154,14 +154,14 @@ Tester.use('console', 'test', function(Y){
 		// Tests
 		//---------------------------------------------
 
-		test_emptySelectorWithInput: function () {
+		test_emptySelectorWithInput: function ) {
 			Assert.areSame(true, $('#input1').is(':-xf-empty'));
 			Assert.areSame(false, $('#input2').is(':-xf-empty'));
 			Assert.areSame(true, $('#input2').val(' ').is(':-xf-empty'));
 			Assert.areSame(false, $('#input2').val('foo').is(':-xf-empty'));
 		},
 
-		test_emptySelectorWithRadio: function () {
+		test_emptySelectorWithRadio: function() {
 			Assert.areSame(true, $('#radio1').is(':-xf-empty'), 'radio1 reported as not empty');
 			Assert.areSame(false, $('#radio2').is(':-xf-empty'), 'radio2 reported as empty');
 			$('#radio2-B').get(0).checked = false;
@@ -171,14 +171,14 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(false, $('#radio2').is(':-xf-empty'), 'radio2 should not be empty');
 		},
 
-		test_relevantSelectorReturnsCorrectBoolean: function () {
+		test_relevantSelectorReturnsCorrectBoolean: function() {
 			Assert.areSame(true, $('#input1').is(':-xf-relevant'));
 			Assert.areSame(true, $('#input3').is(':-xf-irrelevant'));
 			Assert.areSame(false, $('#input3').is(':-xf-relevant'));
 			Assert.areSame(true, $('#input3').forces_attr('relevant', true).is(':-xf-relevant'));
 		},
 
-		test_requiredSelectorReturnsCorrectBoolean: function () {
+		test_requiredSelectorReturnsCorrectBoolean: function() {
 			Assert.areSame(true, $('#input1').is(':-xf-required'));
 			Assert.areSame(false, $('#input1').is(':-xf-optional'));
 			Assert.areSame(true, $('#input1').forces_attr('required', false).is(':-xf-optional'));
@@ -186,7 +186,7 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#input2').is(':-xf-optional'));
 		},
 
-		test_validitySelectorsReturnCorrectBoolean: function () {
+		test_validitySelectorsReturnCorrectBoolean: function() {
 			Assert.areSame(false, $('#input1').is(':-xf-valid'), 'input matched valid');
 			Assert.areSame(false, $('#input1').is(':-xf-invalid'), 'input matched invalid');
 			Assert.areSame(true, $('#input1').is(':-tf-not-validated'), 'input matched \'not validated\'');
@@ -201,7 +201,7 @@ Tester.use('console', 'test', function(Y){
 		// Setup and tear down
 		//---------------------------------------------
 
-		setUp: function () {
+		setUp: function() {
 			$(
 				'<form id="form" action="#form"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
@@ -211,7 +211,7 @@ Tester.use('console', 'test', function(Y){
 			$('#input2').forces_attr('type', 'email');
 		},
 
-		tearDown: function () {
+		tearDown: function() {
 			$('#form').remove();
 		},
 
@@ -219,7 +219,7 @@ Tester.use('console', 'test', function(Y){
 		// Tests
 		//---------------------------------------------
 
-		test_readTypeAttribute: function () {
+		test_readTypeAttribute: function() {
 			Assert.areSame('email', $('#input2').forces_attr('type'));
 			Assert.areSame('email', $('#input1').forces_attr('type', 'email').forces_attr('type'));
 			Assert.areNotSame('email', $('#input1').forces_removeAttr('type').forces_attr('type'));
@@ -234,7 +234,7 @@ Tester.use('console', 'test', function(Y){
 		// Setup and tear down
 		//---------------------------------------------
 
-		setUp: function () {
+		setUp: function() {
 			$(
 				'<form id="form" action="#form"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
@@ -248,7 +248,7 @@ Tester.use('console', 'test', function(Y){
 			).appendTo('body').forces_enable();
 		},
 
-		tearDown: function () {
+		tearDown: function() {
 			$('#form').remove();
 		},
 
@@ -302,7 +302,7 @@ Tester.use('console', 'test', function(Y){
 		// Setup and tear down
 		//---------------------------------------------
 
-		setUp: function () {
+		setUp: function() {
 			$(
 				'<form id="form" action="#form"><ol>' +
 					'<li><input type="text" name="input1" id="input1" /></li>' +
@@ -312,7 +312,7 @@ Tester.use('console', 'test', function(Y){
 			$('#input2').forces_isConfirmationFor('#input1');
 		},
 
-		tearDown: function () {
+		tearDown: function() {
 			$('#form').remove();
 		},
 
