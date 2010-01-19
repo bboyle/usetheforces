@@ -790,25 +790,27 @@ $F.generateId = function() {
 			return $(e).is('.xf-label');
 		}
 	});
-	
-	
+
+
 
 
 
 	// set an alert for a control
 	$.fn.forces_alert = function(message) {
 		var src = $(this);
-		
+
 		var controls = src.closest(':-xf-control');
 		controls.find('.xf-alert').remove();
-
-		message = message || controls.forces_validationMessage();
-		if (message) {
-			controls.map(function() {
-				var f = $(this).children('fieldset');
-				return f.length == 1 ? f.get(0) : this;
-			}).append($F.HTML_ALERT_INLINE(message));
-		}
+		
+		controls
+			.each(function() {
+				var control = $(this).children('fieldset').andSelf().eq(0);
+				var alertMessage = message || control.forces_validationMessage();
+				if (alertMessage) {
+					control.append($F.HTML_ALERT_INLINE(alertMessage));
+				}
+			})
+		;
 
 		return src;
 	};
@@ -820,7 +822,7 @@ $F.generateId = function() {
 	// set a hint message for a control
 	$.fn.forces_hint = function(message) {
 		var src = $(this);
-		
+
 		var controls = src.closest(':-xf-control');
 		controls.find('.xf-hint').remove();
 
@@ -843,7 +845,11 @@ $F.generateId = function() {
 
 	// get a label text for a control
 	$.fn.forces_label = function() {
-		return $(this).closest(':-xf-control').find(':-xf-label').text();
+		return $(this)
+			.closest(':-xf-control')
+				.find(':-xf-label')
+					.text()
+		;
 	};
 
 
@@ -1002,19 +1008,6 @@ $F.generateId = function() {
 			status.forces_id(this.HTML_STATUS_ID);
 			status
 				.scrollTo({ hash: true, focus: true })
-//				.shake({ interval: 250, distance: 8, shakes: 1 })
-			;
-
-			controls
-				.filter(':not(:-xf-empty)')
-					.closest(':-xf-control')
-						.removeClass($F.CSS_MISSING)
-			;
-			controls
-				.filter(':-xf-required:-xf-empty')
-					.closest(':-xf-control')
-						.addClass($F.CSS_MISSING)
-						.forces_alert($F.MSG_MISSING)
 			;
 		})
 

@@ -191,7 +191,7 @@ Tester.use('console', 'test', function(Y){
 								'<li><label for="radio1-B"><input type="radio" name="radio1" id="radio1-B" value="B" />B</label></li>' +
 								'<li><label for="radio1-C"><input type="radio" name="radio1" id="radio1-C" value="C" />C</label></li>' +
 							'</ul>' +
-						'</fiedlset></li>' +
+						'</fieldset></li>' +
 						'<li class="xf-group" id="question5">' +
 							'<fieldset id="group1">' +
 								'<legend><span class="xf-label">Group</span></legend>' +
