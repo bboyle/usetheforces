@@ -215,8 +215,11 @@
 <script type="text/javascript" src="../../jquery.forces.forms.core.js"></script>
 <script type="text/javascript" src="../../jquery.forces.fx.js"></script>
 <script type="text/javascript" src="../../jquery.forces.forms.ui.js"></script>
+<script type="text/javascript" src="../../jquery.forces.lib.validate.js"></script>
 <script type="text/javascript">
 <!-- //
+
+	$('#my-answer').forces_attr('required', true);
 
 	$('#gate-open')
 		.forces_attr('required', true)
@@ -226,7 +229,8 @@
 	$('#number').forces_attr('type', 'number');
 	$('#email').forces_attr('type', 'email');
 // TODO use custom validity
-//	$('#email-confirm').forces_isConfirmationFor();
+	$('#email-confirm').forces_isConfirmationFor('#email');
+/*
 	$('#email,#email-confirm').change(function() {
 		$('#email-confirm').forces_setCustomValidity(
 			$('#email').forces_val() == $('#email-confirm').forces_val() ?
@@ -234,8 +238,7 @@
 			"doesn't match email"
 		);
 	});
-
-
+*/
 	$('#date-start,#date-birth').forces_attr('type', 'date');
 //	$('#date-start').click(function() {
 //		$(this).after($.forces.uiHtmlCalendar());

@@ -65,6 +65,9 @@
 		'-tf-not-validated': function(e) {
 			return ($(e).data('-tf-FLAGS') & 48) == 0;
 		},
+		'-tf-validated': function(e) {
+			return ($(e).data('-tf-FLAGS') & 48) != 0;
+		},
 		'-xf-empty': function(e) {
 			return $.trim($(e).forces_val()).length == 0;
 		},
@@ -240,11 +243,11 @@
 			var e = $(this);
 			var validityState = e.forces_validity();
 
-			// valueMissing = required and empty
-			validityState.valueMissing = e.is(':-xf-required:-xf-empty');
-
 			// custom error = setCustomValidity(message) called
 			validityState.customError = !!e.data('-tf-customValidityErrorMessage');
+
+			// valueMissing = required and empty
+			validityState.valueMissing = e.is(':-xf-required:-xf-empty');
 
 			// typeMismatch tests
 			var value = $.trim(e.forces_val());
@@ -275,9 +278,9 @@
 			}
 
 			// valid = no states are true
-			var valid = validityState.valid = !(validityState.valueMissing || validityState.customError || validityState.typeMismatch);
+			validityState.valid = !(validityState.valueMissing || validityState.customError || validityState.typeMismatch);
 
-			if (valid) {
+			if (validityState.valid) {
 				e
 					.forces__flags(32, false)
 					.forces__flags(16, true)
@@ -291,7 +294,7 @@
 				;
 			}
 
-			return validityFilter === undefined || validityFilter === valid;
+			return validityFilter === undefined || validityFilter === validityState.valid;
 		});
 	};
 

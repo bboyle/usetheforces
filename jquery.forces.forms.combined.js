@@ -366,6 +366,9 @@ $F.generateId = function() {
 		'-tf-not-validated': function(e) {
 			return ($(e).data('-tf-FLAGS') & 48) == 0;
 		},
+		'-tf-validated': function(e) {
+			return ($(e).data('-tf-FLAGS') & 48) != 0;
+		},
 		'-xf-empty': function(e) {
 			return $.trim($(e).forces_val()).length == 0;
 		},
@@ -541,11 +544,11 @@ $F.generateId = function() {
 			var e = $(this);
 			var validityState = e.forces_validity();
 
-			// valueMissing = required and empty
-			validityState.valueMissing = e.is(':-xf-required:-xf-empty');
-
 			// custom error = setCustomValidity(message) called
 			validityState.customError = !!e.data('-tf-customValidityErrorMessage');
+
+			// valueMissing = required and empty
+			validityState.valueMissing = e.is(':-xf-required:-xf-empty');
 
 			// typeMismatch tests
 			var value = $.trim(e.forces_val());
@@ -576,9 +579,9 @@ $F.generateId = function() {
 			}
 
 			// valid = no states are true
-			var valid = validityState.valid = !(validityState.valueMissing || validityState.customError || validityState.typeMismatch);
+			validityState.valid = !(validityState.valueMissing || validityState.customError || validityState.typeMismatch);
 
-			if (valid) {
+			if (validityState.valid) {
 				e
 					.forces__flags(32, false)
 					.forces__flags(16, true)
@@ -592,7 +595,7 @@ $F.generateId = function() {
 				;
 			}
 
-			return validityFilter === undefined || validityFilter === valid;
+			return validityFilter === undefined || validityFilter === validityState.valid;
 		});
 	};
 
@@ -838,6 +841,15 @@ $F.generateId = function() {
 
 
 
+	// get a label text for a control
+	$.fn.forces_label = function() {
+		return $(this).closest(':-xf-control').find(':-xf-label').text();
+	};
+
+
+
+
+
 	// validationMessage property
 	// PARTIAL: supports custom validity only
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-validationmessage
@@ -971,7 +983,7 @@ $F.generateId = function() {
 				alerts
 					.each(function() {
 						var widget = $(this);
-						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + widget.forces_validationMessage() + '</a>');
+						var link = $('<a href="#' + widget.forces_id() + '">' + widget.forces_label().replace(/[?:]*$/, ': ') + widget.forces_validationMessage() + '</a>');
 						errorList.append($('<li></li>').append(link));
 					})
 				;
