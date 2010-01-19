@@ -123,6 +123,15 @@
 
 
 
+	// get a label text for a control
+	$.fn.forces_label = function() {
+		return $(this).closest(':-xf-control').find(':-xf-label').text();
+	};
+
+
+
+
+
 	// validationMessage property
 	// PARTIAL: supports custom validity only
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-validationmessage
@@ -256,7 +265,7 @@
 				alerts
 					.each(function() {
 						var widget = $(this);
-						var link = $('<a href="#' + widget.forces_id() + '">' + widget.closest(':-xf-control').find(':-xf-label').text().replace(/[?:]*$/, ': ') + widget.forces_validationMessage() + '</a>');
+						var link = $('<a href="#' + widget.forces_id() + '">' + widget.forces_label().replace(/[?:]*$/, ': ') + widget.forces_validationMessage() + '</a>');
 						errorList.append($('<li></li>').append(link));
 					})
 				;

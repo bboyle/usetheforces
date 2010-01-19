@@ -11,6 +11,7 @@
 
 	// jquery.forces
 	var $F = $.forces = $.extend($.forces || {}, {
+		MSG_CONFIRM: "doesn't match "
 	});
 
 
@@ -46,5 +47,23 @@
 	};
 
 
+	// setup a confirmation field relationship
+	$.fn.forces_isConfirmationFor = function(source) {
+		source = $(source);
+		var confirm = $(this);
+		source.add(confirm).change(function() {
+			confirm.forces_setCustomValidity(
+				source.forces_val() == confirm.forces_val() ?
+				'' :
+				$F.MSG_CONFIRM + source.forces_label()
+			);
+			if (confirm.is(':-tf-validated')) {
+				confirm.forces_validate();
+			}
+		});
+		return this;
+	};
+
+	
 })(jQuery);
 }
