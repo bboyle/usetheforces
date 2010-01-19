@@ -55,7 +55,7 @@
 			confirm.forces_setCustomValidity(
 				source.forces_val() == confirm.forces_val() ?
 				'' :
-				$F.MSG_CONFIRM + source.forces_label()
+				$.forces.MSG_CONFIRM + source.forces_label()
 			);
 			if (confirm.is(':-tf-validated')) {
 				confirm.forces_validate();
