@@ -470,6 +470,7 @@ Tester.use('console', 'test', function(Y){
 						'<legend><span class="xf-label">Radio buttons</span></legend><ul class="xf-choices">' +
 						'<li><label for="radio1-true"><input type="radio" name="radio1" id="radio1-true" value="true" />true</label></li>' +
 						'<li><label for="radio1-false"><input type="radio" name="radio1" id="radio1-false" value="false" />false</label></li>' +
+						'<li><label for="radio1-null"><input type="radio" name="radio1" id="radio1-null" value="" />Not specified</label></li>' +
 					'</ul></fieldset></li>' +
 					'<li><fieldset id="group1"><ol>' +
 						'<li class="xf-input">' +
@@ -580,6 +581,28 @@ Tester.use('console', 'test', function(Y){
 			$('#email').focus().val('foo@example.com').blur();
 			Assert.areSame(true, $('#email').closest(':-xf-control').hasClass($.forces.CSS_VALID), 'valid class not present');
 			Assert.areSame(false, $('#email').closest(':-xf-control').hasClass($.forces.CSS_INVALID), 'invalid class still present');
+		},
+
+
+		test_requiredInlineAlertMessageDisplayed: function() {
+			$('#number,#radio1').forces_attr('required', true);
+
+			Assert.areSame(0, $('#number').closest(':-xf-control').find('.xf-alert').length, 'alert (input) present before interation');
+			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert (radio) present before interaction');
+
+			$('#number').focus().val('foo').blur();
+			Assert.areSame(0, $('#number').closest(':-xf-control').find('.xf-alert').length, 'alert (input) present when value is foo');
+			$('#number').focus().val('').blur();
+			Assert.areSame(1, $('#number').closest(':-xf-control').find('.xf-alert').length, 'alert (input) not present when value missing');
+			Assert.areSame('must be completed', $('#number').closest(':-xf-control').find('.xf-alert').text(), 'wrong alert message (input)');
+
+			$('#radio1-true').attr('checked', 'checked').click();
+			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert (radio) present when value selected');
+			$('#radio1-null').attr('checked', 'checked').click();
+			Assert.areSame(1, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert (radio) not present when empty value selected');
+			Assert.areSame('must be completed', $('#number').closest(':-xf-control').find('.xf-alert').text(), 'wrong alert message (radio)');
+			$('#radio1-true').attr('checked', 'checked').click();
+			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert (radio) present when value selected again');
 		},
 
 

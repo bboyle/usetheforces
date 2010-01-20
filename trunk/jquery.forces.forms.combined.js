@@ -665,16 +665,15 @@ $F.generateId = function() {
 		var control = $(evt.target);
 
 		switch (evt.type) {
-		
+
 			case 'click':
 			case 'focus':
-			case 'mousedown':
 				control
 					.data('-tf-VALUE', control.val())
 					.trigger($F.EVENT_XF_FOCUS_IN)
 				;
 			break;
-			
+
 			case 'blur':
 				var oldValue = control.data('-tf-VALUE');
 				control
@@ -682,6 +681,48 @@ $F.generateId = function() {
 					.trigger($F.EVENT_XF_FOCUS_OUT)
 				;
 				if (control.val() !== oldValue) {
+					control
+						.trigger($F.EVENT_XF_VALUE_CHANGED)
+						.forces_validate()
+					;
+				}
+			break;
+		}
+	};
+
+
+
+
+
+	var radioFocusHandler = function(evt) {
+		var control = $(evt.target).closest('fieldset');
+
+		switch (evt.type) {
+		
+			case 'focus':
+				control
+					.data('-tf-VALUE', control.forces_val())
+					.trigger($F.EVENT_XF_FOCUS_IN)
+				;
+			break;
+
+			case 'click':
+				var oldValue = control.data('-tf-VALUE');
+				if (control.forces_val() !== oldValue) {
+					control
+						.trigger($F.EVENT_XF_VALUE_CHANGED)
+						.forces_validate()
+					;
+				}
+			break;
+
+			case 'blur':
+				var oldValue = control.data('-tf-VALUE');
+				control
+					.removeData('-tf-VALUE')
+					.trigger($F.EVENT_XF_FOCUS_OUT)
+				;
+				if (control.forces_val() !== oldValue) {
 					control
 						.trigger($F.EVENT_XF_VALUE_CHANGED)
 						.forces_validate()
@@ -704,10 +745,12 @@ $F.generateId = function() {
 		form = form || $('form');
 		if (enable || enable === undefined) {
 			form.bind('submit', formSubmitHandler);
-			$('input,select,textarea', form).bind('focus blur click mousedown', inputFocusHandler);
+			$(':text,select,textarea', form).bind('focus blur click', inputFocusHandler);
+			$(':radio,:checkbox', form).bind('focus blur click', radioFocusHandler);
 		} else {
 			form.unbind('submit', formSubmitHandler);
-			$('input,select,textarea', form).unbind('focus blur click mousedown', inputFocusHandler);
+			$(':text,select,textarea', form).unbind('focus blur click', inputFocusHandler);
+			$(':radio,:checkbox', form).unbind('focus blur click', radioFocusHandler);
 		}
 	};
 	
