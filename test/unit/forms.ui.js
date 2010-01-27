@@ -687,15 +687,18 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
-		test_shouldReuseExistingStatusBlock: function() {
+		test_shouldReuseExistingStatusAlertBlock: function() {
 			$('#input1').forces_attr('required', true);
 			
 			$('.tf-form').before($.forces.HTML_STATUS());
-			Assert.areSame(1, $('.tf-status > .tf-alert').length, 'expected 1 status alert block before submit');
+			$('.tf-form').before('<div class="tf-status"><div class="tf-info inner">Test info box</div></div>');
+			Assert.areSame(1, $('.tf-status > .tf-info').length, 'expected 1 info block before submit');
+			Assert.areSame(1, $('.tf-status > .tf-alert').length, 'expected 1 alert block before submit');
 			
 			$('#form').submit();
-			Assert.areSame(1, $('.tf-status > .tf-alert').length, 'expected 1 status alert block after submit');
-			Assert.areSame(1, $('.tf-status').length, 'expected 1 status block after submit');
+			Assert.areSame(1, $('.tf-status > .tf-info').length, 'expected 1 info block after submit');
+			Assert.areSame(1, $('.tf-status > .tf-alert').length, 'expected 1 alert block after submit');
+			Assert.areSame(2, $('.tf-status').length, 'expected 2 status blocks after submit');
 		},
 
 

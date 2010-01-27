@@ -261,7 +261,7 @@
 			var status = form.data(DOM_STATUS);
 			if (!status) {
 				status = form.data(DOM_STATUS, $F.HTML_STATUS()).data(DOM_STATUS);
-				form.prev('.tf-status').children('.tf-alert').end().remove();
+				form.prevAll('.tf-status').children('.tf-alert').parent().remove();
 			}
 			
 			var errorList = $('<ol></ol>');
