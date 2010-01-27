@@ -294,8 +294,29 @@ Tester.use('console', 'test', function(Y){
 			$('#input1').forces_setCustomValidity('').forces_validate();
 			Assert.areSame(false, $('#input1').is(':-xf-invalid'));
 		},
-		
-		
+
+		test_emailValidationRegex: function() {
+			// valid
+			var emails = [
+				'benjamins.boyle@gmail.com',
+				"ben.o'boyle@example.com",
+				'a1@abc.net',
+				'foo@11.11.11.11'
+			];
+			for (var i = 0; i < emails.length; i++) {
+				Assert.isNotNull($.forces.REXP_EMAIL.exec(emails[i]), emails[i]);
+			}
+			// invalid
+			emails = [
+				'benjamins boyle@gmail.com',
+				'a1@net au',
+				'a1@net'
+			];
+			for (var i = 0; i < emails.length; i++) {
+				Assert.isNull($.forces.REXP_EMAIL.exec(emails[i]), emails[i]);
+			}
+		},
+
 		test_validityStateIsLive: function() {
 			var input1 = $('#input1');
 			Assert.isUndefined(input1.data('-tf-validity'), 'validityState defined before validation');

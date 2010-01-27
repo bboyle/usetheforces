@@ -34,7 +34,7 @@
 		
 		// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
 		// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
-		REXP_EMAIL: /^[A-Za-z!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/,
+		REXP_EMAIL: /^[A-Za-z0-9!#$%&'*+-\/=?^_`{|}~\.]+@[A-Za-z0-9-]*[A-Za-z0-9]+(?:\.[A-Za-z0-9-]*[A-Za-z0-9]+)+$/,
 		
 		REXP_NUMBER: /^[0-9]+$/,
 
