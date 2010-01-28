@@ -164,9 +164,7 @@
 
 	// get value
 	$.fn.forces_val = function() {
-		var e = $(this);
-		
-		return e.val() || e.find(':checked').val() || null;
+		return this.val() || this.find(':checked').val() || null;
 	};
 
 
@@ -176,7 +174,7 @@
 	// setCustomValidity() method
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-setcustomvalidity
 	$.fn.forces_setCustomValidity = function(message) {
-		return $(this).data('-tf-customValidityErrorMessage', message);
+		return this.data('-tf-customValidityErrorMessage', message);
 	},
 
 
@@ -248,7 +246,7 @@
 	// validate
 	// validityFilter can filter the jquery object: true = valid controls; false = invalid controls; undefined = all controls (no filter)
 	$.fn.forces_validate = function(validityFilter) {
-		return $(this).filter(function() {
+		return this.filter(function() {
 
 			var e = $(this);
 			var validityState = e.forces_validity();
@@ -315,15 +313,16 @@
 	// toggle flags
 	$.fn.forces__flags = function(flag, add) {
 		var e;
-		this.set = function() {
+		add = add ? 
+		function() {
 			e = $(this);
 			e.data('-tf-FLAGS', e.data('-tf-FLAGS') | flag);
-		};
-		this.unset = function() {
+		} :
+		function() {
 			e = $(this);
 			e.data('-tf-FLAGS', e.data('-tf-FLAGS') & ~flag);
 		};
-		return add ? this.each(this.set) : this.each(this.unset);
+		return this.each(add);
 	};
 	
 	
