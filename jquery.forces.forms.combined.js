@@ -464,8 +464,19 @@ $F.generateId = function() {
 
 
 	// get value
-	$.fn.forces_val = function() {
-		return this.val() || this.find(':checked').val() || null;
+	$.fn.forces_val = function(asType) {
+		switch (this.get(0).tagName.toLowerCase()) {
+			case 'fieldset':
+				return this.find(':checked').val() || null;
+			case 'input':
+				switch (this.forces_attr('type')) {
+					case 'date':
+						return (asType ? $F.dateParse(this.val()) : this.val()) || null;
+				}
+		}
+		
+		
+		return this.val() || null;
 	};
 
 
