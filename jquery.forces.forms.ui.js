@@ -139,10 +139,13 @@
 
 
 	// validationMessage property
-	// PARTIAL: supports custom validity only
+	// PARTIAL: supports custom validity, value missing and type mismatch states
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-validationmessage
 	$.fn.forces_validationMessage = function() {
-		var e = $(this).find($F.EXPR_HTML_CONTROLS).andSelf().eq(0);
+		var e = this.find($F.EXPR_HTML_CONTROLS).eq(0);
+		if (e.length == 0) {
+			e = this;
+		}
 
 		var validityState = e.forces_validity();
 		
