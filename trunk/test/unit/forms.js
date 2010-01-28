@@ -223,6 +223,19 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('email', $('#input2').forces_attr('type'));
 			Assert.areSame('email', $('#input1').forces_attr('type', 'email').forces_attr('type'));
 			Assert.areNotSame('email', $('#input1').forces_removeAttr('type').forces_attr('type'));
+		},
+
+		test_getDateValues: function() {
+
+			$('#input1').forces_attr('type', 'date').val('28/01/2010');
+			Assert.areSame('28/01/2010', $('#input1').forces_val(), 'string not returned (asType default)');
+			Assert.areSame('28/01/2010', $('#input1').forces_val(false), 'string not returned (asType false)');
+			Y.DateAssert.datesAreEqual($.forces.dateParse('28/01/2010'), $('#input1').forces_val(true), 'date not returned (asType true)');
+
+			$('#input1').val('foo');
+			Assert.areSame('foo', $('#input1').forces_val(), 'string not returned (asType default)');
+			Assert.areSame('foo', $('#input1').forces_val(false), 'string not returned (asType false)');
+			Assert.isNull($('#input1').forces_val(true), 'null not returned (asType true)');
 		}
 	}));
 
