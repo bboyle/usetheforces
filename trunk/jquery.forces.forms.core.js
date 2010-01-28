@@ -187,9 +187,8 @@
 	// PARTIAL: supports valueMissing, typeMismatch (email, date, number) and customError
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#validitystate
 	$.fn.forces_validity = function() {
-		var e = $(this);
-
-		return e.data('-tf-validity') || e.data('-tf-validity', { 
+		
+		return this.data('-tf-validity') || this.data('-tf-validity', { 
 			valueMissing: false,
 			typeMismatch: false,
 //			patternMismatch: false,
