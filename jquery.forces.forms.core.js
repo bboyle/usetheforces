@@ -103,7 +103,18 @@
 		// read
 		if (typeof(value) == 'undefined') {
 			value = this.data('-tf-@' + name);
-			return value ? value : (this.is(':-xf-' + name) ? name : null);
+			if (value) {
+				return value;
+			}
+			
+			switch (name) {
+				case 'required':
+				case 'relevant':
+					if (this.is(':-xf-' + name)) {
+						return name;
+					}
+			}
+			return null;
 		}
 		// write
 		switch (name) {
