@@ -35,6 +35,7 @@ Tester.use('console', 'test', function(Y){
 			var numbers = [
 				'4111 1111 1111 1111',
 				'4000 1000 2000 3000',
+				'4000 1000 2000 3',
 				'0000 0000 0000 0000'
 			];
 			for (var i = 0; i < numbers.length; i++) {
