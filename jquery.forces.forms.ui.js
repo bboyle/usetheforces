@@ -79,9 +79,8 @@
 
 	// set an alert for a control
 	$.fn.forces_alert = function(message) {
-		var src = $(this);
 
-		var controls = src.closest(':-xf-control');
+		var controls = this.closest(':-xf-control');
 		controls.find('.xf-alert').remove();
 		
 		controls
@@ -94,7 +93,7 @@
 			})
 		;
 
-		return src;
+		return this;
 	};
 
 
@@ -103,9 +102,8 @@
 
 	// set a hint message for a control
 	$.fn.forces_hint = function(message) {
-		var src = $(this);
 
-		var controls = src.closest(':-xf-control');
+		var controls = this.closest(':-xf-control');
 		controls.find('.xf-hint').remove();
 
 		if (message) {
@@ -118,7 +116,7 @@
 			;
 		}
 
-		return src;
+		return this;
 	};
 
 
@@ -127,7 +125,7 @@
 
 	// get a label text for a control
 	$.fn.forces_label = function() {
-		return $(this)
+		return this
 			.closest(':-xf-control')
 				.find(':-xf-label')
 					.text()
