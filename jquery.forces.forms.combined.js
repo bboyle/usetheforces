@@ -465,9 +465,7 @@ $F.generateId = function() {
 
 	// get value
 	$.fn.forces_val = function() {
-		var e = $(this);
-		
-		return e.val() || e.find(':checked').val() || null;
+		return this.val() || this.find(':checked').val() || null;
 	};
 
 
@@ -477,7 +475,7 @@ $F.generateId = function() {
 	// setCustomValidity() method
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-setcustomvalidity
 	$.fn.forces_setCustomValidity = function(message) {
-		return $(this).data('-tf-customValidityErrorMessage', message);
+		return this.data('-tf-customValidityErrorMessage', message);
 	},
 
 
@@ -488,9 +486,8 @@ $F.generateId = function() {
 	// PARTIAL: supports valueMissing, typeMismatch (email, date, number) and customError
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#validitystate
 	$.fn.forces_validity = function() {
-		var e = $(this);
-
-		return e.data('-tf-validity') || e.data('-tf-validity', { 
+		
+		return this.data('-tf-validity') || this.data('-tf-validity', { 
 			valueMissing: false,
 			typeMismatch: false,
 //			patternMismatch: false,
@@ -550,7 +547,7 @@ $F.generateId = function() {
 	// validate
 	// validityFilter can filter the jquery object: true = valid controls; false = invalid controls; undefined = all controls (no filter)
 	$.fn.forces_validate = function(validityFilter) {
-		return $(this).filter(function() {
+		return this.filter(function() {
 
 			var e = $(this);
 			var validityState = e.forces_validity();
@@ -617,15 +614,16 @@ $F.generateId = function() {
 	// toggle flags
 	$.fn.forces__flags = function(flag, add) {
 		var e;
-		this.set = function() {
+		add = add ? 
+		function() {
 			e = $(this);
 			e.data('-tf-FLAGS', e.data('-tf-FLAGS') | flag);
-		};
-		this.unset = function() {
+		} :
+		function() {
 			e = $(this);
 			e.data('-tf-FLAGS', e.data('-tf-FLAGS') & ~flag);
 		};
-		return add ? this.each(this.set) : this.each(this.unset);
+		return this.each(add);
 	};
 	
 	
@@ -851,14 +849,16 @@ $F.generateId = function() {
 
 	// set an alert for a control
 	$.fn.forces_alert = function(message) {
-		var src = $(this);
 
-		var controls = src.closest(':-xf-control');
+		var controls = this.closest(':-xf-control');
 		controls.find('.xf-alert').remove();
 		
 		controls
 			.each(function() {
-				var control = $(this).children('fieldset').andSelf().eq(0);
+				var control = $(this).children('fieldset').eq(0);
+				if (control.length == 0) {
+					control = $(this);
+				}
 				var alertMessage = message || control.forces_validationMessage();
 				if (alertMessage) {
 					control.append($F.HTML_ALERT_INLINE(alertMessage));
@@ -866,7 +866,7 @@ $F.generateId = function() {
 			})
 		;
 
-		return src;
+		return this;
 	};
 
 
@@ -875,9 +875,8 @@ $F.generateId = function() {
 
 	// set a hint message for a control
 	$.fn.forces_hint = function(message) {
-		var src = $(this);
 
-		var controls = src.closest(':-xf-control');
+		var controls = this.closest(':-xf-control');
 		controls.find('.xf-hint').remove();
 
 		if (message) {
@@ -890,7 +889,7 @@ $F.generateId = function() {
 			;
 		}
 
-		return src;
+		return this;
 	};
 
 
@@ -899,7 +898,7 @@ $F.generateId = function() {
 
 	// get a label text for a control
 	$.fn.forces_label = function() {
-		return $(this)
+		return this
 			.closest(':-xf-control')
 				.find(':-xf-label')
 					.text()
@@ -911,10 +910,13 @@ $F.generateId = function() {
 
 
 	// validationMessage property
-	// PARTIAL: supports custom validity only
+	// PARTIAL: supports custom validity, value missing and type mismatch states
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-validationmessage
 	$.fn.forces_validationMessage = function() {
-		var e = $(this).find($F.EXPR_HTML_CONTROLS).andSelf().eq(0);
+		var e = this.find($F.EXPR_HTML_CONTROLS).eq(0);
+		if (e.length == 0) {
+			e = this;
+		}
 
 		var validityState = e.forces_validity();
 		

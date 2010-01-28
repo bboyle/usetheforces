@@ -85,7 +85,10 @@
 		
 		controls
 			.each(function() {
-				var control = $(this).children('fieldset').andSelf().eq(0);
+				var control = $(this).children('fieldset').eq(0);
+				if (control.length == 0) {
+					control = $(this);
+				}
 				var alertMessage = message || control.forces_validationMessage();
 				if (alertMessage) {
 					control.append($F.HTML_ALERT_INLINE(alertMessage));
