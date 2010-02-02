@@ -363,6 +363,9 @@ $F.generateId = function() {
 
 	// selectors
 	$.extend($.expr[':'], {
+		'-tf-html-control': function(e) {
+			return $(e).is($F.EXPR_HTML_CONTROLS);
+		},
 		'-tf-not-validated': function(e) {
 			return ($(e).data('-tf-FLAGS') & 48) == 0;
 		},
@@ -1115,7 +1118,7 @@ $F.generateId = function() {
 
 	// auto enable
 	$('.usetheforces').forces_enable(true);
-	$('.xf-required').closest(':-xf-control').find($F.EXPR_HTML_CONTROLS).forces_attr('required', true);
+	$('.xf-required').closest(':-xf-control').find(':-tf-html-control').forces_attr('required', true);
 
 
 

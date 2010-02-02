@@ -333,7 +333,7 @@
 
 	// auto enable
 	$('.usetheforces').forces_enable(true);
-	$('.xf-required').closest(':-xf-control').find($F.EXPR_HTML_CONTROLS).forces_attr('required', true);
+	$('.xf-required').closest(':-xf-control').find(':-tf-html-control').forces_attr('required', true);
 
 
 

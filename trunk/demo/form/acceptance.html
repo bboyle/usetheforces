@@ -146,7 +146,7 @@
 					<ul class="xf-choices">
 						<li><label for="flavour-chocolate"><input type="checkbox" name="flavour" id="flavour-chocolate" value="chocolate" />Chocolate</label></li>
 						<li><label for="flavour-strawberry"><input type="checkbox" name="flavour" id="flavour-strawberry" value="strawberry" />Strawberry</label></li>
-						<li><label for="flavour-vanilla"><input type="checkbox" name="flavour" id="flavour-magic" value="vanilla" />Vanilla</label></li>
+						<li><label for="flavour-vanilla"><input type="checkbox" name="flavour" id="flavour-vanilla" value="vanilla" />Vanilla</label></li>
 						<li><label for="bubblegum-flavoured"><input type="checkbox" name="bubblegum-flavoured" id="bubblegum-flavoured" value="bubblegum-flavoured" />Bubblegum</label></li>
 					</ul>
 				</fieldset>
@@ -237,11 +237,7 @@
 <script type="text/javascript">
 <!-- //
 
-	$('#my-answer').forces_attr('required', true);
-	$('#flavour').forces_attr('required', true);
-
 	$('#gate-open')
-		.forces_attr('required', true)
 		.forces_setCustomValidity('the wicked gate will not allow you to pass')
 	;
 
