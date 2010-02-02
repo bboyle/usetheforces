@@ -730,6 +730,7 @@ $F.generateId = function() {
 				var oldValue = control.data('-tf-VALUE');
 				if (control.forces_val() !== oldValue) {
 					control
+						.data('-tf-VALUE', control.forces_val())
 						.trigger($F.EVENT_XF_VALUE_CHANGED)
 						.forces_validate()
 					;
