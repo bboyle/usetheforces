@@ -62,6 +62,9 @@
 
 	// selectors
 	$.extend($.expr[':'], {
+		'-tf-html-control': function(e) {
+			return $(e).is($F.EXPR_HTML_CONTROLS);
+		},
 		'-tf-not-validated': function(e) {
 			return ($(e).data('-tf-FLAGS') & 48) == 0;
 		},

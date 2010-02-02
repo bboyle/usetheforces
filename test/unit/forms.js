@@ -130,12 +130,12 @@ Tester.use('console', 'test', function(Y){
 					'<li><input type="text" name="input1" id="input1" /></li>' +
 					'<li><input type="text" name="input2" id="input2" value="foo" /></li>' +
 					'<li><input type="text" name="input3" id="input3" value="foo" /></li>' +
-					'<li><fieldset id="radio1">' +
+					'<li class="xf-select1"><fieldset id="radio1">' +
 						'<input type="radio" name="radio1" id="radio1-A" value="A"/>' +
 						'<input type="radio" name="radio1" id="radio1-B" value="B"/>' +
 						'<input type="radio" name="radio1" id="radio1-C" value="C"/>' +
 					'</fieldset></li>' +
-					'<li><fieldset id="radio2">' +
+					'<li class="xf-select1"><fieldset id="radio2">' +
 						'<input type="radio" name="radio2" id="radio2-A" value="A"/>' +
 						'<input type="radio" name="radio2" id="radio2-B" value="B" checked="checked" />' +
 						'<input type="radio" name="radio2" id="radio2-C" value="C"/>' +
@@ -186,11 +186,20 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#input2').is(':-xf-optional'));
 		},
 
-		test_validitySelectorsReturnCorrectBoolean: function() {
+		test_validitySelectorsReturnsCorrectBoolean: function() {
 			Assert.areSame(false, $('#input1').is(':-xf-valid'), 'input matched valid');
 			Assert.areSame(false, $('#input1').is(':-xf-invalid'), 'input matched invalid');
 			Assert.areSame(true, $('#input1').is(':-tf-not-validated'), 'input matched \'not validated\'');
+		},
+
+		test_htmlControlSelectorReturnsCorrectBoolean: function() {
+			Assert.areSame(true, $('#input1').is(':-tf-html-control'));
+			Assert.areSame(true, $('#radio1').is(':-tf-html-control'));
+
+			Assert.areSame(false, $('#input1').parent().is(':-tf-html-control'));
+			Assert.areSame(false, $('#radio1').parent().is(':-tf-html-control'));
 		}
+
 	}));
 
 
