@@ -118,6 +118,7 @@
 					<option value="7">7 unstoppable melee</option>
 				</select>
 			</li>
+
 			<li class="xf-select1">
 				<fieldset id="gate-open">
 					<legend>
@@ -130,6 +131,23 @@
 						<li><label for="gate-open-key"><input type="radio" name="gate-open" id="gate-open-key" value="key" />Use a key</label></li>
 						<li><label for="gate-open-sword"><input type="radio" name="gate-open" id="gate-open-sword" value="sword" />Smash it with the sword</label></li>
 						<li><label for="gate-open-magic"><input type="radio" name="gate-open" id="gate-open-magic" value="magic" />Blast it open with magic</label></li>
+					</ul>
+				</fieldset>
+			</li>
+			
+			<li class="xf-select">
+				<fieldset id="flavour">
+					<legend>
+						<span>
+							<span class="xf-label">Favourite flavour</span>
+							<abbr class="xf-required" title="required">*</abbr>
+						</span>
+					</legend>
+					<ul class="xf-choices">
+						<li><label for="flavour-chocolate"><input type="checkbox" name="flavour" id="flavour-chocolate" value="chocolate" />Chocolate</label></li>
+						<li><label for="flavour-strawberry"><input type="checkbox" name="flavour" id="flavour-strawberry" value="strawberry" />Strawberry</label></li>
+						<li><label for="flavour-vanilla"><input type="checkbox" name="flavour" id="flavour-magic" value="vanilla" />Vanilla</label></li>
+						<li><label for="bubblegum-flavoured"><input type="checkbox" name="bubblegum-flavoured" id="bubblegum-flavoured" value="bubblegum-flavoured" />Bubblegum</label></li>
 					</ul>
 				</fieldset>
 			</li>
@@ -220,6 +238,7 @@
 <!-- //
 
 	$('#my-answer').forces_attr('required', true);
+	$('#flavour').forces_attr('required', true);
 
 	$('#gate-open')
 		.forces_attr('required', true)
@@ -228,21 +247,10 @@
 
 	$('#number').forces_attr('type', 'number');
 	$('#email').forces_attr('type', 'email');
-// TODO use custom validity
+
 	$('#email-confirm').forces_isConfirmationFor('#email');
-/*
-	$('#email,#email-confirm').change(function() {
-		$('#email-confirm').forces_setCustomValidity(
-			$('#email').forces_val() == $('#email-confirm').forces_val() ?
-			'' :
-			"doesn't match email"
-		);
-	});
-*/
+
 	$('#date-start,#date-birth').forces_attr('type', 'date');
-//	$('#date-start').click(function() {
-//		$(this).after($.forces.uiHtmlCalendar());
-//	});
 
 	$('#my-answer').click(function() {
 		var checked = $('#my-answer :checked').val() || '';

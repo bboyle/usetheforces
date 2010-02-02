@@ -257,6 +257,12 @@ Tester.use('console', 'test', function(Y){
 						'<input type="radio" id="radio1b" name="radio1" value="b" />' +
 						'<input type="radio" id="radio1c" name="radio1" value="c" />' +
 					'</fieldset></li>' +
+					'<li><fieldset id="checkbox1">' +
+						'<input type="checkbox" id="checkbox1a" name="checkbox1" value="a" />' +
+						'<input type="checkbox" id="checkbox1b" name="checkbox1" value="b" />' +
+						'<input type="checkbox" id="checkbox1c" name="checkbox1" value="c" />' +
+						'<input type="checkbox" id="another-checkbox" name="another-checkbox" value="d" />' +
+					'</fieldset></li>' +
 				'</ol></form>'
 			).appendTo('body').forces_enable();
 		},
@@ -292,7 +298,27 @@ Tester.use('console', 'test', function(Y){
 			$('#radio1').forces_validate();
 			Assert.areSame(true, $('#radio1').is(':-xf-valid'), 'required radio1 should be valid when "a" checked');
 		},
-		
+
+		test_requiredCheckboxesValidation: function() {
+			$('#checkbox1').forces_validate();
+			Assert.areSame(true, $('#checkbox1').is(':-xf-valid'), 'checkbox1 should be valid by default');
+
+			$('#checkbox1').forces_attr('required', true).forces_validate();
+			Assert.areSame(false, $('#checkbox1').is(':-xf-valid'), 'required checkbox1 should be invalid when empty');
+
+			$('#checkbox1a').click();
+			$('#checkbox1').forces_validate();
+			Assert.areSame(true, $('#checkbox1').is(':-xf-valid'), 'required checkbox1 should be valid when "a" checked');
+			
+			$('#checkbox1a').click();
+			$('#checkbox1').forces_validate();
+			Assert.areSame(false, $('#checkbox1').is(':-xf-valid'), 'required checkbox1 should be invalid when "a" unchecked');
+
+			$('#another-checkbox').click();
+			$('#checkbox1').forces_validate();
+			Assert.areSame(true, $('#checkbox1').is(':-xf-valid'), 'required checkbox1 should be valid when "d" checked');
+		},
+
 		test_shouldBeInvalidOnSetCustomValidityWithMessage: function() {
 			Assert.areSame(false, $('#input1').is(':-xf-invalid'), 'input1 should not be invalid by default');
 
