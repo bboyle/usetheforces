@@ -1,0 +1,24 @@
+#summary range controls
+#labels Phase-Requirements
+
+= Introduction =
+
+Input type range is specified in HTML5.
+
+
+= Details =
+
+
+= Story RANGE-001 =
+
+As a web developer I want to use range where available and a select list elsewhere so that I can deliver the best customer experience.
+http://stackoverflow.com/questions/2246136/how-do-i-build-a-gracefully-degrading-html5-range
+
+== Acceptance criteria ==
+ # use progressive enhancement (select list by default, replaced by range when supported)
+ # do nothing if any option contains non-numeric values: floating point and negatives allowed; ignore null values
+ # preserve attributes: id, class, name, title
+ # specify min attribute based on the lowest option value
+ # specify max attribute based on the highest option value
+ # specify step attribute based on difference between two lowest values
+ # specify (default) value attribute based on selected option value or the empty string
