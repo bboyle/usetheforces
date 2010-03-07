@@ -364,9 +364,6 @@ Tester.use('console', 'test', function(Y){
 			$('#input1').blur();
 			Assert.areSame(true, question1.hasClass(classActive), 'input should remain active onblur');
 
-			$('#input1').blur();
-			Assert.areSame(true, question1.hasClass(classActive), 'input should remain active onblur');
-
 			$('#input2').focus();
 			Assert.areSame(false, question1.hasClass(classActive), 'input1 should not remain active when input2 is active');
 

@@ -468,6 +468,9 @@ $F.generateId = function() {
 
 	// get value
 	$.fn.forces_val = function(asType) {
+		if (this.length < 1) {
+			return null;
+		}
 		switch (this.get(0).tagName.toLowerCase()) {
 			case 'fieldset':
 				return this.find(':checked').val() || null;
@@ -760,7 +763,7 @@ $F.generateId = function() {
 
 
 
-	// TODO enable/disabled forces (partially implemented)
+	// TODO enable/disable forces (partially implemented)
 	$.fn.forces_enable = function(enable) {
 		$F.toggleFormHandlers(enable, $(this));
 	};
