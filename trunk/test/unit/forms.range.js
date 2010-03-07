@@ -83,6 +83,18 @@ Tester.use('console', 'test', function(Y){
 			} else {
 				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
 			}
+		},
+		
+		test_maxAttributeDeterminedFromOptionValue: function() {
+			if (isRangeSupported) {
+				
+				var select = $('#select1,#select2').forces_toRange();
+				Assert.areSame('3', select.eq(0).attr('max'));
+				Assert.areSame('0.5', select.eq(1).attr('max'));
+				
+			} else {
+				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+			}
 		}
 
 	}));
