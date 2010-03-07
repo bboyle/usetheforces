@@ -26,8 +26,8 @@ Tester.use('console', 'test', function(Y){
 				'</select>' +
 				'<select id="select2">' +
 					'<option>0.2</option>' +
-					'<option>0.1</option>' +
 					'<option>0.5</option>' +
+					'<option>0.1</option>' +
 				'</select>' +
 				'<select id="select3">' +
 					'<option value="1">one</option>' +
@@ -59,9 +59,9 @@ Tester.use('console', 'test', function(Y){
 			if (isRangeSupported) {
 				Y.log('Input type range IS supported in this browser', 'info', 'TestRunner');
 				
-				Assert.areSame('input', select.get(0).tagName.toLowerCase(), 'expected range: 1, 2, 3');
-				Assert.areSame('input', select.get(1).tagName.toLowerCase(), 'expected range: 0.1, 0.2, 0.5');
-				Assert.areSame('select', select.get(2).tagName.toLowerCase(), 'expected select (abc)');
+				Assert.areSame('input', $('form > div > *').get(0).tagName.toLowerCase(), 'expected range: 1, 2, 3');
+				Assert.areSame('input', $('form > div > *').get(1).tagName.toLowerCase(), 'expected range: 0.1, 0.2, 0.5');
+				Assert.areSame('select', $('form > div > *').get(2).tagName.toLowerCase(), 'expected select (abc)');
 				
 			} else {
 				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
@@ -91,6 +91,18 @@ Tester.use('console', 'test', function(Y){
 				var select = $('#select1,#select2').forces_toRange();
 				Assert.areSame('3', select.eq(0).attr('max'));
 				Assert.areSame('0.5', select.eq(1).attr('max'));
+				
+			} else {
+				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+			}
+		},
+		
+		test_stepAttributeDeterminedFromOptionValues: function() {
+			if (isRangeSupported) {
+				
+				var select = $('#select1,#select2').forces_toRange();
+				Assert.areSame('1', select.eq(0).attr('step'));
+				Assert.areSame('0.1', select.eq(1).attr('step'));
 				
 			} else {
 				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');

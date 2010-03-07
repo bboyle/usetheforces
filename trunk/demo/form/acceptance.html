@@ -29,6 +29,35 @@
 				<input type="text" id="number" name="number" size="40" />
 			</li>
 
+			<li class="xf-input">
+				<label for="range">
+					<span class="xf-label">Range</span>
+					<abbr class="xf-required" title="required">*</abbr>
+				</label>
+				<select id="range" name="range">
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option>5</option>
+					<option>6</option>
+					<option>7</option>
+					<option>8</option>
+					<option>9</option>
+					<option>10</option>
+				</select>
+			</li>
+
+			<li class="xf-input">
+				<label for="range">
+					<span class="xf-label">Fixed range</span>
+					<abbr class="xf-required" title="required">*</abbr>
+				</label>
+				<select id="range-fixed" name="rangeFixed">
+					<option>1</option>
+				</select>
+			</li>
+
 			<li class="xf-group">
 				<fieldset id="name">
 					<legend>
@@ -233,6 +262,7 @@
 <script type="text/javascript" src="../../jquery.forces.forms.core.js"></script>
 <script type="text/javascript" src="../../jquery.forces.fx.js"></script>
 <script type="text/javascript" src="../../jquery.forces.forms.ui.js"></script>
+<script type="text/javascript" src="../../jquery.forces.forms.range.js"></script>
 <script type="text/javascript" src="../../jquery.forces.lib.validate.js"></script>
 <script type="text/javascript">
 <!-- //
@@ -240,6 +270,8 @@
 	$('#gate-open')
 		.forces_setCustomValidity('the wicked gate will not allow you to pass')
 	;
+	
+	$('#range,#range-fixed').forces_toRange();
 
 	$('#number').forces_attr('type', 'number');
 	$('#email').forces_attr('type', 'email');

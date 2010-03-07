@@ -32,6 +32,10 @@ $.fn.forces_toRange = function() {
 				var range = $('<input type="range" />');
 				range.attr('min', options[0]);
 				range.attr('max', options[options.length - 1]);
+				range.attr('step', options[1] - options[0]);
+				
+				$(this).replaceWith(range);
+				
 				return range.get(0);
 			} else {
 				return this;
