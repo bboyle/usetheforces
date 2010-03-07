@@ -38,11 +38,13 @@ Tester.use('console', 'test', function(Y){
 				'</form>' +
 				'</div>'
 			).appendTo('body');
+			isRangeSupported = $('<input type="range" />').attr('type') == 'range';
 		},
 
 
 		tearDown: function() {
 			$('#form-container').remove();
+			delete isRangeSupported;
 		},
 
 
@@ -52,7 +54,6 @@ Tester.use('console', 'test', function(Y){
 
 
 		test_selectToRange: function() {
-			var isRangeSupported = $('<input type="range" />').attr('type') == 'range';
 			var select = $('#select1,#select2,#select3').forces_toRange();
 			
 			if (isRangeSupported) {
@@ -69,6 +70,18 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('select', select.get(1).tagName.toLowerCase());
 				Assert.areSame('select', select.get(2).tagName.toLowerCase());
 				
+			}
+		},
+		
+		test_minAttributeDeterminedFromOptionValue: function() {
+			if (isRangeSupported) {
+				
+				var select = $('#select1,#select2').forces_toRange();
+				Assert.areSame('1', select.eq(0).attr('min'));
+				Assert.areSame('0.1', select.eq(1).attr('min'));
+				
+			} else {
+				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
 			}
 		}
 

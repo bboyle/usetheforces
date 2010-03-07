@@ -29,7 +29,9 @@ $.fn.forces_toRange = function() {
 					return this;
 				}
 				
-				return $('<input type="range" />').get(0);
+				var range = $('<input type="range" />');
+				range.attr('min', options[0]);
+				return range.get(0);
 			} else {
 				return this;
 			}
