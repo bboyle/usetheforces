@@ -20,7 +20,7 @@ http://stackoverflow.com/questions/2246136/how-do-i-build-a-gracefully-degrading
  # specify min attribute based on the lowest option value [http://code.google.com/p/usetheforces/source/detail?r=226 r226]
  # specify max attribute based on the highest option value [http://code.google.com/p/usetheforces/source/detail?r=227 r227]
  # specify step attribute based on difference between two lowest values [http://code.google.com/p/usetheforces/source/detail?r=229 r229]
- # specify (default) value attribute based on selected option value or the empty string
+ # specify (default) value attribute based on selected option value ~~or the empty string~~
  # preserve attributes: id, class, name, title
 
 === Questions ===
