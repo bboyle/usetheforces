@@ -17,7 +17,8 @@ $.fn.forces_toRange = function() {
 
 	return this.map(function() {
 			if (this.tagName.toLowerCase() == 'select') {
-				var options = $(this)
+				var select = $(this);
+				var options = select
 					.find('option')
 						.map(function() {
 							return parseFloat($(this).val());
@@ -33,9 +34,15 @@ $.fn.forces_toRange = function() {
 				range.attr('min', options[0]);
 				range.attr('max', options[options.length - 1]);
 				range.attr('step', options[1] - options[0]);
-				range.val($(this).val());
+				range.val(select.val());
 				
-				$(this).replaceWith(range);
+				var copyAttributes = ['id', 'name', 'class', 'title'];
+				while (copyAttributes.length) {
+					var key = copyAttributes.shift();
+					range.attr(key, select.attr(key));
+				}
+				
+				select.replaceWith(range);
 				
 				return range.get(0);
 			} else {
