@@ -15,13 +15,14 @@ As a web developer I want to use range where available and a select list elsewhe
 http://stackoverflow.com/questions/2246136/how-do-i-build-a-gracefully-degrading-html5-range
 
 == Acceptance criteria ==
+* Completed 12 March 2010 *
  # use progressive enhancement (select list by default, replaced by range when supported) [http://code.google.com/p/usetheforces/source/detail?r=229 r229]
  # do nothing if any option contains non-numeric values: floating point and negatives allowed; ignore null values [http://code.google.com/p/usetheforces/source/detail?r=225 r225]
  # specify min attribute based on the lowest option value [http://code.google.com/p/usetheforces/source/detail?r=226 r226]
  # specify max attribute based on the highest option value [http://code.google.com/p/usetheforces/source/detail?r=227 r227]
  # specify step attribute based on difference between two lowest values [http://code.google.com/p/usetheforces/source/detail?r=229 r229]
  # specify (default) value attribute based on selected option value ~~or the empty string~~ [http://code.google.com/p/usetheforces/source/detail?r=233 r233]
- # preserve attributes: id, class, name, title
+ # preserve attributes: id, class, name, title [http://code.google.com/p/usetheforces/source/detail?r=235 r235]
 
 === Questions ===
  * What if there is only 1 value in the list? This gets converted to a range control with min and max the same, and a step of zero. This is expected behaviour, not a bug.
