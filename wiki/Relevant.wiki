@@ -1,7 +1,7 @@
 #summary using the "relevant" concept for progressive disclosure
 
 = IMPORTANT NOTICE =
-These ideas have been superseded in the implementation of [.forces_attr()]
+These ideas have been superseded in the implementation of [forces_attr]
 
 = Introduction =
 
