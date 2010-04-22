@@ -49,7 +49,7 @@ function toppingRelevant() {
   $('#topping').forces_attr('relevant', $('#flavour input:checked').val() === 'vanilla');
 }
 // run onchange to toggle relevance
-$('#topping').change(toppingRelevant);
+$('#flavour').change(toppingRelevant);
 // run once onload to set initial relevance
 toppingRelevant();
 
