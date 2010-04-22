@@ -48,9 +48,9 @@ The "toppings" are only relevant with vanilla flavour.
 function toppingRelevant() {
   $('#topping').forces_attr('relevant', $('#flavour input:checked').val() === 'vanilla');
 }
-// run onchange to toggle relevance
+// run when flavour changes to check relevance of topping
 $('#flavour').change(toppingRelevant);
-// run once onload to set initial relevance
+// run once on page load to set initial relevance
 toppingRelevant();
 
 }}}
