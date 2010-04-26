@@ -7,7 +7,7 @@ CSS id and class identifiers used by forces.
 
 = Details =
 
-|| identifier || description || application || namespace ||
+|| identifier || description || application || source ||
 || .ftw-questions || list of questions || OL, UL || Forms That Work ||
 || .ftw-preamble || introductory instructions || DIV || Forms That Work ||
 || .tt-citizen || citizen interaction || FORM || Tim Turner (Market Segmentation) ||
@@ -24,3 +24,14 @@ CSS id and class identifiers used by forces.
 || .tf-form || sectioning element (form) || DIV || (use) the forces ||
 || .tf-footer ||
 || .tf-submit ||
+
+== Prefixes ==
+
+Class names have been chosen to reduce the likelihood of conflicts — e.g. there's every chance "alert" may already be used on a website, but "xf-alert" is less likely. These prefixes have been chosen to reflect the source, or inspiration, of the semantics behind the class name.
+
+|| prefix || source || description ||
+|| ftw || Forms That Work ||
+|| tf || (use) the forces || some ideas originate in this project ||
+|| tt || Tim Turner ||
+|| wfd || Web Form Design: Filling in the Blanks ||
+|| xf || XForms ||
