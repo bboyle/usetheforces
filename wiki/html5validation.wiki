@@ -17,4 +17,5 @@ This integrates forces with those attributes and events in order to:
 As a forces developer I want "invalid" states to be consistently handled whether they were detected and escalated by html5 validation or forces validation.
 
 == Acceptance criteria ==
- # :-xf-invalid should match elements that are "invalid" by html5 definition
+ # {{{:-xf-invalid}}} should match elements that are "invalid" by html5 definition
+ # {{{:-xf-required}}} should match elements with {{{@required}}}
