@@ -1,9 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-AU" lang="en-AU">
+<html lang="en-AU">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta charset="UTF-8" />
 	<title>forces validate test</title>
 	<link rel="stylesheet" href="../minty.css" type="text/css" />
 	<link rel="stylesheet" href="../../forces.forms.css" type="text/css" />
@@ -27,6 +26,13 @@
 					<abbr class="xf-required" title="required">*</abbr>
 				</label>
 				<input type="text" id="number" name="number" size="40" />
+			</li>
+
+			<li class="xf-input">
+				<label for="number">
+					<span class="xf-label">@required</span>
+				</label>
+				<input type="text" id="required" name="required" required="required" />
 			</li>
 
 			<li class="xf-input">
@@ -244,6 +250,13 @@
 			</li>
 			
 			</ol>
+		</li>
+		
+		<li>
+				<label for="url">
+					<span class="xf-label">Web address</span>
+				</label>
+				<input type="url" value="http://" />
 		</li>
 		
 		<li class="tf-footer">
