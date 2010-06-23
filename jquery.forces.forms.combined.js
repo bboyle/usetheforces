@@ -783,13 +783,7 @@ $F.generateId = function() {
 	};
 	
 
-	// @required support
-	(function(){
-		var required = document.createElement('input');
-		if (!'required' in required) {
-			$('input[required]').forces_attr('required', true);
-		}
-	});
+
 
 
 })(jQuery);
