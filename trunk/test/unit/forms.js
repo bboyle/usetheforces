@@ -186,14 +186,6 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(true, $('#input1').forces_attr('required', false).is(':-xf-optional'));
 			Assert.areSame(false, $('#input2').is(':-xf-required'));
 			Assert.areSame(true, $('#input2').is(':-xf-optional'));
-			
-			function requiredSupport() {
-				var i = document.createElement('input');
-				return 'required' in i;
-			}
-			if (!requiredSupport()) {
-				Y.log('html5 @required not supported, attempting test…', 'warn', 'TestRunner');
-			}
 			Assert.areSame(true, $('#input4').is(':-xf-required'), '#input4@required should be required');
 		},
 
