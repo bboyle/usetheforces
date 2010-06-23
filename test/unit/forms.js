@@ -130,6 +130,7 @@ Tester.use('console', 'test', function(Y){
 					'<li><input type="text" name="input1" id="input1" /></li>' +
 					'<li><input type="text" name="input2" id="input2" value="foo" /></li>' +
 					'<li><input type="text" name="input3" id="input3" value="foo" /></li>' +
+					'<li><input type="text" name="input4" id="input4" /></li>' +
 					'<li class="xf-select1"><fieldset id="radio1">' +
 						'<input type="radio" name="radio1" id="radio1-A" value="A"/>' +
 						'<input type="radio" name="radio1" id="radio1-B" value="B"/>' +
@@ -143,6 +144,7 @@ Tester.use('console', 'test', function(Y){
 				'</ol></form>'
 			).appendTo('body');
 			$('#input1,#radio1').forces_attr('required', true);
+			$('#input4').attr('required', 'required');
 			$('#input3').forces_attr('relevant', false);
 		},
 
@@ -179,11 +181,20 @@ Tester.use('console', 'test', function(Y){
 		},
 
 		test_requiredSelectorReturnsCorrectBoolean: function() {
-			Assert.areSame(true, $('#input1').is(':-xf-required'));
+			Assert.areSame(true, $('#input1').is(':-xf-required'), '#input1 should be required');
 			Assert.areSame(false, $('#input1').is(':-xf-optional'));
 			Assert.areSame(true, $('#input1').forces_attr('required', false).is(':-xf-optional'));
 			Assert.areSame(false, $('#input2').is(':-xf-required'));
 			Assert.areSame(true, $('#input2').is(':-xf-optional'));
+			
+			function requiredSupport() {
+				var i = document.createElement('input');
+				return 'required' in i;
+			}
+			if (!requiredSupport()) {
+				Y.log('html5 @required not supported, attempting test…', 'warn', 'TestRunner');
+			}
+			Assert.areSame(true, $('#input4').is(':-xf-required'), '#input4@required should be required');
 		},
 
 		test_validitySelectorsReturnsCorrectBoolean: function() {

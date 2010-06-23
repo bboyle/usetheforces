@@ -90,7 +90,8 @@
 			return ($(e).data('-tf-FLAGS') & 1) == 0;
 		},
 		'-xf-required': function(e) {
-			return ($(e).data('-tf-FLAGS') & 4) == 4;
+			e = $(e);
+			return !!e.attr('required') || (e.data('-tf-FLAGS') & 4) == 4;
 		},
 		'-xf-valid': function(e) {
 			return ($(e).data('-tf-FLAGS') & 16) == 16;
@@ -481,6 +482,13 @@
 	};
 	
 
+	// @required support
+	(function(){
+		var required = document.createElement('input');
+		if (!'required' in required) {
+			$('input[required]').forces_attr('required', true);
+		}
+	});
 
 
 })(jQuery);
