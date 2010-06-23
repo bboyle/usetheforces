@@ -23,23 +23,28 @@ $.fn.forces_toRange = function() {
 						.map(function() {
 							return parseFloat($(this).val());
 						})
-						.sort()
+						.sort(function(a, b) {
+							return a - b;
+						})
 				;
 
-				if (isNaN(options[options.length - 1])) {
+				if (isNaN(options[0]) || isNaN(options[options.length - 1])) {
 					return this;
 				}
 				
 				var range = $('<input type="range" />');
 				range.attr('min', options[0]);
 				range.attr('max', options[options.length - 1]);
-				range.attr('step', options[1] - options[0]);
+				range.attr('step', (options[1] - options[0]) || 1);
 				range.val(select.val());
 				
 				var copyAttributes = ['id', 'name', 'class', 'title'];
 				while (copyAttributes.length) {
 					var key = copyAttributes.shift();
-					range.attr(key, select.attr(key));
+					var val = select.attr(key);
+					if (val) {
+						range.attr(key, val);
+					}
 				}
 				
 				select.replaceWith(range);

@@ -23,6 +23,7 @@ Tester.use('console', 'test', function(Y){
 					'<option value="1">one</option>' +
 					'<option value="2" selected="selected">two</option>' +
 					'<option value="3">three</option>' +
+					'<option value="10">ten</option>' +
 				'</select>' +
 				'<select id="select2" name="form.selectTwo" title="test select list">' +
 					'<option>0.2</option>' +
@@ -59,12 +60,12 @@ Tester.use('console', 'test', function(Y){
 			if (isRangeSupported) {
 				Y.log('Input type range IS supported in this browser', 'info', 'TestRunner');
 				
-				Assert.areSame('input', $('form > div > *').get(0).tagName.toLowerCase(), 'expected range: 1, 2, 3');
+				Assert.areSame('input', $('form > div > *').get(0).tagName.toLowerCase(), 'expected range: 1, 2, 3, 10');
 				Assert.areSame('input', $('form > div > *').get(1).tagName.toLowerCase(), 'expected range: 0.1, 0.2, 0.5');
 				Assert.areSame('select', $('form > div > *').get(2).tagName.toLowerCase(), 'expected select (abc)');
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 				
 				Assert.areSame('select', select.get(0).tagName.toLowerCase());
 				Assert.areSame('select', select.get(1).tagName.toLowerCase());
@@ -81,7 +82,7 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('0.1', select.eq(1).attr('min'));
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		},
 		
@@ -89,11 +90,11 @@ Tester.use('console', 'test', function(Y){
 			if (isRangeSupported) {
 				
 				var select = $('#select1,#select2').forces_toRange();
-				Assert.areSame('3', select.eq(0).attr('max'));
+				Assert.areSame('10', select.eq(0).attr('max'));
 				Assert.areSame('0.5', select.eq(1).attr('max'));
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		},
 		
@@ -105,7 +106,7 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('0.1', select.eq(1).attr('step'));
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		},
 		
@@ -117,7 +118,7 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('0.2', select.eq(1).val());
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		},
 		
@@ -129,7 +130,7 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('select2', select.eq(1).attr('id'));
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		},
 		
@@ -141,7 +142,7 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('form.selectTwo', select.eq(1).attr('name'));
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		},
 		
@@ -154,7 +155,7 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('', select.eq(1).attr('class'));
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		},
 		
@@ -166,7 +167,7 @@ Tester.use('console', 'test', function(Y){
 				Assert.areSame('test select list', select.eq(1).attr('title'));
 				
 			} else {
-				Y.log('Input type range IS NOT supported in this browser', 'info', 'TestRunner');
+				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
 			}
 		}
 
