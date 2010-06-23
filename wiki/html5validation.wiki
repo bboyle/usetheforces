@@ -19,3 +19,6 @@ As a forces developer I want "invalid" states to be consistently handled whether
 == Acceptance criteria ==
  # {{{:-xf-invalid}}} should match elements that are "invalid" by html5 definition
  # {{{:-xf-required}}} should match elements with {{{@required}}}
+
+= References =
+ * [http://diveintohtml5.org/detect.html Detecting HTML5 Features, Dive Into HTML 5]
