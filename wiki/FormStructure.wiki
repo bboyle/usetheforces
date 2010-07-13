@@ -13,3 +13,6 @@ Building on the work of Caroline Jarrett, Designing usable forms: the three-laye
   # _Prompt/response pairs_ — use the forces markup and styles directly address this.
  # Conversational layer
  # Relationship layer
+
+= References =
+* [http://www.usability.com.au/resources/wcag2/ Accessible Forms using WCAG 2.0]
