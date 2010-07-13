@@ -15,4 +15,4 @@ Building on the work of Caroline Jarrett, Designing usable forms: the three-laye
  # Relationship layer
 
 = References =
-* [http://www.usability.com.au/resources/wcag2/ Accessible Forms using WCAG 2.0]
+ * [http://www.usability.com.au/resources/wcag2/ Accessible Forms using WCAG 2.0]
