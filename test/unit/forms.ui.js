@@ -335,7 +335,7 @@ Tester.use('console', 'test', function(Y){
 
 			input.forces_attr('relevant', false).forces_attr('relevant', true);
 			this.wait(function() {
-				Assert.areSame('block', question.css('display'), 'false to true causes glitch (animation not stopped?)');
+				Assert.areNotSame('none', question.css('display'), 'false to true causes glitch (animation not stopped?)');
 			}, $.forces.MS_ENABLED+1);
 
 			input.forces_attr('relevant', false);
