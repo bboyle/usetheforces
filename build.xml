@@ -19,7 +19,7 @@
 	<target name="forms">
 		<echo message="combine javascript source files"/>
 		<concat destfile="jquery.forces.forms.combined.js">
-			<filelist dir="." files="license.js,jquery.forces.date.js,jquery.forces.xpath.js,jquery.forces.dom.js,jquery.forces.fx.js,jquery.forces.forms.core.js,jquery.forces.forms.ui.js"/>
+			<filelist dir="." files="license.js,jquery.forces.date.js,jquery.forces.dom.js,jquery.forces.fx.js,jquery.forces.forms.core.js,jquery.forces.forms.ui.js"/>
 		</concat>
 		
 		<echo message="google compiler compression (jquery.forces.forms.js)"/>
