@@ -1,0 +1,1 @@
+cmd /k lib\apache-ant-1.8.1\bin\ant clean all

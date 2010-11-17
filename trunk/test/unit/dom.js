@@ -8,6 +8,37 @@ Tester.use('console', 'test', function(Y){
 
 	Y.forces.test.DomUnitSuite.add(new Y.Test.Case({
 
+		name: "forces.generateId unit tests",
+
+		//---------------------------------------------
+		// Setup and tear down
+		//---------------------------------------------
+
+		setUp: function() {
+			$('<div id="test"></div>').appendTo('body');
+		},
+
+		tearDown: function() {
+			$('#test').remove();
+		},
+
+		//---------------------------------------------
+		// Tests
+		//---------------------------------------------
+
+		test_generateId: function () {
+			for (var i = 0; i < 100; i++) {
+				Assert.areSame(null, document.getElementById($.forces.generateId()));
+			}
+			var id = $.forces.generateId();
+			Assert.areSame(null, document.getElementById(id));
+			var div = $('<div>' + id + '</div>').attr('id', id).appendTo('#test');
+			Assert.areSame(div.get(0), document.getElementById(id), 'unable to find element with generated id');
+		}
+	}));
+
+	Y.forces.test.DomUnitSuite.add(new Y.Test.Case({
+
 		name: "$.forces_id() unit tests",
 
 		//---------------------------------------------

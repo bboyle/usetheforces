@@ -28,7 +28,7 @@ $.fn.forces_toRange = function() {
 						})
 				;
 
-				if (isNaN(options[0]) || isNaN(options[options.length - 1])) {
+				if ($.grep(options, function(a) { return isNaN(a) }).length > 0) {
 					return this;
 				}
 				
