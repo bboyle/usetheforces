@@ -31,7 +31,7 @@
 		</java>
 
 		<echo message="YUI compression (jquery.forces.forms.js)"/>
-		<java jar="lib/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
+		<java jar="lib/yuicompressor-2.4.4.jar" fork="true" failonerror="true">
 			<arg value="-o"/>
 			<arg value="jquery.forces.forms.min-yui.js"/>
 			<arg value="jquery.forces.forms.combined.js"/>
@@ -41,14 +41,14 @@
 		<copy file="jquery.forces.forms.min-yui.js" tofile="jquery.forces.forms.min.js"/>
 
 		<echo message="YUI compression (jquery.forces.lib.validate.js)"/>
-		<java jar="lib/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
+		<java jar="lib/yuicompressor-2.4.4.jar" fork="true" failonerror="true">
 			<arg value="-o"/>
 			<arg value="jquery.forces.lib.validate.min.js"/>
 			<arg value="jquery.forces.lib.validate.js"/>
 		</java>
 
 		<echo message="YUI compression (forces.forms.css)"/>
-		<java jar="lib/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
+		<java jar="lib/yuicompressor-2.4.4.jar" fork="true" failonerror="true">
 			<arg value="-o"/>
 			<arg value="forces.forms.min.css"/>
 			<arg value="forces.forms.css"/>
