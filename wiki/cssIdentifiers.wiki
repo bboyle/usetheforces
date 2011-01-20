@@ -16,8 +16,8 @@ CSS id and class identifiers used by forces.
 || .tf-form || sectioning element (form) || DIV ||
 || .tf-submit ||
 || .tt-citizen || citizen interaction || FORM ||
-|| .wfd-action-primary || primary action || BUTTON, INPUT[type="submit"] ||
-|| .xf-required || required marker || ABBR
+|| .wfd-action-primary || primary action || BUTTON, INPUT (type submit) ||
+|| .xf-required || required marker || ABBR ||
 || .xf-input ||
 || .xf-secret ||
 || .xf-select1 ||
