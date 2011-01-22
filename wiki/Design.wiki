@@ -1,0 +1,10 @@
+#summary Form design
+
+= Introduction =
+
+TBA
+
+
+= References =
+
+  # http://www.uxmatters.com/mt/archives/2010/12/need-better-data-pay-more-attention-to-your-web-forms.php
