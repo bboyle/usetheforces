@@ -25,3 +25,6 @@ Issue: "oninput" should not be triggered too often. Wait for a pause in input (t
 
 Special cases where oninput feedback is beneficial are for answers that are 'created' and the user cannot know in advance if the value is valid. Examples: checking if a new username is already reserved, testing if a new password meets security requirements.
 Oninput validation must not be used for 'slot-in' answers. Checking for typos (e.g. credit card numbers) should not occur until onblur.
+
+= References =
+# http://formulate.com.au/articles/well-designed-error-messages/
