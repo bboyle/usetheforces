@@ -27,4 +27,4 @@ Special cases where oninput feedback is beneficial are for answers that are 'cre
 Oninput validation must not be used for 'slot-in' answers. Checking for typos (e.g. credit card numbers) should not occur until onblur.
 
 = References =
-# http://formulate.com.au/articles/well-designed-error-messages/
+  # http://formulate.com.au/articles/well-designed-error-messages/
