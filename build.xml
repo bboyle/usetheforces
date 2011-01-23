@@ -1,7 +1,12 @@
 <project name="usetheforces" default="help" basedir=".">
 	<description>Use The Forces!</description>
 
-	<target name="clean" description="clean up" >
+	<target name="help" description="command line help">
+		<echo message="use 'ant clean wireframe' to build the wireframe css"/>
+	</target>
+
+	<target name="clean" depends="-load.properties">
+        <delete dir="${build.dir}" quiet="true"/>
 		<delete>
 			<fileset dir="." includes="jquery.forces.forms.combined.js"/>
 			<fileset dir="." includes="jquery.forces.forms.min-yui.js"/>
@@ -12,10 +17,14 @@
 		</delete>
 	</target>
 
-	<target name="help" description="command line help">
-		<echo message="use 'ant clean forms' to build the forces forms library"/>
-	</target>
-
+    <target name="-load.properties">
+        <property file="ant.properties"/>
+    </target>
+    
+    <target name="-init" depends="-load.properties">
+        <mkdir dir="${build.dir}"/>
+    </target>
+    
 	<target name="forms">
 		<echo message="combine javascript source files"/>
 		<concat destfile="jquery.forces.forms.combined.js">
@@ -51,10 +60,35 @@
 		<java jar="lib/yuicompressor-2.4.4.jar" fork="true" failonerror="true">
 			<arg value="-o"/>
 			<arg value="forces.forms.min.css"/>
-			<arg value="forces.forms.css"/>
+			<arg value="src/css/forms/forces.forms.css"/>
 		</java>
 	</target>
-
-	<target name="all" depends="forms"/>
+	
+	<target name="-build-css">
+		<mkdir dir="${build.dir}/css"/>
+	</target>
+	
+	<target name="-build-wireframe">
+		<echo message="embed images in css"/>
+		<java jar="lib/${cssembed.jar}" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${build.dir}/css/wireframe.embed.css"/>
+			<arg value="src/css/wireframe/wireframe.css"/>
+		</java>
+		<echo message="YUI compression (wireframe.css)"/>
+		<java jar="lib/${yuicompressor.jar}" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="${build.dir}/css/wireframe.min.css"/>
+			<arg value="${build.dir}/css/wireframe.embed.css"/>
+		</java>
+		<echo message="gzip minified css (for comparison)"/>
+		<gzip 
+			src="${build.dir}/css/wireframe.min.css" 
+			destfile="${build.dir}/css/wireframe.min.css.gzip"
+		/>
+	</target>
+	
+	<target name="wireframe" depends="-build-css,-build-wireframe"/>
+	<target name="all" depends="-build-css,forms,-build-wireframe"/>
 
 </project>
