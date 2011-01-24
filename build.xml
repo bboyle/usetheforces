@@ -6,14 +6,13 @@
 	</target>
 
 	<target name="clean" depends="-load.properties">
-        <delete dir="${build.dir}" quiet="true"/>
+        <delete dir="build" quiet="true"/>
 		<delete>
 			<fileset dir="." includes="jquery.forces.forms.combined.js"/>
 			<fileset dir="." includes="jquery.forces.forms.min-yui.js"/>
 			<fileset dir="." includes="jquery.forces.forms.min-google.js"/>
 			<fileset dir="." includes="jquery.forces.forms.min.js"/>
 			<fileset dir="." includes="jquery.forces.forms.validate.min.js"/>
-			<fileset dir="." includes="forces.forms.min.css"/>
 		</delete>
 	</target>
 
@@ -22,73 +21,78 @@
     </target>
     
     <target name="-init" depends="-load.properties">
-        <mkdir dir="${build.dir}"/>
+        <mkdir dir="build"/>
     </target>
     
+	<target name="-build-css">
+		<mkdir dir="build/css"/>
+	</target>
+	
+	<target name="-build-js">
+		<mkdir dir="build/js"/>
+	</target>
+	
 	<target name="forms">
 		<echo message="combine javascript source files"/>
-		<concat destfile="jquery.forces.forms.combined.js">
+		<concat destfile="build/js/jquery.forces.forms.combined.js">
 			<filelist dir="." files="license.js,jquery.forces.date.js,jquery.forces.dom.js,jquery.forces.fx.js,jquery.forces.forms.core.js,jquery.forces.forms.ui.js"/>
 		</concat>
 		
 		<echo message="google compiler compression (jquery.forces.forms.js)"/>
 		<java jar="lib/compiler.jar" fork="true" failonerror="true">
 			<arg value="-js"/>
-			<arg value="jquery.forces.forms.combined.js"/>
+			<arg value="build/js/jquery.forces.forms.combined.js"/>
 			<arg value="-js_output_file"/>
-			<arg value="jquery.forces.forms.min-google.js"/>
+			<arg value="build/js/jquery.forces.forms.min-google.js"/>
 		</java>
 
 		<echo message="YUI compression (jquery.forces.forms.js)"/>
-		<java jar="lib/yuicompressor-2.4.4.jar" fork="true" failonerror="true">
+		<java jar="lib/${yuicompressor.jar}" fork="true" failonerror="true">
 			<arg value="-o"/>
-			<arg value="jquery.forces.forms.min-yui.js"/>
-			<arg value="jquery.forces.forms.combined.js"/>
+			<arg value="build/js/jquery.forces.forms.min-yui.js"/>
+			<arg value="build/js/jquery.forces.forms.combined.js"/>
 		</java>
 		
 		<echo message="copying YUI minified file"/>
-		<copy file="jquery.forces.forms.min-yui.js" tofile="jquery.forces.forms.min.js"/>
+		<copy file="build/js/jquery.forces.forms.min-yui.js" 
+			tofile="build/js/jquery.forces.forms.min.js"/>
 
 		<echo message="YUI compression (jquery.forces.lib.validate.js)"/>
-		<java jar="lib/yuicompressor-2.4.4.jar" fork="true" failonerror="true">
+		<java jar="lib/${yuicompressor.jar}" fork="true" failonerror="true">
 			<arg value="-o"/>
-			<arg value="jquery.forces.lib.validate.min.js"/>
+			<arg value="build/js/jquery.forces.lib.validate.min.js"/>
 			<arg value="jquery.forces.lib.validate.js"/>
 		</java>
 
 		<echo message="YUI compression (forces.forms.css)"/>
-		<java jar="lib/yuicompressor-2.4.4.jar" fork="true" failonerror="true">
+		<java jar="lib/${yuicompressor.jar}" fork="true" failonerror="true">
 			<arg value="-o"/>
-			<arg value="forces.forms.min.css"/>
+			<arg value="build/css/forces.forms.min.css"/>
 			<arg value="src/css/forms/forces.forms.css"/>
 		</java>
-	</target>
-	
-	<target name="-build-css">
-		<mkdir dir="${build.dir}/css"/>
 	</target>
 	
 	<target name="-build-wireframe">
 		<echo message="embed images in css"/>
 		<java jar="lib/${cssembed.jar}" fork="true" failonerror="true">
 			<arg value="-o"/>
-			<arg value="${build.dir}/css/wireframe.embed.css"/>
+			<arg value="build/css/wireframe.embed.css"/>
 			<arg value="src/css/wireframe/wireframe.css"/>
 		</java>
 		<echo message="YUI compression (wireframe.css)"/>
 		<java jar="lib/${yuicompressor.jar}" fork="true" failonerror="true">
 			<arg value="-o"/>
-			<arg value="${build.dir}/css/wireframe.min.css"/>
-			<arg value="${build.dir}/css/wireframe.embed.css"/>
+			<arg value="build/css/wireframe.min.css"/>
+			<arg value="build/css/wireframe.embed.css"/>
 		</java>
 		<echo message="gzip minified css (for comparison)"/>
 		<gzip 
-			src="${build.dir}/css/wireframe.min.css" 
-			destfile="${build.dir}/css/wireframe.min.css.gzip"
+			src="build/css/wireframe.min.css" 
+			destfile="build/css/wireframe.min.css.gzip"
 		/>
 	</target>
 	
 	<target name="wireframe" depends="-build-css,-build-wireframe"/>
-	<target name="all" depends="-build-css,forms,-build-wireframe"/>
+	<target name="all" depends="-init,-build-css,forms,-build-wireframe"/>
 
 </project>
