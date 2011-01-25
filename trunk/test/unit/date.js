@@ -123,6 +123,10 @@ Tester.use('console', 'test', function(Y){
 		},
 		test_error_dmyyy_slash: function() {
 			Assert.isInstanceOf(Date, $.forces.dateParse('25/5/077'));
+		},
+		test_W3CDTF: function() {
+			Assert.isInstanceOf(Date, $.forces.dateParse('1977-05-25'));
+			DateAssert.datesAreEqual(releaseStarWarsIV, $.forces.dateParse('1977-05-25'));
 		}
 
 	}));

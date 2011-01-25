@@ -56,32 +56,43 @@
 
 	// parse a date
 	$F.dateParse = function(s, min, max) {
-		s = s.split(/[^A-Za-z0-9]/);
-
-		var base = min || max || TODAY;
-
 		var date = {};
-		function setDate(property, value) {
-			date[property] = date[property] || value;
-		}
 
-		for (var i = 0; i < s.length; i++) {
-			if (s[i].match(/^\d{4}$/)) {
-				setDate('year', s[i]);
-			} else if (s[i].match(/^\d{1,2}$/)) {
-				// precedence: date, month, year
-				var property = date.date ? (date.month ? 'year' : 'month') : 'date';
-				if (property == 'year' && !date.year) {
-					s[i] = (base.getFullYear()+"").substring(0,2) + _pad(s[i], 2, '0');
-					if (min && min.getFullYear() > s[i]) {
-						s[i] += 100;
-					} else if (max && max.getFullYear() < s[i]) {
-						s[i] -= 100;
-					} else if (!min && !max && s[i] > base.getFullYear()+20) {
-						s[i] -= 100;
+		if (s.match(/^\d{4}-[01]\d-[0-3]\d$/)) {
+			// W3CDTF
+			s = s.split(/[^A-Za-z0-9]/);
+			date.year = s[0];
+			date.month = s[1];
+			date.date = s[2];
+			
+		} else {
+		
+			s = s.split(/[^A-Za-z0-9]/);
+	
+			var base = min || max || TODAY;
+	
+			function setDate(property, value) {
+				date[property] = date[property] || value;
+			}
+	
+			for (var i = 0; i < s.length; i++) {
+				if (s[i].match(/^\d{4}$/)) {
+					setDate('year', s[i]);
+				} else if (s[i].match(/^\d{1,2}$/)) {
+					// precedence: date, month, year
+					var property = date.date ? (date.month ? 'year' : 'month') : 'date';
+					if (property == 'year' && !date.year) {
+						s[i] = (base.getFullYear()+"").substring(0,2) + _pad(s[i], 2, '0');
+						if (min && min.getFullYear() > s[i]) {
+							s[i] += 100;
+						} else if (max && max.getFullYear() < s[i]) {
+							s[i] -= 100;
+						} else if (!min && !max && s[i] > base.getFullYear()+20) {
+							s[i] -= 100;
+						}
 					}
+					setDate(property, s[i]);
 				}
-				setDate(property, s[i]);
 			}
 		}
 
