@@ -5,7 +5,7 @@
 	<meta charset="UTF-8" />
 	<title>forces validate test</title>
 	<link rel="stylesheet" href="../minty.css" type="text/css" />
-	<link rel="stylesheet" href="../../forces.forms.css" type="text/css" />
+	<link rel="stylesheet" href="../../src/css/forms/forces.forms.css" type="text/css" />
 	<!--[if lt IE 7]><script>document.createElement('abbr')</script><![endif]-->
 </head>
 
@@ -33,6 +33,14 @@
 						<span class="xf-label">@required</span>
 					</label>
 					<input type="text" id="required" name="required" required="required" />
+				</li>
+	
+				<li class="xf-secret">
+					<label for="secret-password">
+						<span class="xf-label">Secret password</span>
+						<abbr class="xf-required" title="required">*</abbr>
+					</label>
+					<input type="password" id="secret-password" name="secretPassword" />
 				</li>
 	
 				<li class="xf-input">
@@ -269,13 +277,13 @@
 </div>
 
 <script type="text/javascript" src="../../lib/jquery-1.4.4.js"></script>
-<script type="text/javascript" src="../../jquery.forces.date.js"></script>
-<script type="text/javascript" src="../../jquery.forces.dom.js"></script>
-<script type="text/javascript" src="../../jquery.forces.forms.core.js"></script>
-<script type="text/javascript" src="../../jquery.forces.fx.js"></script>
-<script type="text/javascript" src="../../jquery.forces.forms.ui.js"></script>
-<script type="text/javascript" src="../../jquery.forces.forms.range.js"></script>
-<script type="text/javascript" src="../../jquery.forces.lib.validate.js"></script>
+<script type="text/javascript" src="../../src/jquery/forces/date.js"></script>
+<script type="text/javascript" src="../../src/jquery/forces/dom.js"></script>
+<script type="text/javascript" src="../../src/jquery/forces/forms/core.js"></script>
+<script type="text/javascript" src="../../src/jquery/forces/fx.js"></script>
+<script type="text/javascript" src="../../src/jquery/forces/forms/ui.js"></script>
+<script type="text/javascript" src="../../src/jquery/forces/forms/range.js"></script>
+<script type="text/javascript" src="../../src/jquery/forces/lib/validate.js"></script>
 <script type="text/javascript">
 <!-- //
 

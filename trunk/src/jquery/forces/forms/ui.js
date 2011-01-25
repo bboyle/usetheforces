@@ -63,7 +63,7 @@
 			return $(e).is('.tf-form');
 		},
 		'-xf-control': function(e) {
-			return $(e).is('.xf-input,.xf-select,.xf-select1,.xf-textarea');
+			return $(e).is('.xf-input,.xf-select,.xf-select1,.xf-textarea,.xf-secret');
 		},
 		'-xf-group': function(e) {
 			return $(e).is('.xf-group');

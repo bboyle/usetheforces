@@ -216,6 +216,8 @@ Tester.use('console', 'test', function(Y){
 								'</ol>' +
 							'</fieldset>' +
 						'</li>' +
+						'<li class="xf-secret" id="question6"><label for="password1"><span class="xf-label">Password</span></label>' +
+							'<input type="password" name="password1" id="password1" /></li>' +
 						'<li class="section" id="section1">' +
 							'<fieldset>' +
 								'<legend>Section</legend>' +
@@ -247,12 +249,15 @@ Tester.use('console', 'test', function(Y){
 		//---------------------------------------------
 
 		test_requiredFieldMarkerShown: function() {
-			$('#input1, #input2').forces_attr('required', true);
+			$('#input1, #input2, #password1').forces_attr('required', true);
 			Assert.areSame(true, $('#question1').find('abbr.xf-required').length > 0, 'required marker should be shown');
 			Assert.areSame('Input*', $('#question1').text(), 'required marker should contain *');
 			Assert.areSame('required', $('#question1').find('abbr.xf-required').attr('title'), 'required marker @title should be "required"');
 			Assert.areSame(true, $('#question2').find('abbr.xf-required').length > 0, 'required marker should be shown');
 			Assert.areSame(1, $('#question2').find('abbr.xf-required').length, 'only one required marker should be shown');
+			Assert.areSame(true, $('#question6').find('abbr.xf-required').length > 0, 'required marker should be shown');
+			Assert.areSame('Password*', $('#question6').text(), 'required marker should contain *');
+			Assert.areSame('required', $('#question6').find('abbr.xf-required').attr('title'), 'required marker @title should be "required"');
 			$('#input1, #input2').forces_attr('required', false);
 			Assert.areSame(0, $('#question1').find('abbr.xf-required').length, 'required marker should not be shown');
 			Assert.areSame(0, $('#question2').find('abbr.xf-required').length, 'required marker should not be shown');
