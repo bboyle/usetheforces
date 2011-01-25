@@ -27,12 +27,14 @@ Tester.use('console', 'test', function(Y){
 						'<input type="radio" id="radio1b" name="radio1" value="b" />' +
 						'<input type="radio" id="radio1c" name="radio1" value="c" />' +
 					'</fieldset></li>' +
+					'<li class="required"><input type="password" name="password1" id="password1" /></li>' +
 				'</ol></form>'
 			).appendTo('body');
 			$('#input2').forces_attr('required', true);
 			$('.required input', '#form').forces_attr('required', true);
 			$('#input5').forces_attr('required', 'input1 = "5 is required"');
 			$('#radio1').forces_attr('required', true);
+			$('#password1').forces_attr('required', true);
 		},
 
 		tearDown: function() {
@@ -47,6 +49,7 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('required', $('#input2').forces_attr('required'));
 			Assert.areSame(null, $('#input1').forces_attr('required'));
 			Assert.areSame('required', $('#radio1').forces_attr('required'), 'radio1 should be required');
+			Assert.areSame('required', $('#password1').forces_attr('required'), 'password1 should be required');
 		},
 
 		test_canSetRequiredUsingForcesAttr: function() {
@@ -59,6 +62,11 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(false, $('#radio1').forces_attr('required', false).is(':-xf-required'));
 			Assert.areSame(false, $('#radio1').forces_removeAttr('required').is(':-xf-required'));
 			Assert.areSame(null, $('#radio1').forces_attr('required'));
+
+			Assert.areSame(true, $('#password1').forces_attr('required', true).is(':-xf-required'));
+			Assert.areSame(false, $('#password1').forces_attr('required', false).is(':-xf-required'));
+			Assert.areSame(false, $('#password1').forces_removeAttr('required').is(':-xf-required'));
+			Assert.areSame(null, $('#password1').forces_attr('required'));
 		},
 
 		test_setRequiredFromAncestorClass: function() {
