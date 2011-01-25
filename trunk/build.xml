@@ -7,13 +7,6 @@
 
 	<target name="clean" depends="-load.properties">
         <delete dir="build" quiet="true"/>
-		<delete>
-			<fileset dir="." includes="jquery.forces.forms.combined.js"/>
-			<fileset dir="." includes="jquery.forces.forms.min-yui.js"/>
-			<fileset dir="." includes="jquery.forces.forms.min-google.js"/>
-			<fileset dir="." includes="jquery.forces.forms.min.js"/>
-			<fileset dir="." includes="jquery.forces.forms.validate.min.js"/>
-		</delete>
 	</target>
 
     <target name="-load.properties">
@@ -35,7 +28,10 @@
 	<target name="forms">
 		<echo message="combine javascript source files"/>
 		<concat destfile="build/js/jquery.forces.forms.combined.js">
-			<filelist dir="." files="license.js,jquery.forces.date.js,jquery.forces.dom.js,jquery.forces.fx.js,jquery.forces.forms.core.js,jquery.forces.forms.ui.js"/>
+			<filelist dir="src/jquery/forces/"
+				files="license.js,date.js,dom.js,fx.js"/>
+			<filelist dir="src/jquery/forces/forms/"
+				files="core.js,ui.js"/>
 		</concat>
 		
 		<echo message="google compiler compression (jquery.forces.forms.js)"/>
@@ -61,7 +57,14 @@
 		<java jar="lib/${yuicompressor.jar}" fork="true" failonerror="true">
 			<arg value="-o"/>
 			<arg value="build/js/jquery.forces.lib.validate.min.js"/>
-			<arg value="jquery.forces.lib.validate.js"/>
+			<arg value="src/jquery/forces/lib/validate.js"/>
+		</java>
+
+		<echo message="YUI compression (jquery.forces.forms.range.js)"/>
+		<java jar="lib/${yuicompressor.jar}" fork="true" failonerror="true">
+			<arg value="-o"/>
+			<arg value="build/js/jquery.forces.forms.range.min.js"/>
+			<arg value="src/jquery/forces/forms/range.js"/>
 		</java>
 
 		<echo message="YUI compression (forces.forms.css)"/>
