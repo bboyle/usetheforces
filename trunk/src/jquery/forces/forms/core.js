@@ -30,7 +30,7 @@
 		EVENT_XF_SUBMIT_ERROR: '-xf-submit-error',
 		EVENT_TF_SUBMIT_SUPPRESSED: '-tf-submit-suppressed',
 
-		EXPR_HTML_CONTROLS: ':text,:password,select,textarea,.xf-select>fieldset,.xf-select1>fieldset',
+		EXPR_HTML_CONTROLS: ':text,input[type="email"],select,textarea,.xf-select>fieldset,.xf-select1>fieldset',
 		
 		// http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#valid-e-mail-address
 		// 1*( atext / "." ) "@" ldh-str 1*( "." ldh-str )
@@ -472,11 +472,11 @@
 		form = form || $('form');
 		if (enable || enable === undefined) {
 			form.bind('submit', formSubmitHandler);
-			$(':text,select,textarea', form).bind('focus blur click', inputFocusHandler);
+			$(':text,input[type="email"],select,textarea', form).bind('focus blur click', inputFocusHandler);
 			$(':radio,:checkbox', form).bind('focus blur click', radioFocusHandler);
 		} else {
 			form.unbind('submit', formSubmitHandler);
-			$(':text,select,textarea', form).unbind('focus blur click', inputFocusHandler);
+			$(':text,input[type="email"],select,textarea', form).unbind('focus blur click', inputFocusHandler);
 			$(':radio,:checkbox', form).unbind('focus blur click', radioFocusHandler);
 		}
 	};
