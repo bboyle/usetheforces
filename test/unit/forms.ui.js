@@ -331,6 +331,14 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(false, $('#section1').is(':hidden'), 'relevant section should not be hidden');
 			Assert.areSame(false, $('#section1 p').is(':hidden'), 'relevant section content should not be hidden');
 		},
+		
+		
+		test_ancestorRelevanceNotTriggeredByDescendent: function() {
+			$('#group1input1').forces_attr('relevant', false);
+			Assert.areSame(false, $('#group1').is(':hidden'), 'relevant group should be visible');
+			Assert.areSame(true, $('#group1input1').is(':hidden'), 'irrelevant question should be hidden');
+			Assert.areSame(false, $('#group1input2').is(':hidden'), 'relevant question should be visible');
+		},
 
 
 		test_relevantAnimationsGlitchFree: function() {
