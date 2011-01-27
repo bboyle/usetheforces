@@ -223,7 +223,7 @@
 	
 
 	$(':-xf-control, :-xf-group, .section')	
-		.live($F.EVENT_XF_ENABLED, function() {
+		.live($F.EVENT_XF_ENABLED, function(evt) {
 			$(this)
 				.find($F.EXPR_HTML_CONTROLS)
 					.each(function() {
@@ -234,9 +234,10 @@
 				.stop(true, true)
 				.slideDown($F.MS_ENABLE)
 			;
+			evt.stopPropagation();
 		})
 
-		.live($F.EVENT_XF_DISABLED, function() {
+		.live($F.EVENT_XF_DISABLED, function(evt) {
 			$(this)
 				.find($F.EXPR_HTML_CONTROLS)
 					.each(function() {
@@ -247,6 +248,7 @@
 				.stop(true, true)
 				.hide($F.MS_DISABLE)
 			;
+			evt.stopPropagation();
 		})
 	;
 		
