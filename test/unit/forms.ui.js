@@ -22,6 +22,10 @@ Tester.use('console', 'test', function(Y){
 						'<label for="input01" id="label-input"><span class="xf-label">Input</span></label>' +
 						'<input type="text" name="input01" id="input01" />' +
 					'</li>' +
+					'<li class="xf-input" id="email01-container">' +
+						'<label for="email01" id="label-email"><span class="xf-label">Email</span></label>' +
+						'<input type="text" name="email01" id="email01" />' +
+					'</li>' +
 					'<li class="xf-select" id="select-container"><fieldset><legend id="legend-select"><span class="xf-label">Select</span></legend>' +
 						'<ul class="xf-choices">' +
 							'<li><input type="checkbox" name="select" id="selectA" value="A" /><label for="selectA">A</label></li>' +
@@ -75,6 +79,13 @@ Tester.use('console', 'test', function(Y){
 			$('#input01').forces_attr('required', true);
 			Assert.areSame(1, $('#label-input').find('.xf-required').length);
 			Assert.areSame("Input*", $('#label-input').text());
+		},
+
+
+		test_canFindRequiredMarkerForEmail: function() {
+			$('#email01').forces_attr('required', true);
+			Assert.areSame(1, $('#label-email').find('.xf-required').length);
+			Assert.areSame("Email*", $('#label-email').text());
 		},
 
 
@@ -341,6 +352,20 @@ Tester.use('console', 'test', function(Y){
 		},
 
 
+/* http://code.google.com/p/usetheforces/issues/detail?id=30
+		test_descendentRelevanceNotTriggeredByAncestor: function() {
+			$('#group1,#group1input1').forces_attr('relevant', false);
+			Assert.areSame(true, $('#group1').is(':hidden'), 'irrelevant group should be hidden');
+			Assert.areSame(true, $('#group1input1').is(':hidden'), 'irrelevant question should be hidden');
+			Assert.areSame(true, $('#group1input2').is(':hidden'), 'relevant question within irrelevant group should be hidden');
+
+			$('#group1').forces_attr('relevant', true);
+			Assert.areSame(false, $('#group1').is(':hidden'), 'relevant group should be visible');
+			Assert.areSame(true, $('#group1input1').is(':hidden'), 'irrelevant question should be hidden (when group made relevant)');
+			Assert.areSame(false, $('#group1input2').is(':hidden'), 'relevant question should be visible');
+		},*/
+
+
 		test_relevantAnimationsGlitchFree: function() {
 			var input = $('#input1');
 			var question = $('#question1');
@@ -466,7 +491,7 @@ Tester.use('console', 'test', function(Y){
 					'</li>' +
 					'<li class="xf-input">' +
 						'<label for="email"><span class="xf-label">Email:</span></label>' +
-						'<input type="text" name="email" id="email" />' +
+						'<input type="email" name="email" id="email" />' +
 					'</li>' +
 					'<li class="xf-input">' +
 						'<label for="number"><span class="xf-label">Number:</span></label>' +
@@ -551,16 +576,19 @@ Tester.use('console', 'test', function(Y){
 
 
 		test_requiredAlertMessageDisplayed: function() {
-			$('#input1,#textarea1,#radio1').forces_attr('required', true);
+			$('#input1,#textarea1,#email,#radio1').forces_attr('required', true);
 			
 			$('#form').submit();
 			var status = $('div.tf-status');
-			Assert.areSame(3, status.find('li').length, 'expected 3 alerts in status');
+			Assert.areSame(4, status.find('li').length, 'expected 4 alerts in status');
 			Assert.areSame('Input: must be completed', status.find('li').eq(0).text());
 			Assert.areSame('Textarea: must be completed', status.find('li').eq(1).text());
-			Assert.areSame('Radio buttons: must be completed', status.find('li').eq(2).text());
+			Assert.areSame('Email: must be completed', status.find('li').eq(2).text());
+			Assert.areSame('Radio buttons: must be completed', status.find('li').eq(3).text());
 			Assert.areSame(1, $('#input1').closest(':-xf-control').find('.xf-alert').length, 'alert not present on input');
 			Assert.areSame('must be completed', $('#input1').closest(':-xf-control').find('.xf-alert').text());
+			Assert.areSame(1, $('#email').closest(':-xf-control').find('.xf-alert').length, 'alert not present on email');
+			Assert.areSame('must be completed', $('#email').closest(':-xf-control').find('.xf-alert').text());
 			Assert.areSame(1, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert not present on radio buttons');
 			Assert.areSame('must be completed', $('#radio1').closest(':-xf-control').find('.xf-alert').text());
 
