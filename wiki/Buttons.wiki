@@ -14,3 +14,4 @@ TBA
  * [http://www.p51labs.com/simply-buttons-v2/ Simply Buttons v2]
  * [http://particletree.com/features/rediscovering-the-button-element/ Rediscovering the Button Element]
  * [http://www.oscaralexander.com/tutorials/how-to-make-sexy-buttons-with-css.html How to make sexy buttons with CSS]
+ * [http://www.quora.com/Why-should-your-form-buttons-not-use-Submit-for-their-text/answer/Caroline-Jarrett?srid=Xqv Labelling buttons]
