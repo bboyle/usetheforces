@@ -286,10 +286,18 @@ Tester.use('console', 'test', function(Y){
 		test_onlyRelevantFieldsAreEnabled: function() {
 			var input = $('#input1');
 			Assert.areSame(false, input.attr('disabled'), 'input should not have @disabled by default');
+
+			// 2011-02-26 needed to slow down these tests for jquery 1.5
+			// was seeing false positives, likey due to test executing faster than event handling
 			input.forces_attr('relevant', false);
-			Assert.areSame(true, input.attr('disabled'), '"disabled" property should be "true" when irrelevant');
+			this.wait(function() {
+				Assert.areSame(true, input.attr('disabled'), '"disabled" property should be "true" when irrelevant');
+			}, 1);
+
 			input.forces_attr('relevant', true);
-			Assert.areSame(false, input.attr('disabled'), 'input should not have @disabled when made relevant');
+			this.wait(function() {
+				Assert.areSame(false, input.attr('disabled'), 'input should not have @disabled when made relevant');
+			}, 1);
 		},
 
 
@@ -369,21 +377,23 @@ Tester.use('console', 'test', function(Y){
 		test_relevantAnimationsGlitchFree: function() {
 			var input = $('#input1');
 			var question = $('#question1');
-			Assert.areNotSame('none', question.css('display'), 'relevant input should not be hidden');
+			Assert.isTrue(question.is(':visible'), 'relevant input should not be hidden');
 
+			// quickly hide then show the control
 			input.forces_attr('relevant', false).forces_attr('relevant', true);
-			this.wait(function() {
-				Assert.areNotSame('none', question.css('display'), 'false to true causes glitch (animation not stopped?)');
-			}, $.forces.MS_ENABLED+1);
+			// 2011-02-26 need this delay or test fails
+			this.wait(function() {}, 1);
+			Assert.isTrue(question.is(':visible'), 'quickly become relevant failed (animation not stopped?)');
 
+			// hide the control
 			input.forces_attr('relevant', false);
-			this.wait(function() {
-				Assert.areSame('none', question.css('display'), 'irrelevant input should be hidden');
-			}, $.forces.MS_DISABLED+1);
+			this.wait(function() {}, $.forces.MS_DISABLED);
+			Assert.isFalse(question.is(':visible'), 'irrelevant input should be hidden');
+
+			// quickly show then hide the control
 			input.forces_attr('relevant', true).forces_attr('relevant', false);
-			this.wait(function() {
-				Assert.areSame('none', question.css('display'), 'true to false causes glitch (animation not stopped?)');
-			}, $.forces.MS_DISABLED+1);
+			this.wait(function() {}, $.forces.MS_DISABLED);
+			Assert.isFalse(question.is(':visible'), 'quickly become irrelevant failed (animation not stopped?)');
 		},
 		
 		

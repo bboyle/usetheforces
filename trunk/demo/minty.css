@@ -60,3 +60,7 @@ h1, h2, legend, caption {
 .xf-submit-error .xf-invalid.tf-active {
 	background: #ff0;
 }
+
+[disabled] {
+	background: #ccc;
+}
