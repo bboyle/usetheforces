@@ -225,7 +225,7 @@
 	$(':-xf-control, :-xf-group, .section')	
 		.live($F.EVENT_XF_ENABLED, function(evt) {
 			$(this)
-				.find($F.EXPR_HTML_CONTROLS)
+				.find('input,textarea,select,button')
 					.each(function() {
 						// DOM more robust than jquery here
 						this.removeAttribute('disabled');
@@ -239,7 +239,7 @@
 
 		.live($F.EVENT_XF_DISABLED, function(evt) {
 			$(this)
-				.find($F.EXPR_HTML_CONTROLS)
+				.find('input,textarea,select,button')
 					.each(function() {
 						// DOM more robust than jquery here
 						this.setAttribute('disabled', 'disabled');
