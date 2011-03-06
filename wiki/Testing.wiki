@@ -12,6 +12,7 @@ Testing is an important part of quality assurance. Automated testing is useful t
 
 = References and potential tools =
  * [https://github.com/NeilCrosby/frontend-test-suite/blob/master/README.markdown frontend-test-suite]
+ * [http://watirmelon.com/2011/01/23/reducing-step-explosion-by-decoupling-cucumber-steps-from-your-gui/ Reducing step explosion by decoupling Cucumber steps from your GUI]
  * [http://cukes.info/ Behaviour driven development with Cucumber]
  * QUnit—jquery test framework (requires javascript), great for bundling into Chrome extensions
  * YUI Test—tests written in javascript, bundled into self-contained HTML pages
