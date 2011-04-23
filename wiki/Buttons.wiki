@@ -14,7 +14,7 @@ Simple UI for buttons.
  * Be specific about what happens when the button is pressed—the is a relationship between the button label, the title of the form, and what the user expects to happen
  * Avoid computer/web jargon like 'Submit'—try 'Submit feedback' or 'Send feedback' if there isn't anything more specific
  * Make the *primary action* bold, and first in the list
-   * It should be the first `input[type=submit]` in the form, so that it is activated if the user presses 'Enter' in any input field to submit the form—if you need other buttons earlier in the form, use `button[type=button]`)
+   * It should be the first `input[type=submit]` in the form, so that it is activated if the user presses 'Enter' in any input field to submit the form—if you need other buttons earlier in the form, use `button[type=button]`
  * Put generous space between buttons
 
 == Styling ==
