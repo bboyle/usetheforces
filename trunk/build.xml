@@ -2,6 +2,7 @@
 	<description>Use The Forces!</description>
 
 	<target name="help" description="command line help">
+		<echo message="use 'ant clean all' to build everything"/>
 		<echo message="use 'ant clean wireframe' to build the wireframe css"/>
 	</target>
 
