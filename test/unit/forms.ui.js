@@ -285,18 +285,19 @@ Tester.use('console', 'test', function(Y){
 
 		test_onlyRelevantFieldsAreEnabled: function() {
 			var input = $('#input1');
-			Assert.areSame(false, input.attr('disabled'), 'input should not have @disabled by default');
+			// 2011-05-04 input.get(0).disabled instead of input.attr('disabled') for jquery 1.6 attr() changes
+			Assert.areSame(false, input.get(0).disabled, 'input should not have @disabled by default');
 
 			// 2011-02-26 needed to slow down these tests for jquery 1.5
 			// was seeing false positives, likey due to test executing faster than event handling
 			input.forces_attr('relevant', false);
 			this.wait(function() {
-				Assert.areSame(true, input.attr('disabled'), '"disabled" property should be "true" when irrelevant');
+				Assert.areSame(true, input.get(0).disabled, '"disabled" property should be "true" when irrelevant');
 			}, 1);
 
 			input.forces_attr('relevant', true);
 			this.wait(function() {
-				Assert.areSame(false, input.attr('disabled'), 'input should not have @disabled when made relevant');
+				Assert.areSame(false, input.get(0).disabled, 'input should not have @disabled when made relevant');
 			}, 1);
 		},
 
@@ -644,12 +645,12 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame(1, $('#number').closest(':-xf-control').find('.xf-alert').length, 'alert (input) not present when value missing');
 			Assert.areSame('must be completed', $('#number').closest(':-xf-control').find('.xf-alert').text(), 'wrong alert message (input)');
 
-			$('#radio1-true').attr('checked', 'checked').click();
+			$('#radio1-true').click().blur();
 			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert (radio) present when value selected');
-			$('#radio1-null').attr('checked', 'checked').click();
+			$('#radio1-null').click().blur();
 			Assert.areSame(1, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert (radio) not present when empty value selected');
 			Assert.areSame('must be completed', $('#number').closest(':-xf-control').find('.xf-alert').text(), 'wrong alert message (radio)');
-			$('#radio1-true').attr('checked', 'checked').click();
+			$('#radio1-true').click().blur();
 			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert (radio) present when value selected again');
 		},
 

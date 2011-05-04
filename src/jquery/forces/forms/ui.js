@@ -228,7 +228,8 @@
 				.find('input,textarea,select,button')
 					.each(function() {
 						// DOM more robust than jquery here
-						this.removeAttribute('disabled');
+						//this.removeAttribute('disabled');
+						this.disabled = false
 					})
 				.end()
 				.stop(true, true)
@@ -242,7 +243,8 @@
 				.find('input,textarea,select,button')
 					.each(function() {
 						// DOM more robust than jquery here
-						this.setAttribute('disabled', 'disabled');
+						//this.setAttribute('disabled', 'disabled');
+						this.disabled = true
 					})
 				.end()
 				.stop(true, true)

@@ -150,9 +150,10 @@ Tester.use('console', 'test', function(Y){
 			if (isRangeSupported) {
 				
 				var select = $('#select1,#select2').forces_toRange();
-				Assert.areSame('red blue', select.eq(0).attr('class'));
+				// use || '' to handle jquery 1.6 attr() changes
+				Assert.areSame('red blue', select.eq(0).attr('class') || '');
 				Assert.areSame(true, select.eq(0).hasClass('red'));
-				Assert.areSame('', select.eq(1).attr('class'));
+				Assert.areSame('', select.eq(1).attr('class') || '');
 				
 			} else {
 				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
@@ -163,8 +164,8 @@ Tester.use('console', 'test', function(Y){
 			if (isRangeSupported) {
 				
 				var select = $('#select1,#select2').forces_toRange();
-				Assert.areSame('', select.eq(0).attr('title'));
-				Assert.areSame('test select list', select.eq(1).attr('title'));
+				Assert.areSame('', select.eq(0).attr('title') || '');
+				Assert.areSame('test select list', select.eq(1).attr('title') || '');
 				
 			} else {
 				Y.log('Input type range IS NOT supported in this browser', 'warn', 'TestRunner');
