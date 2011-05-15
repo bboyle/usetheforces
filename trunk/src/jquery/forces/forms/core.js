@@ -5,7 +5,7 @@
  * @requires jQuery
  */
 
-;if(typeof(jQuery)!="undefined") {
+;if(typeof(jQuery)!=="undefined") {
 (function($){
 
 
@@ -78,7 +78,7 @@
 			return ($(e).data(FLAGS) & 48) !== 0;
 		},
 		'-xf-empty': function(e) {
-			return $.trim($(e).forces_val()).length == 0;
+			return $.trim($(e).forces_val()).length === 0;
 		},
 		'-xf-non-empty': function(e) {
 			return $.trim($(e).forces_val()).length > 0;
@@ -293,7 +293,7 @@
 					
 					case 'date':
 						// unable to parse date
-						validityState.typeMismatch = $F.dateParse(value) == null;
+						validityState.typeMismatch = $F.dateParse(value) === null;
 					break;
 
 					case 'number':

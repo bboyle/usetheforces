@@ -5,7 +5,7 @@
  * @requires jQuery
  */
 
-;if(typeof(jQuery)!="undefined") {
+;if(typeof(jQuery)!=="undefined") {
 (function($){
 
 
@@ -28,7 +28,9 @@
 	// private: _pad a string
 	var _pad = function(s, l, c) {
 		s = String(s);
-		while (s.length < l) s = String(c) + s;
+		while (s.length < l) {
+			s = String(c) + s;
+		}
 		return s;
 	};
 
@@ -75,14 +77,15 @@
 				date[property] = date[property] || value;
 			}
 	
-			for (var i = 0; i < s.length; i++) {
+			var slength = s.length;
+			for (var i = 0; i < slength; i++) {
 				if (s[i].match(/^\d{4}$/)) {
 					setDate('year', s[i]);
 				} else if (s[i].match(/^\d{1,2}$/)) {
 					// precedence: date, month, year
 					var property = date.date ? (date.month ? 'year' : 'month') : 'date';
-					if (property == 'year' && !date.year) {
-						s[i] = (base.getFullYear()+"").substring(0,2) + _pad(s[i], 2, '0');
+					if (property === 'year' && !date.year) {
+						s[i] = (base.getFullYear()+'').substring(0,2) + _pad(s[i], 2, '0');
 						if (min && min.getFullYear() > s[i]) {
 							s[i] += 100;
 						} else if (max && max.getFullYear() < s[i]) {
@@ -127,7 +130,7 @@
 
 	// check date equality
 	$F.dateEquals = function(date, y, m, d) {
-		return (date.getMonth() == m-1 && date.getDate() == d && date.getFullYear() == y);
+		return (date.getMonth() === m-1 && date.getDate() === +d && date.getFullYear() === +y);
 	};
 	
 	
@@ -137,7 +140,7 @@
 	// return last day in month
 	$F.dateEndOfMonth = function(date) {
 		date = new Date(date.getFullYear(), date.getMonth(), 31);
-		if (date.getDate() != 31) {
+		if (date.getDate() !== 31) {
 			date.setDate(31 - date.getDate());
 			date = this.dateCalc(date, { month: -1 });
 		}
