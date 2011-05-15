@@ -5,7 +5,7 @@
  * @requires jQuery
  */
 
-;if(typeof(jQuery)!="undefined") {
+;if(typeof(jQuery)!=="undefined") {
 (function($){
 
 
@@ -86,7 +86,7 @@
 		controls
 			.each(function() {
 				var control = $(this).children('fieldset').eq(0);
-				if (control.length == 0) {
+				if (control.length === 0) {
 					control = $(this);
 				}
 				var alertMessage = message || control.forces_validationMessage();
@@ -144,7 +144,7 @@
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-validationmessage
 	$.fn.forces_validationMessage = function() {
 		var e = this.find($F.EXPR_HTML_CONTROLS).eq(0);
-		if (e.length == 0) {
+		if (e.length === 0) {
 			e = this;
 		}
 

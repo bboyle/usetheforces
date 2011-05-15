@@ -5,7 +5,7 @@
  * @requires jQuery
  */
 
-;if(typeof(jQuery)!="undefined") {
+;if(typeof(jQuery)!=="undefined") {
 (function($){
 
 	// jquery.forces

@@ -5,7 +5,7 @@
  * @requires jQuery
  */
 
-;if(typeof(jQuery)!="undefined") {
+;if(typeof(jQuery)!=="undefined") {
 (function($){
 
 
@@ -30,7 +30,7 @@
 		// focus
 		if (cfg.focus === true) {
 			j.focus();
-		} else if (typeof cfg.focus == "object") {
+		} else if (typeof cfg.focus === "object") {
 			cfg.focus.focus();
 		}
 
