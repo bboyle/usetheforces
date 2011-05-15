@@ -331,7 +331,10 @@ Tester.use('console', 'test', function(Y){
 			$('#checkbox1').forces_validate();
 			Assert.areSame(true, $('#checkbox1').is(':-xf-valid'), 'checkbox1 should be valid by default');
 
-			$('#checkbox1').forces_attr('required', true).forces_validate();
+			$('#checkbox1')
+				.forces_attr('required', true)
+				.forces_validate()
+			;
 			Assert.areSame(false, $('#checkbox1').is(':-xf-valid'), 'required checkbox1 should be invalid when empty');
 
 			$('#checkbox1a').click();
@@ -386,9 +389,9 @@ Tester.use('console', 'test', function(Y){
 
 		test_validityStateIsLive: function() {
 			var input1 = $('#input1');
-			Assert.isUndefined(input1.data('-tf-validity'), 'validityState defined before validation');
+			Assert.isUndefined(input1.data('_tf_validity'), 'validityState defined before validation');
 			
-			var validityState = input1.forces_validate().data('-tf-validity');
+			var validityState = input1.forces_validate().data('_tf_validity');
 			Assert.isNotUndefined(validityState, 'validityState not defined post validation');
 			Assert.areSame(true, validityState.valid, 'validityState.valid should be true (default)');
 			

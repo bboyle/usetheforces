@@ -51,7 +51,7 @@
 
 
 	// constants (private)
-	var DOM_STATUS = '-tfui-status';
+	var DOM_STATUS = '_tfui_status';
 
 
 
@@ -154,7 +154,7 @@
 			return '';
 
 		} else if (validityState.customError) {
-			return e.data('-tf-customValidityErrorMessage');
+			return e.data($F.CUSTOM_VALIDITY);
 
 		} else if (validityState.valueMissing) {
 			return $F.MSG_MISSING;
