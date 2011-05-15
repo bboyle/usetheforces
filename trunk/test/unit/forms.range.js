@@ -39,7 +39,7 @@ Tester.use('console', 'test', function(Y){
 				'</form>' +
 				'</div>'
 			).appendTo('body');
-			isRangeSupported = $('<input type="range" />').attr('type') == 'range';
+			isRangeSupported = $('<input type="range" />').type === 'range';
 		},
 
 
