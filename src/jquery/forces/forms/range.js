@@ -11,12 +11,12 @@
 
 // convert to a range control
 $.fn.forces_toRange = function() {
-	if ($('<input type="range" />').attr('type') != 'range') {
+	if ($('<input type="range" />').type !== 'range') {
 		return this;
 	}
 
 	return this.map(function() {
-			if (this.tagName.toLowerCase() == 'select') {
+			if (this.tagName.toLowerCase() === 'select') {
 				var select = $(this);
 				var options = select
 					.find('option')
