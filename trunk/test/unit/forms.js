@@ -160,7 +160,7 @@ Tester.use('console', 'test', function(Y){
 				'</ol></form>'
 			).appendTo('body');
 			$('#input1,#radio1').forces_attr('required', true);
-			$('#input4').attr('required', 'required');
+			$('#input4').forces_attr('required', 'required');
 			$('#input3').forces_attr('relevant', false);
 		},
 

@@ -46,7 +46,7 @@
 
 
 	// constants (private)
-	var SUBMIT_TIMESTAMP = '-tf-submitted';
+	var SUBMIT_TIMESTAMP = '_tf_submitted';
 /*
 	// bit flags
 	var BIT_IRRELEVANT		= 1;
@@ -105,8 +105,8 @@
 	// pseudo attr() to support @required, @relevant and @type
 	$.fn.forces_attr = function(name, value) {
 		// read
-		if (typeof(value) == 'undefined') {
-			value = this.data('-tf-@' + name);
+		if (typeof(value) === 'undefined') {
+			value = this.data('_tf_@' + name);
 			if (value) {
 				return value;
 			}
@@ -124,11 +124,11 @@
 		switch (name) {
 
 			case 'relevant': // irrelevant
-				this.forces__flags(2, value !== true && value != 'relevant');
+				this.forces__flags(2, value !== true && value !== 'relevant');
 			break;
 			
 			case 'required':
-				this.forces__flags(8, value === true || value == 'required');
+				this.forces__flags(8, value === true || value === 'required');
 			break;
 			
 			case 'type':
@@ -138,7 +138,7 @@
 				// exit
 				return this;
 		}
-		return this.data('-tf-@' + name, value === true ? name : value).forces_recalculate();
+		return this.data('_tf_@' + name, value === true ? name : value).forces_recalculate();
 	};
 
 	$.fn.forces_removeAttr = function(name) {
@@ -159,7 +159,7 @@
 				// exit
 				return this;
 		}
-		return this.removeData('-tf-@' + name).forces_recalculate();
+		return this.removeData('_tf_@' + name).forces_recalculate();
 	};
 
 
