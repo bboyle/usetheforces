@@ -604,12 +604,12 @@ Tester.use('console', 'test', function(Y){
 			Assert.areSame('must be completed', $('#radio1').closest(':-xf-control').find('.xf-alert').text());
 
 			$('#form').submit();
-			Assert.areSame(1, $('#input1').closest(':-xf-control').find('.xf-alert').length);
+			Assert.areSame(1, $('#input1').closest(':-xf-control').find('.xf-alert').length, 'alert not present on input after submit');
 			Assert.areSame('must be completed', $('#input1').closest(':-xf-control').find('.xf-alert').text());
 			
 			$('#radio1-true').click();
 			$('#form').submit();
-			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length);
+			Assert.areSame(0, $('#radio1').closest(':-xf-control').find('.xf-alert').length, 'alert still present on checked radio after submit');
 		},
 		
 		
