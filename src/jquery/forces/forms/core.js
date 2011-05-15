@@ -38,7 +38,10 @@
 		
 		REXP_NUMBER: /^[0-9]+$/,
 
-		SUBMIT_TOLERANCE: 10000
+		SUBMIT_TOLERANCE: 10000,
+
+		VALIDITY: '_tf_validity',
+		CUSTOM_VALIDITY: '_tf_customValidityErrorMessage'
 	});
 
 
@@ -47,6 +50,9 @@
 
 	// constants (private)
 	var SUBMIT_TIMESTAMP = '_tf_submitted';
+	var FLAGS = '_tf_FLAGS';
+	var VALUE = '_tf_VALUE';
+	var ATTR_PREFIX = '_@tf_';
 /*
 	// bit flags
 	var BIT_IRRELEVANT		= 1;
@@ -66,10 +72,10 @@
 			return $(e).is($F.EXPR_HTML_CONTROLS);
 		},
 		'-tf-not-validated': function(e) {
-			return ($(e).data('-tf-FLAGS') & 48) == 0;
+			return ($(e).data(FLAGS) & 48) === 0;
 		},
 		'-tf-validated': function(e) {
-			return ($(e).data('-tf-FLAGS') & 48) != 0;
+			return ($(e).data(FLAGS) & 48) !== 0;
 		},
 		'-xf-empty': function(e) {
 			return $.trim($(e).forces_val()).length == 0;
@@ -78,23 +84,23 @@
 			return $.trim($(e).forces_val()).length > 0;
 		},
 		'-xf-invalid': function(e) {
-			return ($(e).data('-tf-FLAGS') & 32) == 32;
+			return ($(e).data(FLAGS) & 32) === 32;
 		},
 		'-xf-irrelevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & 1) == 1;
+			return ($(e).data(FLAGS) & 1) === 1;
 		},
 		'-xf-optional': function(e) {
-			return ($(e).data('-tf-FLAGS') & 4) == 0;
+			return ($(e).data(FLAGS) & 4) === 0;
 		},
 		'-xf-relevant': function(e) {
-			return ($(e).data('-tf-FLAGS') & 1) == 0;
+			return ($(e).data(FLAGS) & 1) === 0;
 		},
 		'-xf-required': function(e) {
 			e = $(e);
-			return !!e.attr('required') || (e.data('-tf-FLAGS') & 4) == 4;
+			return !!e.attr('required') || (e.data(FLAGS) & 4) === 4;
 		},
 		'-xf-valid': function(e) {
-			return ($(e).data('-tf-FLAGS') & 16) == 16;
+			return ($(e).data(FLAGS) & 16) === 16;
 		}
 	});
 	
@@ -106,7 +112,7 @@
 	$.fn.forces_attr = function(name, value) {
 		// read
 		if (typeof(value) === 'undefined') {
-			value = this.data('_tf_@' + name);
+			value = this.data(ATTR_PREFIX + name);
 			if (value) {
 				return value;
 			}
@@ -138,7 +144,7 @@
 				// exit
 				return this;
 		}
-		return this.data('_tf_@' + name, value === true ? name : value).forces_recalculate();
+		return this.data(ATTR_PREFIX + name, value === true ? name : value).forces_recalculate();
 	};
 
 	$.fn.forces_removeAttr = function(name) {
@@ -159,7 +165,7 @@
 				// exit
 				return this;
 		}
-		return this.removeData('_tf_@' + name).forces_recalculate();
+		return this.removeData(ATTR_PREFIX + name).forces_recalculate();
 	};
 
 
@@ -173,7 +179,7 @@
 		}
 		switch (this.get(0).tagName.toLowerCase()) {
 			case 'fieldset':
-				return this.find(':checked').val() || null;
+				return this.find(':radio,:checkbox').filter(':checked').val() || null;
 			case 'input':
 				switch (this.forces_attr('type')) {
 					case 'date':
@@ -192,7 +198,7 @@
 	// setCustomValidity() method
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#dom-cva-setcustomvalidity
 	$.fn.forces_setCustomValidity = function(message) {
-		return this.data('-tf-customValidityErrorMessage', message);
+		return this.data($F.CUSTOM_VALIDITY, message);
 	},
 
 
@@ -204,7 +210,7 @@
 	// http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#validitystate
 	$.fn.forces_validity = function() {
 		
-		return this.data('-tf-validity') || this.data('-tf-validity', { 
+		return this.data($F.VALIDITY) || this.data($F.VALIDITY, { 
 			valueMissing: false,
 			typeMismatch: false,
 //			patternMismatch: false,
@@ -214,7 +220,7 @@
 //			stepMismatch: false,
 //			customError: false,
 			valid: true
-		}).data('-tf-validity');
+		}).data($F.VALIDITY);
 	},
 
 
@@ -234,7 +240,7 @@
 		
 		return this.each(function() {
 			e = $(this);
-			f = e.data('-tf-FLAGS') || 0;
+			f = e.data(FLAGS) || 0;
 	
 			// relevant
 			switch (f & 3) {
@@ -270,7 +276,7 @@
 			var validityState = e.forces_validity();
 
 			// custom error = setCustomValidity(message) called
-			validityState.customError = !!e.data('-tf-customValidityErrorMessage');
+			validityState.customError = !!e.data($F.CUSTOM_VALIDITY);
 
 			// valueMissing = required and empty
 			validityState.valueMissing = e.is(':-xf-required:-xf-empty');
@@ -334,11 +340,11 @@
 		add = add ? 
 		function() {
 			e = $(this);
-			e.data('-tf-FLAGS', e.data('-tf-FLAGS') | flag);
+			e.data(FLAGS, e.data(FLAGS) | flag);
 		} :
 		function() {
 			e = $(this);
-			e.data('-tf-FLAGS', e.data('-tf-FLAGS') & ~flag);
+			e.data(FLAGS, e.data(FLAGS) & ~flag);
 		};
 		return this.each(add);
 	};
@@ -395,15 +401,15 @@
 			case 'click':
 			case 'focus':
 				control
-					.data('-tf-VALUE', control.val())
+					.data(VALUE, control.val())
 					.trigger($F.EVENT_XF_FOCUS_IN)
 				;
 			break;
 
 			case 'blur':
-				var oldValue = control.data('-tf-VALUE');
+				var oldValue = control.data(VALUE);
 				control
-					.removeData('-tf-VALUE')
+					.removeData(VALUE)
 					.trigger($F.EVENT_XF_FOCUS_OUT)
 				;
 				if (control.val() !== oldValue) {
@@ -427,16 +433,16 @@
 		
 			case 'focus':
 				control
-					.data('-tf-VALUE', control.forces_val())
+					.data(VALUE, control.forces_val())
 					.trigger($F.EVENT_XF_FOCUS_IN)
 				;
 			break;
 
 			case 'click':
-				var oldValue = control.data('-tf-VALUE');
+				var oldValue = control.data(VALUE);
 				if (control.forces_val() !== oldValue) {
 					control
-						.data('-tf-VALUE', control.forces_val())
+						.data(VALUE, control.forces_val())
 						.trigger($F.EVENT_XF_VALUE_CHANGED)
 						.forces_validate()
 					;
@@ -444,9 +450,9 @@
 			break;
 
 			case 'blur':
-				var oldValue = control.data('-tf-VALUE');
+				var oldValue = control.data(VALUE);
 				control
-					.removeData('-tf-VALUE')
+					.removeData(VALUE)
 					.trigger($F.EVENT_XF_FOCUS_OUT)
 				;
 				if (control.forces_val() !== oldValue) {
